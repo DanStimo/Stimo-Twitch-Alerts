@@ -381,6 +381,8 @@ html, body {
 
 <script>
 const socket = io();
+const packQueue = [];
+let packPlaying = false;
 
 const overlay = document.getElementById("cardOverlay");
 const pack = document.getElementById("pack");
@@ -390,6 +392,17 @@ const cardName = document.getElementById("cardName");
 const cardRarity = document.getElementById("cardRarity");
 
 socket.on("card_pull", (data) => {
+    packQueue.push(data);
+    playNextPack();
+});
+
+function playNextPack() {
+    if (packPlaying) return;
+    if (packQueue.length === 0) return;
+
+    packPlaying = true;
+
+    const data = packQueue.shift();
     const pulledCard = data.card;
 
     overlay.classList.add("show");
@@ -401,24 +414,13 @@ socket.on("card_pull", (data) => {
     card.style.display = "none";
 
     cardImage.src = "/" + pulledCard.image;
-    console.log("CARD IMAGE:", cardImage.src);
-    cardImage.onload = () => {
-        console.log("Card image loaded successfully");
-    };
-
-    cardImage.onerror = () => {
-        console.log("Card image failed to load:", cardImage.src);
-    };
     cardRarity.textContent = pulledCard.rarity;
 
     setTimeout(() => {
-
         pack.classList.add("flare");
-
     }, 1400);
 
     setTimeout(() => {
-
         pack.style.display = "none";
 
         card.style.display = "block";
@@ -427,28 +429,24 @@ socket.on("card_pull", (data) => {
         void card.offsetWidth;
 
         card.classList.add("reveal");
-
     }, 2500);
 
     setTimeout(() => {
-
         card.classList.remove("reveal");
         card.classList.add("exit");
-
     }, 11000);
 
     setTimeout(() => {
-
         overlay.classList.remove("show");
 
         card.className = "card";
-
         card.style.display = "none";
-
         pack.style.display = "flex";
 
+        packPlaying = false;
+        playNextPack();
     }, 12500);
-});
+}
 </script>
 
 </body>
