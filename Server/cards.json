@@ -21,10 +21,10 @@
   },
 
    {
-    "id": "javelin",
-    "name": "UEE Javelin",
+    "id": "orion",
+    "name": "Orion",
     "rarity": "epic",
-    "image": "assets/cards/epic/javelin.png"
+    "image": "assets/cards/epic/orion.png"
   },
 
   {
