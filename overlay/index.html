@@ -367,7 +367,7 @@ body {
     position: absolute;
     inset: -160px 0 0 0;
     background-repeat: repeat;
-    background-size: 320px 320px;
+    background-size: 420px 420px;
     animation: particlesFall 8s linear infinite;
     will-change: background-position;
 }
@@ -396,11 +396,17 @@ body {
 
 @keyframes particlesFall {
     from {
-        background-position: 0 0, 70px 40px, 140px 90px;
+        background-position:
+            0px -800px,
+            120px -600px,
+            240px -1000px;
     }
 
     to {
-        background-position: 0 420px, 70px 460px, 140px 510px;
+        background-position:
+            0px 1200px,
+            120px 1400px,
+            240px 1000px;
     }
 }
 </style>
