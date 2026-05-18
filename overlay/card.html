@@ -384,6 +384,7 @@ const socket = io();
 const packQueue = [];
 let packPlaying = false;
 
+const revealSound = new Audio("/assets/sounds/Pack Open.mp3");
 const overlay = document.getElementById("cardOverlay");
 const pack = document.getElementById("pack");
 const card = document.getElementById("card");
@@ -421,14 +422,20 @@ function playNextPack() {
     }, 1400);
 
     setTimeout(() => {
-        pack.style.display = "none";
 
+        pack.style.display = "none";
+    
         card.style.display = "block";
         card.style.opacity = "1";
-
+    
         void card.offsetWidth;
-
+    
+        revealSound.pause();
+        revealSound.currentTime = 0;
+        revealSound.play();
+    
         card.classList.add("reveal");
+    
     }, 2500);
 
     setTimeout(() => {
