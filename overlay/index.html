@@ -310,6 +310,8 @@ body {
     pointer-events: none;
     animation: giftFall 2.6s ease-in forwards;
     z-index: 10;
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
 
 @keyframes giftFall {
@@ -593,31 +595,24 @@ function formatRightPanel(data) {
 }
 
 function giftBurst(duration = 8000) {
-
     const frame = document.querySelector(".hud-frame");
 
     const interval = setInterval(() => {
+        const gift = document.createElement("div");
 
-        for (let i = 0; i < 2; i++) {
+        gift.className = "gift-particle";
+        gift.textContent = "🎁";
 
-            const gift = document.createElement("div");
+        gift.style.left = Math.random() * 100 + "%";
+        gift.style.animationDuration = (2.4 + Math.random() * 1.2) + "s";
 
-            gift.className = "gift-particle";
-            gift.textContent = "🎁";
+        frame.appendChild(gift);
 
-            gift.style.left = Math.random() * 100 + "%";
+        setTimeout(() => {
+            gift.remove();
+        }, 4200);
 
-            gift.style.animationDuration =
-                (2 + Math.random() * 1.5) + "s";
-
-            frame.appendChild(gift);
-
-            setTimeout(() => {
-                gift.remove();
-            }, 5000);
-        }
-
-    }, 180);
+    }, 220);
 
     setTimeout(() => {
         clearInterval(interval);
