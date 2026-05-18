@@ -143,6 +143,8 @@ html, body {
 
 <script>
 const socket = io();
+const webcamQueue = [];
+let webcamPlaying = false;
 
 const alertThemes = {
     follow: {
@@ -219,6 +221,17 @@ function drawTicker(text) {
 }
 
 socket.on("alert", (data) => {
+    webcamQueue.push(data);
+    playNextWebcamAlert();
+});
+
+function playNextWebcamAlert() {
+    if (webcamPlaying) return;
+    if (webcamQueue.length === 0) return;
+
+    webcamPlaying = true;
+
+    const data = webcamQueue.shift();
     const theme = alertThemes[data.type];
 
     if (theme) {
@@ -243,9 +256,12 @@ socket.on("alert", (data) => {
     console.log("WEBCAM DURATION:", alertDuration, data.type);
 
     setTimeout(() => {
-        widget.classList.remove("show");
-    }, alertDuration);
-});
+    widget.classList.remove("show");
+
+    webcamPlaying = false;
+    playNextWebcamAlert();
+}, alertDuration);
+}
 </script>
 
 </body>
