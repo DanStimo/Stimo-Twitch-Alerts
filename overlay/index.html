@@ -598,7 +598,7 @@ function giftBurst(duration = 8000) {
 
     const interval = setInterval(() => {
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 2; i++) {
 
             const gift = document.createElement("div");
 
@@ -614,10 +614,10 @@ function giftBurst(duration = 8000) {
 
             setTimeout(() => {
                 gift.remove();
-            }, 4000);
+            }, 5000);
         }
 
-    }, 350);
+    }, 180);
 
     setTimeout(() => {
         clearInterval(interval);
