@@ -6,11 +6,46 @@
     "image": "assets/cards/common/aurora_mr.png"
   },
 
-   {
+  {
+    "id": "hull_a",
+    "name": "Hull A",
+    "rarity": "common",
+    "image": "assets/cards/common/hull_a.png"
+  },
+
+  {
+    "id": "cutter",
+    "name": "Cutter",
+    "rarity": "common",
+    "image": "assets/cards/common/cutter.png"
+  },
+
+  {
+    "id": "avenger_titan",
+    "name": "Avenger Titan",
+    "rarity": "common",
+    "image": "assets/cards/common/avenger_titan.png"
+  },
+
+  {
     "id": "gladius",
     "name": "Gladius",
     "rarity": "uncommon",
     "image": "assets/cards/uncommon/gladius.png"
+  },
+
+  {
+    "id": "buccaneer",
+    "name": "Buccaneer",
+    "rarity": "uncommon",
+    "image": "assets/cards/uncommon/buccaneer.png"
+  },
+
+  {
+    "id": "hawk",
+    "name": "Hawk",
+    "rarity": "uncommon",
+    "image": "assets/cards/uncommon/hawk.png"
   },
 
   {
@@ -20,13 +55,13 @@
     "image": "assets/cards/rare/constellation_andromeda.png"
   },
 
-   {
+  {
     "id": "orion",
     "name": "Orion",
     "rarity": "epic",
     "image": "assets/cards/epic/orion.png"
   },
-
+  
   {
     "id": "javelin",
     "name": "Javelin",
