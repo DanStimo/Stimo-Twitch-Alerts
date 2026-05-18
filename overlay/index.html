@@ -442,6 +442,8 @@ body {
 
 <script>
 const socket = io();
+const alertQueue = [];
+let alertPlaying = false;
 
 const alertThemes = {
     follow: {
@@ -720,7 +722,18 @@ function bitsBurst(duration = 8000) {
     }, duration);
 }
 
-socket.on("alert", async (data) => {
+socket.on("alert", (data) => {
+    alertQueue.push(data);
+    playNextAlert();
+});
+
+async function playNextAlert() {
+    if (alertPlaying) return;
+    if (alertQueue.length === 0) return;
+
+    alertPlaying = true;
+
+    const data = alertQueue.shift();
     const theme = alertThemes[data.type];
 
     if (theme) {
@@ -800,8 +813,11 @@ socket.on("alert", async (data) => {
     setTimeout(() => {
         particleLayer.className = "particle-layer";
         alertBox.classList.remove("show");
+
+        alertPlaying = false;
+        playNextAlert();
     }, alertDuration);
-});
+}
 </script>
 
 </body>
