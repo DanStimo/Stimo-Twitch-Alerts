@@ -1,0 +1,204 @@
+{
+  "follows": [
+    {
+      "user": "TestFollower",
+      "extra": "",
+      "reward": "",
+      "time": "2026-05-17T14:21:04.171Z"
+    },
+    {
+      "user": "TestFollower",
+      "extra": "",
+      "reward": "",
+      "time": "2026-05-16T15:52:15.489Z"
+    },
+    {
+      "user": "TestFollower",
+      "extra": "",
+      "reward": "",
+      "time": "2026-05-16T15:50:40.712Z"
+    },
+    {
+      "user": "TestFollower",
+      "extra": "",
+      "reward": "",
+      "time": "2026-05-16T15:48:08.661Z"
+    },
+    {
+      "user": "TestFollower",
+      "extra": "",
+      "reward": "",
+      "time": "2026-05-16T15:45:11.033Z"
+    }
+  ],
+  "subs": [
+    {
+      "user": "TestSub",
+      "extra": "25 MONTHS",
+      "reward": "",
+      "time": "2026-05-17T14:21:26.514Z"
+    },
+    {
+      "user": "TestSub",
+      "extra": "25 MONTHS",
+      "reward": "",
+      "time": "2026-05-16T18:56:42.772Z"
+    },
+    {
+      "user": "TestSub",
+      "extra": "25 MONTHS",
+      "reward": "",
+      "time": "2026-05-16T18:51:22.927Z"
+    },
+    {
+      "user": "TestSub",
+      "extra": "25 MONTHS",
+      "reward": "",
+      "time": "2026-05-16T16:20:32.251Z"
+    },
+    {
+      "user": "TestSub",
+      "extra": "25 MONTHS",
+      "reward": "",
+      "time": "2026-05-16T16:20:10.993Z"
+    }
+  ],
+  "bits": [
+    {
+      "user": "TestCheerer",
+      "extra": "100 bits",
+      "reward": "",
+      "time": "2026-05-17T14:21:14.350Z"
+    },
+    {
+      "user": "TestCheerer",
+      "extra": "100 bits",
+      "reward": "",
+      "time": "2026-05-16T18:56:13.504Z"
+    },
+    {
+      "user": "TestCheerer",
+      "extra": "100 bits",
+      "reward": "",
+      "time": "2026-05-16T18:55:52.349Z"
+    },
+    {
+      "user": "TestCheerer",
+      "extra": "100 bits",
+      "reward": "",
+      "time": "2026-05-16T18:55:40.847Z"
+    },
+    {
+      "user": "TestCheerer",
+      "extra": "100 bits",
+      "reward": "",
+      "time": "2026-05-16T18:55:29.258Z"
+    }
+  ],
+  "raids": [
+    {
+      "user": "TestRaider",
+      "extra": "25 viewers",
+      "reward": "",
+      "time": "2026-05-17T14:22:26.176Z"
+    },
+    {
+      "user": "TestRaider",
+      "extra": "25 viewers",
+      "reward": "",
+      "time": "2026-05-16T15:53:03.616Z"
+    },
+    {
+      "user": "TestRaider",
+      "extra": "25 viewers",
+      "reward": "",
+      "time": "2026-05-16T15:50:52.387Z"
+    },
+    {
+      "user": "TestRaider",
+      "extra": "25 viewers",
+      "reward": "",
+      "time": "2026-05-16T15:48:46.834Z"
+    },
+    {
+      "user": "TestRaider",
+      "extra": "25 viewers",
+      "reward": "",
+      "time": "2026-05-16T13:28:54.418Z"
+    }
+  ],
+  "redemptions": [
+    {
+      "user": "TestRedeemer",
+      "extra": "Drink water!",
+      "reward": "Hydrate",
+      "time": "2026-05-17T14:22:48.373Z"
+    },
+    {
+      "user": "TestRedeemer",
+      "extra": "Drink water!",
+      "reward": "Hydrate",
+      "time": "2026-05-16T16:28:01.193Z"
+    },
+    {
+      "user": "TestRedeemer",
+      "extra": "Drink water!",
+      "reward": "Hydrate",
+      "time": "2026-05-16T15:52:50.058Z"
+    },
+    {
+      "user": "TestRedeemer",
+      "extra": "Drink water!",
+      "reward": "Hydrate",
+      "time": "2026-05-16T13:18:00.777Z"
+    },
+    {
+      "user": "TestRedeemer",
+      "extra": "Drink water!",
+      "reward": "Hydrate",
+      "time": "2026-05-16T13:01:55.560Z"
+    }
+  ],
+  "totals": {
+    "follows": 93,
+    "subs": 73,
+    "bits": 23,
+    "raids": 33,
+    "redemptions": 20,
+    "totalBits": 2300,
+    "totalRaidViewers": 825,
+    "giftsubs": 66
+  },
+  "giftsubs": [
+    {
+      "user": "TESTGIFTER GIFTED 5 SUBS",
+      "extra": "5 GIFT SUBS",
+      "reward": "",
+      "time": "2026-05-17T14:22:05.552Z"
+    },
+    {
+      "user": "TESTGIFTER ◆ TESTRECEIVER",
+      "extra": "TESTGIFTER",
+      "reward": "TESTRECEIVER",
+      "time": "2026-05-17T14:21:46.778Z"
+    },
+    {
+      "user": "TESTGIFTER ◆ TESTRECEIVER",
+      "extra": "TESTGIFTER",
+      "reward": "TESTRECEIVER",
+      "time": "2026-05-16T18:56:24.531Z"
+    },
+    {
+      "user": "TESTGIFTER ◆ TESTRECEIVER",
+      "extra": "TESTGIFTER",
+      "reward": "TESTRECEIVER",
+      "time": "2026-05-16T18:53:43.166Z"
+    },
+    {
+      "user": "TESTGIFTER GIFTED 6 SUBS",
+      "extra": "6 GIFT SUBS",
+      "reward": "",
+      "time": "2026-05-16T18:53:24.733Z"
+    }
+  ]
+}

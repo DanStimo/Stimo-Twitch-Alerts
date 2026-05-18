@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Webcam Widget</title>
+
+<style>
+
+:root {
+    --primary: #00d9ff;
+    --secondary: #009dff;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+#widget {
+    position: absolute;
+    inset: 0;
+
+    overflow: hidden;
+
+    opacity: 0;
+
+    transform: scale(0.96);
+
+    transition:
+        opacity 0.7s ease,
+        transform 0.7s ease;
+}
+
+#widget.show {
+    opacity: 1;
+
+    transform: scale(1);
+}
+
+.frame {
+    position: absolute;
+    inset: 0;
+    border: 5px solid var(--primary);
+    box-sizing: border-box;
+    overflow: hidden;
+    background: rgba(0,0,0,0.15);
+}
+
+.ticker-area {
+    position: absolute;
+    inset: -22% -18%;
+
+    overflow: hidden;
+
+    background: rgba(0,0,0,0.15);
+
+    transform: rotate(-8deg) scale(1.18);
+    transform-origin: center;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    gap: 0;
+}
+
+.ticker-row {
+    position: relative;
+
+    height: 16%;
+
+    margin-top: -2.8%;
+
+    white-space: nowrap;
+    overflow: hidden;
+
+    font-size: clamp(42px, 8.8vw, 112px);
+
+    font-weight: 900;
+    font-style: italic;
+
+    text-transform: uppercase;
+
+    letter-spacing: -2px;
+
+    line-height: 0.78;
+}
+
+.ticker-track {
+    display: inline-block;
+
+    white-space: nowrap;
+
+    animation-duration: 130s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+
+    will-change: transform;
+}
+
+.row-outline {
+    color: transparent;
+    -webkit-text-stroke: 2.5px var(--primary);
+}
+
+.row-solid {
+    color: #ffffff;
+}
+
+.move-left {
+    animation-name: moveLeft;
+}
+
+.move-right {
+    animation-name: moveRight;
+}
+
+@keyframes moveLeft {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+@keyframes moveRight {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
+}
+</style>
+</head>
+
+<body>
+
+<div id="widget">
+    <div class="frame">
+        <div class="ticker-area" id="tickerArea"></div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+const alertThemes = {
+    follow: {
+        primary: "#00d9ff",
+        secondary: "#009dff"
+    },
+
+    sub: {
+        primary: "#a855ff",
+        secondary: "#7b2fff"
+    },
+
+    giftsub: {
+        primary: "#ff4fd8",
+        secondary: "#ff2fae"
+    },
+
+    raid: {
+        primary: "#ff5533",
+        secondary: "#ff9900"
+    },
+
+    bits: {
+        primary: "#00ff99",
+        secondary: "#00cc66"
+    },
+
+    redemption: {
+        primary: "#ffe066",
+        secondary: "#ffb300"
+    }
+};
+
+const widget = document.getElementById("widget");
+const tickerArea = document.getElementById("tickerArea");
+
+function getAlertLabel(data) {
+    if (data.type === "follow") return "FOLLOWED";
+    if (data.type === "sub") return "SUBSCRIBED";
+    if (data.type === "giftsub") return "GIFTED A SUB";
+    if (data.type === "raid") return "RAIDED";
+    if (data.type === "bits") return "CHEERED";
+    if (data.type === "redemption") return "REDEEMED";
+    return "ALERT";
+}
+
+function getTickerText(data) {
+    const name = (data.user || "UNKNOWN").toUpperCase();
+    const label = getAlertLabel(data);
+    const extra = (data.extra || data.reward || "").toUpperCase();
+
+    if (extra) {
+        return `${name} ${label} ${extra} THANK YOU   `;
+    }
+
+    return `${name} ${label} THANK YOU   `;
+}
+
+function drawTicker(text) {
+    tickerArea.innerHTML = "";
+
+    for (let i = 0; i < 7; i++) {
+        const row = document.createElement("div");
+        row.className = "ticker-row " + (i % 2 === 0 ? "row-outline" : "row-solid");
+
+        const track = document.createElement("div");
+        track.className = "ticker-track " + (i % 2 === 0 ? "move-left" : "move-right");
+
+        track.textContent = ("    " + text).repeat(60);
+
+        row.appendChild(track);
+        tickerArea.appendChild(row);
+    }
+}
+
+socket.on("alert", (data) => {
+    const theme = alertThemes[data.type];
+
+    if (theme) {
+        document.documentElement.style.setProperty("--primary", theme.primary);
+        document.documentElement.style.setProperty("--secondary", theme.secondary);
+    }
+    drawTicker(getTickerText(data));
+
+    widget.classList.add("show");
+
+    const minimumAlertDurations = {
+        follow: 5000,
+        sub: 6500,
+        giftsub: 7000,
+        raid: 7000,
+        bits: 5500,
+        redemption: 5500
+    };
+
+    const alertDuration = data.duration || 5000;
+
+    console.log("WEBCAM DURATION:", alertDuration, data.type);
+
+    setTimeout(() => {
+        widget.classList.remove("show");
+    }, alertDuration);
+});
+</script>
+
+</body>
+</html>

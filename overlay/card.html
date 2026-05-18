@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Card Pack Reveal</title>
+
+<style>
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+#cardOverlay {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+#cardOverlay.show {
+    display: flex;
+}
+
+.pack {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    width: 372px;
+    height: 519px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    color: white;
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: 3px;
+
+    background:
+        linear-gradient(135deg, #111 0%, #2b2b2b 35%, #050505 70%),
+        repeating-linear-gradient(
+            45deg,
+            rgba(255,255,255,0.08) 0px,
+            rgba(255,255,255,0.08) 3px,
+            transparent 3px,
+            transparent 12px
+        );
+
+    border: 4px solid white;
+    border-radius: 18px;
+
+    box-shadow:
+        0 0 20px rgba(255,255,255,0.5),
+        0 0 55px rgba(255,255,255,0.25),
+        inset 0 0 40px rgba(255,255,255,0.08);
+
+    transform: translate(-50%, -50%) scale(0);
+    overflow: hidden;
+
+    animation: packIn 0.6s forwards, packShake 0.5s 1.1s infinite;
+}
+
+.pack::before {
+    content: "";
+    position: absolute;
+    inset: -40%;
+
+    background: linear-gradient(
+        120deg,
+        transparent 35%,
+        rgba(255,255,255,0.35),
+        transparent 65%
+    );
+
+    animation: packShine 2s linear infinite;
+}
+
+.pack::after {
+    content: "";
+    position: absolute;
+    inset: -20%;
+
+    background:
+        radial-gradient(circle at center, var(--flare1), transparent 28%),
+        radial-gradient(circle at 45% 60%, var(--flare2), transparent 35%),
+        radial-gradient(circle at 60% 40%, rgba(255,255,255,0.75), transparent 18%);
+
+    opacity: 0;
+    display: none;
+    mix-blend-mode: screen;
+    pointer-events: none;
+}
+
+.pack.flare::after {
+    display: block;
+    animation: packFlare 1.1s ease forwards;
+}
+
+.pack[data-rarity="common"] {
+    --flare1: rgba(220,220,220,0.95);
+    --flare2: rgba(150,150,150,0.8);
+}
+
+.pack[data-rarity="uncommon"] {
+    --flare1: rgba(80,255,120,0.95);
+    --flare2: rgba(0,180,60,0.8);
+}
+
+.pack[data-rarity="rare"] {
+    --flare1: rgba(80,170,255,0.95);
+    --flare2: rgba(0,90,255,0.8);
+}
+
+.pack[data-rarity="epic"] {
+    --flare1: rgba(200,90,255,0.95);
+    --flare2: rgba(120,0,255,0.8);
+}
+
+.pack[data-rarity="legendary"] {
+    --flare1: rgba(255,210,60,0.95);
+    --flare2: rgba(255,120,0,0.85);
+}
+
+@keyframes packShine {
+    from {
+        transform: translateX(-80%) rotate(15deg);
+    }
+
+    to {
+        transform: translateX(80%) rotate(15deg);
+    }
+}
+
+@keyframes packFlare {
+    0% {
+        opacity: 0;
+        visibility: hidden;
+        transform: scale(0);
+        filter: blur(24px);
+    }
+
+    5% {
+        visibility: visible;
+    }
+
+    35% {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1.1);
+        filter: blur(4px);
+    }
+
+    100% {
+        opacity: 0;
+        visibility: hidden;
+        transform: scale(1.8);
+        filter: blur(18px);
+    }
+}
+
+.card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    width: 372px;
+    height: 519px;
+
+    background: transparent;
+
+    border: none;
+    border-radius: 14px;
+
+    display: none;
+    overflow: hidden;
+
+    transform: translate(-50%, -50%) scale(0) rotateY(180deg);
+}
+
+.card.reveal {
+    display: block;
+    animation: cardReveal 0.9s forwards;
+}
+
+.card img {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: fill;
+
+    filter:
+        drop-shadow(0 0 14px white)
+        drop-shadow(0 0 34px white);
+}
+
+.card-info {
+    padding: 6px 0 10px;
+    color: white;
+    text-align: center;
+}
+
+.card-rarity {
+    margin-top: 0;
+    font-size: 18px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+.common {
+    border-color: #b8b8b8;
+    color: #b8b8b8;
+}
+
+.uncommon {
+    border-color: #41ff7a;
+    color: #41ff7a;
+}
+
+.rare {
+    border-color: #42a5ff;
+    color: #42a5ff;
+}
+
+.epic {
+    border-color: #b84dff;
+    color: #b84dff;
+}
+
+.legendary {
+    border-color: #ffbf00;
+    color: #ffbf00;
+}
+
+@keyframes packIn {
+    to {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes packShake {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+
+    25% {
+        transform: translate(-50%, -50%) scale(1.04) rotate(-2deg);
+    }
+
+    75% {
+        transform: translate(-50%, -50%) scale(1.04) rotate(2deg);
+    }
+}
+
+@keyframes cardReveal {
+    to {
+        transform: translate(-50%, -50%) scale(1) rotateY(0deg);
+    }
+}
+
+.card.reveal {
+    animation: cardPop 1s ease forwards, cardGlow 2s ease-in-out infinite;
+}
+
+.card::after {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    background: linear-gradient(
+        120deg,
+        transparent 35%,
+        rgba(255,255,255,0.55),
+        transparent 65%
+    );
+
+    transform: translateX(-120%) rotate(12deg);
+
+    opacity: 0;
+}
+
+.card.reveal::after {
+    animation: shineSweep 1.4s ease 0.4s forwards;
+}
+
+@keyframes cardPop {
+
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.4) rotateY(180deg);
+        filter: blur(8px);
+    }
+
+    60% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.08) rotateY(0deg);
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1) rotateY(0deg);
+        filter: blur(0);
+    }
+}
+
+@keyframes shineSweep {
+
+    0% {
+        opacity: 0;
+        transform: translateX(-120%) rotate(12deg);
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(120%) rotate(12deg);
+    }
+}
+
+@keyframes cardGlow {
+    0%, 100% {
+        box-shadow:
+            0 0 22px currentColor,
+            0 0 42px currentColor;
+    }
+
+    50% {
+        box-shadow:
+            0 0 38px currentColor,
+            0 0 70px currentColor;
+    }
+}
+
+@keyframes cardExit {
+
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.2) rotate(720deg);
+    }
+}
+
+.card.exit {
+    animation: cardExit 1s ease forwards;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="cardOverlay">
+    <div class="pack" id="pack">STAR<br>CITIZEN<br>PACK</div>
+
+    <div class="card" id="card">
+        <img id="cardImage">
+
+        <div class="card-info">
+            <div class="card-rarity" id="cardRarity"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+const overlay = document.getElementById("cardOverlay");
+const pack = document.getElementById("pack");
+const card = document.getElementById("card");
+const cardImage = document.getElementById("cardImage");
+const cardName = document.getElementById("cardName");
+const cardRarity = document.getElementById("cardRarity");
+
+socket.on("card_pull", (data) => {
+    const pulledCard = data.card;
+
+    overlay.classList.add("show");
+
+    pack.style.display = "flex";
+    card.className = "card " + pulledCard.rarity;
+    pack.setAttribute("data-rarity", pulledCard.rarity);
+    pack.classList.remove("flare");
+    card.style.display = "none";
+
+    cardImage.src = "/" + pulledCard.image;
+    console.log("CARD IMAGE:", cardImage.src);
+    cardImage.onload = () => {
+        console.log("Card image loaded successfully");
+    };
+
+    cardImage.onerror = () => {
+        console.log("Card image failed to load:", cardImage.src);
+    };
+    cardRarity.textContent = pulledCard.rarity;
+
+    setTimeout(() => {
+
+        pack.classList.add("flare");
+
+    }, 1400);
+
+    setTimeout(() => {
+
+        pack.style.display = "none";
+
+        card.style.display = "block";
+        card.style.opacity = "1";
+
+        void card.offsetWidth;
+
+        card.classList.add("reveal");
+
+    }, 2500);
+
+    setTimeout(() => {
+
+        card.classList.remove("reveal");
+        card.classList.add("exit");
+
+    }, 11000);
+
+    setTimeout(() => {
+
+        overlay.classList.remove("show");
+
+        card.className = "card";
+
+        card.style.display = "none";
+
+        pack.style.display = "flex";
+
+    }, 12500);
+});
+</script>
+
+</body>
+</html>

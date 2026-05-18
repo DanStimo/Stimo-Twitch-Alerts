@@ -1,0 +1,36 @@
+[
+  {
+    "id": "aurora_mr",
+    "name": "Aurora MR",
+    "rarity": "common",
+    "image": "assets/cards/common/aurora_mr.png"
+  },
+
+   {
+    "id": "gladius",
+    "name": "Gladius",
+    "rarity": "uncommon",
+    "image": "assets/cards/uncommon/gladius.png"
+  },
+
+  {
+    "id": "constellation_andromeda",
+    "name": "Constellation Andromeda",
+    "rarity": "rare",
+    "image": "assets/cards/rare/constellation_andromeda.png"
+  },
+
+   {
+    "id": "javelin",
+    "name": "UEE Javelin",
+    "rarity": "epic",
+    "image": "assets/cards/epic/javelin.png"
+  },
+
+  {
+    "id": "javelin",
+    "name": "Javelin",
+    "rarity": "legendary",
+    "image": "assets/cards/legendary/javelin.png"
+  }
+]

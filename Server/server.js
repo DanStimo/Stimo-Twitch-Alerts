@@ -1,0 +1,597 @@
+require("dotenv").config();
+
+const tmi = require("tmi.js");
+const express = require("express");
+const http = require("http");
+const WebSocket = require("ws");
+const { Server } = require("socket.io");
+const fs = require("fs");
+const path = require("path");
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+const twitchClient = new tmi.Client({
+    options: { debug: true },
+
+    identity: {
+        username: process.env.TWITCH_BOT_USERNAME,
+        password: process.env.TWITCH_IRC_TOKEN
+    },
+
+    channels: [
+        process.env.TWITCH_CHANNEL
+    ]
+});
+
+twitchClient.connect();
+
+function rollCard() {
+    const cards = loadCards();
+
+    if (!cards || cards.length === 0) {
+        throw new Error("cards.json is empty");
+    }
+
+    const roll = Math.random() * 100;
+
+    let rarity = "common";
+
+    if (roll <= 1) {
+        rarity = "legendary";
+    } else if (roll <= 5) {
+        rarity = "epic";
+    } else if (roll <= 15) {
+        rarity = "rare";
+    } else if (roll <= 40) {
+        rarity = "uncommon";
+    }
+
+    let pool = cards.filter(c => c.rarity === rarity);
+
+    if (pool.length === 0) {
+        console.log(`No cards found for rarity: ${rarity}. Falling back to common.`);
+        pool = cards.filter(c => c.rarity === "common");
+    }
+
+    if (pool.length === 0) {
+        console.log("No common cards found. Falling back to any card.");
+        pool = cards;
+    }
+
+    return pool[Math.floor(Math.random() * pool.length)];
+}
+
+const CLIENT_ID = process.env.TWITCH_CLIENT_ID;
+const ACCESS_TOKEN = process.env.TWITCH_ACCESS_TOKEN;
+const BROADCASTER_ID = process.env.TWITCH_BROADCASTER_ID;
+const MODERATOR_ID = process.env.TWITCH_MODERATOR_ID;
+const HISTORY_FILE = path.join(__dirname, "alert-history.json");
+
+function getDefaultHistory() {
+    return {
+        follows: [],
+        subs: [],
+        bits: [],
+        raids: [],
+        redemptions: [],
+        giftsubs: [],
+        totals: {
+            follows: 0,
+            subs: 0,
+            bits: 0,
+            raids: 0,
+            redemptions: 0,
+            giftsubs: 0,
+            totalBits: 0,
+            totalRaidViewers: 0
+        }
+    };
+}
+
+function loadHistory() {
+    try {
+        if (!fs.existsSync(HISTORY_FILE)) {
+            fs.writeFileSync(HISTORY_FILE, JSON.stringify(getDefaultHistory(), null, 2));
+        }
+
+        return JSON.parse(fs.readFileSync(HISTORY_FILE, "utf8"));
+    } catch (err) {
+        console.log("Could not load alert-history.json:", err.message);
+        return getDefaultHistory();
+    }
+}
+
+function saveHistory(history) {
+    fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2));
+}
+
+function recordAlert(type, user, extra = "", reward = "") {
+    const history = loadHistory();
+
+    history.follows ||= [];
+    history.subs ||= [];
+    history.bits ||= [];
+    history.raids ||= [];
+    history.redemptions ||= [];
+    history.giftsubs ||= [];
+
+    history.totals ||= {};
+    history.totals.follows ||= 0;
+    history.totals.subs ||= 0;
+    history.totals.bits ||= 0;
+    history.totals.raids ||= 0;
+    history.totals.redemptions ||= 0;
+    history.totals.giftsubs ||= 0;
+    history.totals.totalBits ||= 0;
+    history.totals.totalRaidViewers ||= 0;
+
+    const entry = {
+        user,
+        extra,
+        reward,
+        time: new Date().toISOString()
+    };
+
+    if (type === "follow") {
+        history.follows.unshift(entry);
+        history.follows = history.follows.slice(0, 5);
+        history.totals.follows++;
+    }
+
+    if (type === "giftsub") {
+        history.giftsubs.unshift(entry);
+        history.giftsubs = history.giftsubs.slice(0, 5);
+        history.totals.giftsubs++;
+    }
+
+    if (type === "sub") {
+        history.subs.unshift(entry);
+        history.subs = history.subs.slice(0, 5);
+        history.totals.subs++;
+    }
+
+    if (type === "bits") {
+        history.bits.unshift(entry);
+        history.bits = history.bits.slice(0, 5);
+        history.totals.bits++;
+
+        const bitAmount = parseInt(extra, 10) || 0;
+        history.totals.totalBits += bitAmount;
+    }
+
+    if (type === "raid") {
+        history.raids.unshift(entry);
+        history.raids = history.raids.slice(0, 5);
+        history.totals.raids++;
+
+        const viewers = parseInt(extra, 10) || 0;
+        history.totals.totalRaidViewers += viewers;
+    }
+
+    if (type === "redemption") {
+        history.redemptions.unshift(entry);
+        history.redemptions = history.redemptions.slice(0, 5);
+        history.totals.redemptions++;
+    }
+
+    saveHistory(history);
+    return history;
+}
+
+app.use((req, res, next) => {
+    if (req.url === "/" || req.url.endsWith(".html")) {
+        res.setHeader("Cache-Control", "no-store");
+    }
+
+    next();
+});
+
+app.use(express.static("../overlay"));
+
+server.listen(3000, () => {
+    console.log("Server running on http://localhost:3000");
+});
+
+io.on("connection", () => {
+    console.log("Overlay connected");
+});
+
+app.get("/test/openpack", (req, res) => {
+
+    const card = rollCard();
+
+    io.emit("card_pull", {
+        user: "TestUser",
+        card
+    });
+
+    res.send(`Opened test pack: ${card.name}`);
+});
+
+app.get("/test/:type", (req, res) => {
+    const type = req.params.type;
+
+    const testAlerts = {
+        follow: {
+            type: "follow",
+            user: "TestFollower"
+        },
+
+        giftsub: {
+            type: "giftsub",
+            user: "TESTGIFTER ◆ TESTRECEIVER",
+            extra: "TESTGIFTER",
+            reward: "TESTRECEIVER"
+        },
+
+        multigiftsub: (() => {
+
+            const giftCount = Math.floor(Math.random() * 10) + 2;
+
+            return {
+                type: "giftsub",
+                user: `TESTGIFTER GIFTED ${giftCount} SUBS`,
+                extra: `${giftCount} GIFT SUBS`,
+                reward: ""
+            };
+
+        })(),
+
+        sub: {
+            type: "sub",
+            user: "TestSub",
+            extra: "25 MONTHS"
+        },
+        raid: {
+            type: "raid",
+            user: "TestRaider",
+            extra: "25 viewers"
+        },
+        bits: {
+            type: "bits",
+            user: "TestCheerer",
+            extra: "100 bits"
+        },
+        redemption: {
+            type: "redemption",
+            user: "TestRedeemer",
+            reward: "Hydrate",
+            extra: "Drink water!"
+        }
+    };
+
+    const alert = testAlerts[type];
+
+    if (!alert) {
+        return res.send("Unknown test alert type.");
+    }
+
+    const history = recordAlert(
+        alert.type,
+        alert.user,
+        alert.extra || "",
+        alert.reward || ""
+    );
+
+    queueAlert(
+        alert.type,
+        alert.user,
+        alert.extra || "",
+        alert.reward || "",
+        history
+    );
+
+    res.send(`Test alert sent: ${type}`);
+});
+
+const alertQueue = [];
+let alertPlaying = false;
+
+const alertDurations = {
+    follow: 7000,
+    sub: 15000,
+    giftsub: 15000,
+    raid: 20500,
+    bits: 9000,
+    redemption: 9000
+};
+
+function queueAlert(type, user, extra = "", reward = "", history = null) {
+    alertQueue.push({
+        type,
+        user,
+        extra,
+        reward,
+        history: history || loadHistory(),
+        duration: alertDurations[type] || 5000
+    });
+
+    playNextAlert();
+}
+
+function playNextAlert() {
+    if (alertPlaying) return;
+    if (alertQueue.length === 0) return;
+
+    alertPlaying = true;
+
+    const nextAlert = alertQueue.shift();
+
+    io.emit("alert", nextAlert);
+
+    setTimeout(() => {
+        alertPlaying = false;
+        playNextAlert();
+    }, 6000);
+}
+
+async function createSubscription(type, version, condition, sessionId) {
+    const res = await fetch("https://api.twitch.tv/helix/eventsub/subscriptions", {
+        method: "POST",
+        headers: {
+            "Client-ID": CLIENT_ID,
+            "Authorization": `Bearer ${ACCESS_TOKEN}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            type,
+            version,
+            condition,
+            transport: {
+                method: "websocket",
+                session_id: sessionId
+            }
+        })
+    });
+
+    const text = await res.text();
+
+    if (!res.ok) {
+        console.log(`❌ Failed subscribing to ${type}:`, res.status, text);
+        return;
+    }
+
+    console.log(`✅ Subscribed to ${type}`);
+}
+
+function connectTwitchEventSub() {
+    const ws = new WebSocket("wss://eventsub.wss.twitch.tv/ws");
+
+    ws.on("open", () => {
+        console.log("Connected to Twitch EventSub WebSocket");
+    });
+
+    ws.on("message", async (raw) => {
+        const msg = JSON.parse(raw.toString());
+        const messageType = msg.metadata?.message_type;
+
+        if (messageType === "session_welcome") {
+            const sessionId = msg.payload.session.id;
+            console.log("Session ID:", sessionId);
+
+            await createSubscription(
+                "channel.follow",
+                "2",
+                {
+                    broadcaster_user_id: BROADCASTER_ID,
+                    moderator_user_id: MODERATOR_ID
+                },
+                sessionId
+            );
+
+            await createSubscription(
+                "channel.raid",
+                "1",
+                {
+                    to_broadcaster_user_id: BROADCASTER_ID
+                },
+                sessionId
+            );
+
+           await createSubscription(
+                "channel.subscription.gift",
+                "1",
+                {
+                    broadcaster_user_id: BROADCASTER_ID
+                },
+                sessionId
+            );
+
+            await createSubscription(
+                "channel.subscribe",
+                "1",
+                {
+                    broadcaster_user_id: BROADCASTER_ID
+                },
+                sessionId
+            );
+
+            await createSubscription(
+                "channel.cheer",
+                "1",
+                {
+                    broadcaster_user_id: BROADCASTER_ID
+                },
+                sessionId
+            );
+
+            await createSubscription(
+                "channel.channel_points_custom_reward_redemption.add",
+                "1",
+                {
+                    broadcaster_user_id: BROADCASTER_ID
+                },
+                sessionId
+            );
+        }
+
+        if (messageType === "notification") {
+            const subType = msg.metadata.subscription_type;
+            const event = msg.payload.event;
+
+            console.log("Twitch event:", subType, event);
+
+            if (subType === "channel.follow") {
+                const history = recordAlert("follow", event.user_name);
+                queueAlert("follow", event.user_name, "", "", history);
+            }
+
+            if (subType === "channel.subscription.gift") {
+                const gifter = event.user_name || "Anonymous";
+                const total = event.total || 1;
+
+                let displayName;
+                let extraText;
+                let receiverName;
+
+                if (total > 1) {
+                    displayName = `${gifter.toUpperCase()} GIFTED ${total} SUBS`;
+                    extraText = `${total} GIFT SUBS`;
+                    receiverName = "";
+                } else {
+                    const recipient =
+                        event.recipient_user_name ||
+                        "UNKNOWN";
+
+                    displayName = `${gifter.toUpperCase()} ◆ ${recipient.toUpperCase()}`;
+                    extraText = gifter.toUpperCase();
+                    receiverName = recipient.toUpperCase();
+                }
+
+                const history = recordAlert(
+                    "giftsub",
+                    displayName,
+                    extraText,
+                    receiverName
+                );
+
+                queueAlert(
+                    "giftsub",
+                    displayName,
+                    extraText,
+                    receiverName,
+                    history
+                );
+            }
+
+            if (subType === "channel.subscribe") {
+                const months = event.cumulative_months || 1;
+
+                const history = recordAlert(
+                    "sub",
+                    event.user_name,
+                    `${months} MONTHS`
+                );
+
+                queueAlert(
+                    "sub",
+                    event.user_name,
+                    `${months} MONTHS`,
+                    "",
+                    history
+                );
+
+                givePack(event.user_name);
+            }
+
+            if (subType === "channel.raid") {
+                const history = recordAlert(
+                    "raid",
+                    event.from_broadcaster_user_name,
+                    `${event.viewers} viewers`
+                );
+
+                queueAlert(
+                    "raid",
+                    event.from_broadcaster_user_name,
+                    `${event.viewers} viewers`,
+                    "",
+                    history
+                );
+            }
+
+            if (subType === "channel.cheer") {
+                const history = recordAlert(
+                    "bits",
+                    event.user_name || "Anonymous",
+                    `${event.bits} bits`
+                );
+
+                queueAlert(
+                    "bits",
+                    event.user_name || "Anonymous",
+                    `${event.bits} bits`,
+                    "",
+                    history
+                );
+            }
+
+            if (subType === "channel.channel_points_custom_reward_redemption.add") {
+                const history = recordAlert(
+                    "redemption",
+                    event.user_name,
+                    event.user_input || "",
+                    event.reward.title
+                );
+
+                queueAlert(
+                    "redemption",
+                    event.user_name,
+                    event.user_input || "",
+                    event.reward.title,
+                    history
+                );
+            }
+        }
+
+        if (messageType === "session_keepalive") {
+            // Normal. Twitch is keeping the connection alive.
+        }
+    });
+
+    ws.on("close", () => {
+        console.log("Twitch EventSub disconnected. Reconnecting in 5 seconds...");
+        setTimeout(connectTwitchEventSub, 5000);
+    });
+
+    ws.on("error", (err) => {
+        console.log("Twitch EventSub error:", err.message);
+    });
+}
+
+const COLLECTIONS_FILE = path.join(__dirname, "collections.json");
+const CARDS_FILE = path.join(__dirname, "cards.json");
+
+function loadCollections() {
+    return JSON.parse(fs.readFileSync(COLLECTIONS_FILE, "utf8"));
+}
+
+function saveCollections(data) {
+    fs.writeFileSync(COLLECTIONS_FILE, JSON.stringify(data, null, 2));
+}
+
+function loadCards() {
+    return JSON.parse(fs.readFileSync(CARDS_FILE, "utf8"));
+}
+
+function givePack(username) {
+
+    const collections = loadCollections();
+
+    if (!collections[username]) {
+        collections[username] = {
+            packs: 0,
+            cards: {}
+        };
+    }
+
+    collections[username].packs++;
+
+    saveCollections(collections);
+
+    console.log(username + " received a pack");
+}
+
+connectTwitchEventSub();
