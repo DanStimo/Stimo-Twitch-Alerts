@@ -347,6 +347,61 @@ body {
         transform: translateX(-50%);
     }
 }
+
+        .particle-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    overflow: hidden;
+    z-index: 20;
+}
+
+.particle-layer.active {
+    opacity: 1;
+}
+
+.particle-layer::before,
+.particle-layer::after {
+    content: "";
+    position: absolute;
+    inset: -160px 0 0 0;
+    background-repeat: repeat;
+    background-size: 220px 220px;
+    animation: particlesFall 4s linear infinite;
+}
+
+.particle-layer::after {
+    animation-duration: 5.8s;
+    opacity: 0.65;
+    transform: translateX(80px);
+}
+
+.particle-layer.gifts::before,
+.particle-layer.gifts::after {
+    background-image:
+        radial-gradient(circle, #ffffff 0 3px, transparent 4px),
+        radial-gradient(circle, #ff4fd8 0 5px, transparent 6px),
+        radial-gradient(circle, #ffd166 0 4px, transparent 5px);
+}
+
+.particle-layer.bits::before,
+.particle-layer.bits::after {
+    background-image:
+        radial-gradient(circle, #00ff99 0 4px, transparent 5px),
+        radial-gradient(circle, #ffffff 0 3px, transparent 4px),
+        radial-gradient(circle, #00d9ff 0 5px, transparent 6px);
+}
+
+@keyframes particlesFall {
+    from {
+        background-position: 0 0, 70px 40px, 140px 90px;
+    }
+
+    to {
+        background-position: 0 420px, 70px 460px, 140px 510px;
+    }
+}
 </style>
 </head>
 
@@ -367,6 +422,8 @@ body {
         <div class="event-line" id="eventLine"></div>
 
         <div class="ship-data" id="shipData"></div>
+
+        <div class="particle-layer" id="particleLayer"></div>
 
         <div class="bar">
             <div class="bar-fill"></div>
@@ -417,6 +474,7 @@ const mainName = document.getElementById("mainName");
 const eventLine = document.getElementById("eventLine");
 const barFill = document.querySelector(".bar-fill");
 const shipData = document.getElementById("shipData");
+const particleLayer = document.getElementById("particleLayer");
 
 const alertSounds = {
     follow: new Audio("assets/sounds/New Follower.mp3"),
@@ -681,6 +739,15 @@ socket.on("alert", async (data) => {
     shipData.innerHTML = "";
 
     alertBox.classList.add("show");
+    particleLayer.className = "particle-layer";
+
+    if (data.type === "giftsub") {
+        particleLayer.classList.add("active", "gifts");
+    }
+    
+    if (data.type === "bits") {
+        particleLayer.classList.add("active", "bits");
+    }
 
 //    if (data.type === "giftsub") {
 //        giftBurst(alertDuration);
@@ -724,6 +791,7 @@ socket.on("alert", async (data) => {
     }, 1500);
 
     setTimeout(() => {
+        particleLayer.className = "particle-layer";
         alertBox.classList.remove("show");
     }, alertDuration);
 });
