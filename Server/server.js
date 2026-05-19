@@ -220,12 +220,12 @@ app.get("/test/openpack", (req, res) => {
     res.send(`Opened test pack: ${card.name}`);
 });
 
-app.get("/test/chat/follow", (req, res) => {
+app.get("/test/chat/follow", async (req, res) => {
 
-    const history = loadHistory();
+    const followerCount = await getFollowerCount();
 
     const message =
-        `@TestFollower just followed! (${history.totals.follows} followers)`;
+        `@TestFollower just followed! (${followerCount ?? history.totals.follows} followers)`;
 
     twitchClient.say(
         process.env.TWITCH_CHANNEL,
@@ -393,6 +393,32 @@ async function createSubscription(type, version, condition, sessionId) {
     console.log(`✅ Subscribed to ${type}`);
 }
 
+async function getFollowerCount() {
+    try {
+        const res = await fetch(
+            `https://api.twitch.tv/helix/channels/followers?broadcaster_id=${BROADCASTER_ID}`,
+            {
+                headers: {
+                    "Client-ID": CLIENT_ID,
+                    "Authorization": `Bearer ${ACCESS_TOKEN}`
+                }
+            }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.log("Follower count failed:", data);
+            return null;
+        }
+
+        return data.total;
+    } catch (err) {
+        console.log("Follower count error:", err.message);
+        return null;
+    }
+}
+
 function announceChat(message) {
     const channel = process.env.TWITCH_CHANNEL;
 
@@ -482,7 +508,11 @@ function connectTwitchEventSub() {
             if (subType === "channel.follow") {
                 const history = recordAlert("follow", event.user_name);
                 queueAlert("follow", event.user_name, "", "", history);
-                announceChat(`@${event.user_name} just followed! (${history.totals.follows} followers)`);
+                const followerCount = await getFollowerCount();
+
+                announceChat(
+                    `@${event.user_name} just followed! (${followerCount ?? history.totals.follows} followers)`
+                );
             }
 
             if (subType === "channel.subscription.gift") {
