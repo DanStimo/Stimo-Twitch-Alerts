@@ -372,6 +372,15 @@ async function createSubscription(type, version, condition, sessionId) {
     console.log(`✅ Subscribed to ${type}`);
 }
 
+function announceChat(message) {
+    const channel = process.env.TWITCH_CHANNEL;
+
+    twitchClient.say(channel, `/announce ${message}`)
+        .catch(err => {
+            console.log("Failed to announce:", err.message);
+        });
+}
+
 function connectTwitchEventSub() {
     const ws = new WebSocket("wss://eventsub.wss.twitch.tv/ws");
 
@@ -452,6 +461,7 @@ function connectTwitchEventSub() {
             if (subType === "channel.follow") {
                 const history = recordAlert("follow", event.user_name);
                 queueAlert("follow", event.user_name, "", "", history);
+                announceChat(`@${event.user_name} just followed! (${history.totals.follows} followers)`);
             }
 
             if (subType === "channel.subscription.gift") {
@@ -490,6 +500,9 @@ function connectTwitchEventSub() {
                     receiverName,
                     history
                 );
+
+                givePack(gifter);
+                announceChat(`@${gifter} gifted ${total} sub${total === 1 ? "" : "s"}! The gifter gets 1 pack to redeem with !openpack`);
             }
 
             if (subType === "channel.subscribe") {
@@ -510,6 +523,7 @@ function connectTwitchEventSub() {
                 );
             
                 givePack(event.user_name);
+                announceChat(`@${event.user_name} subscribed with Prime for 1 month! Redeem your pack with !openpack`);
             
                 return;
             }
@@ -530,6 +544,7 @@ function connectTwitchEventSub() {
                 );
 
                 givePack(event.user_name);
+                announceChat(`@${event.user_name} subscribed with ${event.tier} for ${months} months! Redeem your pack with !openpack`);
             }
 
             if (subType === "channel.raid") {
@@ -546,6 +561,9 @@ function connectTwitchEventSub() {
                     "",
                     history
                 );
+
+                announceChat(`@${event.from_broadcaster_user_name} raided with ${event.viewers} viewers!`);
+                twitchClient.say(process.env.TWITCH_CHANNEL, `/shoutout ${event.from_broadcaster_user_login}`);
             }
 
             if (subType === "channel.cheer") {
@@ -562,6 +580,8 @@ function connectTwitchEventSub() {
                     "",
                     history
                 );
+
+                announceChat(`@${event.user_name || "Anonymous"} cheered ${event.bits} bits!`);
             }
 
             if (subType === "channel.channel_points_custom_reward_redemption.add") {
@@ -579,6 +599,8 @@ function connectTwitchEventSub() {
                     event.reward.title,
                     history
                 );
+
+                announceChat(`@${event.user_name} redeemed ${event.reward.title}!`);
             }
         }
 
