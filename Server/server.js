@@ -73,6 +73,7 @@ function getDefaultHistory() {
     return {
         follows: [],
         subs: [],
+        primesubs: [],
         bits: [],
         raids: [],
         redemptions: [],
@@ -80,6 +81,7 @@ function getDefaultHistory() {
         totals: {
             follows: 0,
             subs: 0,
+            primesubs: 0,
             bits: 0,
             raids: 0,
             redemptions: 0,
@@ -112,6 +114,7 @@ function recordAlert(type, user, extra = "", reward = "") {
 
     history.follows ||= [];
     history.subs ||= [];
+    history.primesubs ||= [];
     history.bits ||= [];
     history.raids ||= [];
     history.redemptions ||= [];
@@ -120,6 +123,7 @@ function recordAlert(type, user, extra = "", reward = "") {
     history.totals ||= {};
     history.totals.follows ||= 0;
     history.totals.subs ||= 0;
+    history.totals.primesubs ||= 0;
     history.totals.bits ||= 0;
     history.totals.raids ||= 0;
     history.totals.redemptions ||= 0;
@@ -150,6 +154,12 @@ function recordAlert(type, user, extra = "", reward = "") {
         history.subs.unshift(entry);
         history.subs = history.subs.slice(0, 5);
         history.totals.subs++;
+    }
+
+    if (type === "primesub") {
+        history.primesubs.unshift(entry);
+        history.primesubs = history.primesubs.slice(0, 5);
+        history.totals.primesubs++;
     }
 
     if (type === "bits") {
@@ -244,6 +254,11 @@ app.get("/test/:type", (req, res) => {
             user: "TestSub",
             extra: "25 MONTHS"
         },
+        primesub: {
+            type: "primesub",
+            user: "TestPrime",
+            extra: "PRIME"
+        },
         raid: {
             type: "raid",
             user: "TestRaider",
@@ -292,6 +307,7 @@ let alertPlaying = false;
 const alertDurations = {
     follow: 7000,
     sub: 15000,
+    primesub: 15000,
     giftsub: 15000,
     raid: 20500,
     bits: 9000,
@@ -477,6 +493,26 @@ function connectTwitchEventSub() {
             }
 
             if (subType === "channel.subscribe") {
+
+            if (event.is_prime) {
+                const history = recordAlert(
+                    "primesub",
+                    event.user_name,
+                    "PRIME"
+                );
+            
+                queueAlert(
+                    "primesub",
+                    event.user_name,
+                    "PRIME",
+                    "",
+                    history
+                );
+            
+                givePack(event.user_name);
+            
+                return;
+            }
                 const months = event.cumulative_months || 1;
 
                 const history = recordAlert(
