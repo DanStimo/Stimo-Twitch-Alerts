@@ -375,7 +375,7 @@ async function createSubscription(type, version, condition, sessionId) {
 function announceChat(message) {
     const channel = process.env.TWITCH_CHANNEL;
 
-    twitchClient.say(channel, `/announce ${message}`)
+    twitchClient.say(channel, `[ANNOUNCEMENT] ${message}`)
         .catch(err => {
             console.log("Failed to announce:", err.message);
         });
