@@ -406,6 +406,7 @@ async function getFollowerCount() {
         );
 
         const data = await res.json();
+        console.log("FOLLOWER API RESPONSE:", data);
 
         if (!res.ok) {
             console.log("Follower count failed:", data);
