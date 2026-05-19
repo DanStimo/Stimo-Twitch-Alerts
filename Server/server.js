@@ -220,27 +220,6 @@ app.get("/test/openpack", (req, res) => {
     res.send(`Opened test pack: ${card.name}`);
 });
 
-app.get("/test/chat/follow", async (req, res) => {
-
-    const followerCount = await getFollowerCount();
-
-    const message =
-        `@TestFollower just followed! (${followerCount ?? history.totals.follows} followers)`;
-
-    twitchClient.say(
-        process.env.TWITCH_CHANNEL,
-        message
-    )
-    .then(() => {
-        res.send("Test follow chat message sent.");
-    })
-    .catch(err => {
-        console.log("Chat test failed:", err.message);
-        res.send("Chat test failed: " + err.message);
-    });
-
-});
-
 app.get("/test/:type", (req, res) => {
     const type = req.params.type;
 
