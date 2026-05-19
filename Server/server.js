@@ -220,6 +220,27 @@ app.get("/test/openpack", (req, res) => {
     res.send(`Opened test pack: ${card.name}`);
 });
 
+app.get("/test/chat/follow", (req, res) => {
+
+    const history = loadHistory();
+
+    const message =
+        `@TestFollower just followed! (${history.totals.follows} followers)`;
+
+    twitchClient.say(
+        process.env.TWITCH_CHANNEL,
+        message
+    )
+    .then(() => {
+        res.send("Test follow chat message sent.");
+    })
+    .catch(err => {
+        console.log("Chat test failed:", err.message);
+        res.send("Chat test failed: " + err.message);
+    });
+
+});
+
 app.get("/test/:type", (req, res) => {
     const type = req.params.type;
 
@@ -375,7 +396,7 @@ async function createSubscription(type, version, condition, sessionId) {
 function announceChat(message) {
     const channel = process.env.TWITCH_CHANNEL;
 
-    twitchClient.say(channel, `[ANNOUNCEMENT] ${message}`)
+    twitchClient.say(channel, `/announce ${message}`)
         .catch(err => {
             console.log("Failed to announce:", err.message);
         });
