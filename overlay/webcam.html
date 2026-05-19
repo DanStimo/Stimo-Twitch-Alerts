@@ -157,6 +157,11 @@ const alertThemes = {
         secondary: "#7b2fff"
     },
 
+    primesub: {
+        primary: "#00d9ff",
+        secondary: "#9146ff"
+    },
+
     giftsub: {
         primary: "#ff4fd8",
         secondary: "#ff2fae"
@@ -184,6 +189,7 @@ const tickerArea = document.getElementById("tickerArea");
 function getAlertLabel(data) {
     if (data.type === "follow") return "FOLLOWED";
     if (data.type === "sub") return "SUBSCRIBED";
+    if (data.type === "primesub") return "PRIME SUBSCRIBED";
     if (data.type === "giftsub") return "GIFTED A SUB";
     if (data.type === "raid") return "RAIDED";
     if (data.type === "bits") return "CHEERED";
