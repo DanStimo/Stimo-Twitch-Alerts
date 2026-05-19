@@ -456,6 +456,11 @@ const alertThemes = {
         secondary: "#7b2fff"
     },
 
+        primesub: {
+        primary: "#00d9ff",
+        secondary: "#9146ff"
+    },
+
     giftsub: {
         primary: "#ff4fd8",
         secondary: "#ff2fae"
@@ -555,6 +560,7 @@ function typeText(element, html, speed = 35) {
 function getEventText(data) {
     if (data.type === "follow") return "NEW FOLLOWER DETECTED";
     if (data.type === "sub") return `SUBSCRIPTION CONFIRMED • ${data.extra}`;
+    if (data.type === "primesub") return "PRIME SUBSCRIPTION CONFIRMED";
     if (data.type === "raid") return "INCOMING RAID: " + data.extra;
     if (data.type === "bits") return "BITS TRANSMISSION: " + data.extra;
     if (data.type === "redemption") return "REWARD REDEEMED: " + data.reward;
@@ -569,6 +575,10 @@ function getRankText(data, username) {
 
     if (data.type === "sub") {
         return "WELCOME BACK, COMMANDER " + username.toUpperCase();
+    }
+
+    if (data.type === "primesub") {
+        return "PRIME LINK ESTABLISHED WITH " + username.toUpperCase();
     }
 
     if (data.type === "bits") {
@@ -632,6 +642,14 @@ function formatRightPanel(data) {
             .join("\n");
 
         return buildList("RECENT SUBSCRIBERS", subs);
+    }
+
+    if (data.type === "primesub") {
+        const primes = (history.primesubs || []).slice(0, 5)
+            .map(item => `${item.user.toUpperCase()} - PRIME <`)
+            .join("\n");
+    
+        return buildList("RECENT PRIME SUBS", primes);
     }
 
     if (data.type === "bits") {
