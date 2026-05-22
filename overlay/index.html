@@ -774,21 +774,21 @@ async function playNextAlert() {
     alertBox.classList.add("show");
     particleLayer.className = "particle-layer";
 
- //   if (data.type === "giftsub") {
- //       particleLayer.classList.add("active", "gifts");
- //   }
-    
- //   if (data.type === "bits") {
- //       particleLayer.classList.add("active", "bits");
- //   }
-
     if (data.type === "giftsub") {
-        giftBurst(alertDuration);
+        particleLayer.classList.add("active", "gifts");
+    }
+    
+    if (data.type === "bits") {
+        particleLayer.classList.add("active", "bits");
     }
 
-    if (data.type === "bits") {
-        bitsBurst(alertDuration);
-    }
+ //   if (data.type === "giftsub") {
+ //      giftBurst(alertDuration);
+ //   }
+
+ //   if (data.type === "bits") {
+ //       bitsBurst(alertDuration);
+ //   }
 
     typeText(systemLog,
         "> INITIATING SYSTEM CHECK...\n" +
