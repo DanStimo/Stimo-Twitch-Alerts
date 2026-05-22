@@ -690,15 +690,16 @@ function giftBurst(duration = 8000) {
         gift.textContent = "🎁";
 
         gift.style.left = Math.random() * 100 + "%";
-        gift.style.animationDuration = (2.4 + Math.random() * 1.2) + "s";
+        gift.style.fontSize = "22px";
+        gift.style.animationDuration = "8s";
 
         frame.appendChild(gift);
 
         setTimeout(() => {
             gift.remove();
-        }, 4200);
+        }, 8500);
 
-    }, 220);
+    }, 900);
 
     setTimeout(() => {
         clearInterval(interval);
@@ -706,35 +707,28 @@ function giftBurst(duration = 8000) {
 }
 
 function bitsBurst(duration = 8000) {
-
     const frame = document.querySelector(".hud-frame");
 
     const bitIcons = ["💎", "✨", "⚡"];
 
     const interval = setInterval(() => {
+        const bit = document.createElement("div");
 
-        for (let i = 0; i < 5; i++) {
+        bit.className = "gift-particle";
+        bit.textContent =
+            bitIcons[Math.floor(Math.random() * bitIcons.length)];
 
-            const bit = document.createElement("div");
+        bit.style.left = Math.random() * 100 + "%";
+        bit.style.fontSize = "22px";
+        bit.style.animationDuration = "8s";
 
-            bit.className = "gift-particle";
+        frame.appendChild(bit);
 
-            bit.textContent =
-                bitIcons[Math.floor(Math.random() * bitIcons.length)];
+        setTimeout(() => {
+            bit.remove();
+        }, 8500);
 
-            bit.style.left = Math.random() * 100 + "%";
-
-            bit.style.animationDuration =
-                (1.8 + Math.random() * 1.2) + "s";
-
-            frame.appendChild(bit);
-
-            setTimeout(() => {
-                bit.remove();
-            }, 4000);
-        }
-
-    }, 280);
+    }, 900);
 
     setTimeout(() => {
         clearInterval(interval);
@@ -780,21 +774,21 @@ async function playNextAlert() {
     alertBox.classList.add("show");
     particleLayer.className = "particle-layer";
 
-    if (data.type === "giftsub") {
-        particleLayer.classList.add("active", "gifts");
-    }
+ //   if (data.type === "giftsub") {
+ //       particleLayer.classList.add("active", "gifts");
+ //   }
     
-    if (data.type === "bits") {
-        particleLayer.classList.add("active", "bits");
+ //   if (data.type === "bits") {
+ //       particleLayer.classList.add("active", "bits");
+ //   }
+
+    if (data.type === "giftsub") {
+        giftBurst(alertDuration);
     }
 
-//    if (data.type === "giftsub") {
-//        giftBurst(alertDuration);
-//    }
-
-//    if (data.type === "bits") {
-//        bitsBurst(alertDuration);
-//    }
+    if (data.type === "bits") {
+        bitsBurst(alertDuration);
+    }
 
     typeText(systemLog,
         "> INITIATING SYSTEM CHECK...\n" +
