@@ -417,14 +417,15 @@ function playNextBanner() {
     setTimeout(() => {
         ticker.classList.remove("alerting");
         alertBanner.classList.remove("show");
-
+    
+        addTickerItem(data);
+    
         bannerPlaying = false;
         playNextBanner();
     }, 5300);
 }
 
 socket.on("alert", (data) => {
-    addTickerItem(data);
     queueBanner(data);
 });
 
