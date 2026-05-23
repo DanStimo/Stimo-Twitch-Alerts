@@ -113,7 +113,9 @@ html, body {
 }
 
 .alert-banner.show {
-    animation: bannerInOut var(--banner-duration, 5.2s) ease forwards;
+    animation:
+        bannerIn 0.65s ease forwards,
+        bannerPulse 2.5s ease-in-out 0.65s infinite;
 }
 
 .alert-content {
@@ -172,35 +174,47 @@ html, body {
     to { transform: translateX(-50%); }
 }
 
-@keyframes bannerInOut {
-    0% {
-        transform: translateX(110%) scale(0.96);
+@keyframes bannerIn {
+    from {
+        transform: translateX(110%) scale(0.98);
         opacity: 0;
-        filter: blur(8px);
+        filter: blur(6px);
     }
 
-    15% {
-        transform: translateX(0) scale(1.02);
-        opacity: 1;
-        filter: blur(0);
-    }
-
-    78% {
+    to {
         transform: translateX(0) scale(1);
         opacity: 1;
         filter: blur(0);
     }
+}
 
-    100% {
-        transform: translateX(-110%) scale(0.96);
-        opacity: 0;
-        filter: blur(8px);
+@keyframes bannerPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.92;
     }
 }
 
 @keyframes alertSweep {
     from { left: -15%; }
     to { left: 115%; }
+}
+
+@keyframes bannerOut {
+    from {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+        filter: blur(0);
+    }
+
+    to {
+        transform: translateX(-110%) scale(0.98);
+        opacity: 0;
+        filter: blur(6px);
+    }
 }
 </style>
 </head>
@@ -438,13 +452,18 @@ function playNextBanner() {
     void alertBanner.offsetWidth;
     alertBanner.classList.add("show");
 
-    const bannerDuration = data.duration || 5000;
+    const bannerDuration = (data.duration || 5000) + 750;
     
     alertBanner.style.setProperty("--banner-duration", `${bannerDuration}ms`);
 
     setTimeout(() => {
+        alertBanner.style.animation = "bannerOut 0.65s ease forwards";
+    }, bannerDuration - 650);
+    
+    setTimeout(() => {
         ticker.classList.remove("alerting");
         alertBanner.classList.remove("show");
+        alertBanner.style.animation = "";
     
         addTickerItem(data);
     
