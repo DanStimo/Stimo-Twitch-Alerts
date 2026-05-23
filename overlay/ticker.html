@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Alert Ticker</title>
+
+<style>
+:root {
+    --primary: #ffffff;
+    --secondary: #7a7a7a;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: Consolas, monospace;
+}
+
+#ticker {
+    position: absolute;
+    inset: 0;
+    height: 80px;
+    overflow: hidden;
+
+    background: linear-gradient(
+        90deg,
+        rgba(0,0,0,0.96),
+        rgba(18,18,18,0.94),
+        rgba(0,0,0,0.96)
+    );
+
+    border-top: 2px solid var(--primary);
+    border-bottom: 2px solid var(--primary);
+
+    color: white;
+}
+
+.track {
+    position: absolute;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    animation: tickerMove 45s linear infinite;
+}
+
+.item {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 70px;
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: white;
+    text-shadow: 0 0 10px var(--primary);
+}
+
+.label {
+    color: var(--primary);
+    margin-right: 12px;
+}
+
+.new {
+    animation: popIn 0.6s ease;
+}
+
+@keyframes tickerMove {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(1.3);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="ticker">
+    <div class="track" id="track"></div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+const track = document.getElementById("track");
+
+const alertThemes = {
+    follow: { primary: "#00d9ff", secondary: "#009dff" },
+    sub: { primary: "#a855ff", secondary: "#7b2fff" },
+    primesub: { primary: "#ff3366", secondary: "#990022" },
+    giftsub: { primary: "#ff4fd8", secondary: "#ff2fae" },
+    raid: { primary: "#ff5533", secondary: "#ff9900" },
+    bits: { primary: "#00ff99", secondary: "#00cc66" },
+    redemption: { primary: "#ffe066", secondary: "#ffb300" }
+};
+
+let items = [];
+
+function getTickerLabel(data) {
+    if (data.type === "follow") return "FOLLOW";
+    if (data.type === "sub") return "SUB";
+    if (data.type === "primesub") return "PRIME";
+    if (data.type === "giftsub") return "GIFT SUB";
+    if (data.type === "raid") return "RAID";
+    if (data.type === "bits") return "BITS";
+    if (data.type === "redemption") return "REDEEM";
+    return "ALERT";
+}
+
+function getTickerText(data) {
+    const user = (data.user || "UNKNOWN").toUpperCase();
+
+    if (data.type === "sub") {
+        return `${user} • ${data.extra || ""}`;
+    }
+
+    if (data.type === "primesub") {
+        return `${user} • PRIME`;
+    }
+
+    if (data.type === "giftsub") {
+        return `${user}`;
+    }
+
+    if (data.type === "raid") {
+        return `${user} • ${data.extra || ""}`;
+    }
+
+    if (data.type === "bits") {
+        return `${user} • ${data.extra || ""}`;
+    }
+
+    if (data.type === "redemption") {
+        return `${user} • ${data.reward || ""}`;
+    }
+
+    return user;
+}
+
+function renderTicker() {
+    track.innerHTML = "";
+
+    const doubled = [...items, ...items];
+
+    doubled.forEach((item, index) => {
+        const el = document.createElement("div");
+        el.className = "item" + (index === 0 ? " new" : "");
+
+        el.innerHTML = `
+            <span class="label" style="color:${item.primary}; text-shadow:0 0 10px ${item.primary}">
+                ${item.label}
+            </span>
+            <span>${item.text}</span>
+        `;
+
+        track.appendChild(el);
+    });
+}
+
+socket.on("alert", (data) => {
+    const theme = alertThemes[data.type] || alertThemes.follow;
+
+    items.unshift({
+        label: getTickerLabel(data),
+        text: getTickerText(data),
+        primary: theme.primary
+    });
+
+    items = items.slice(0, 10);
+
+    renderTicker();
+});
+</script>
+
+</body>
+</html>
