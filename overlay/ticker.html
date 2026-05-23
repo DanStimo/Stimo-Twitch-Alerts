@@ -185,6 +185,19 @@ html, body {
     animation: alertSweepPingPong var(--scan-duration, 2.2s) ease-in-out forwards;
 }
 
+.banner-video {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    opacity: 0.35;
+    z-index: -1;
+}
+
 @keyframes tickerMove {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
@@ -258,6 +271,9 @@ html, body {
     <div class="track" id="track"></div>
 
     <div class="alert-banner" id="alertBanner">
+        <video class="banner-video" id="bannerVideo" muted playsinline loop>
+            <source src="assets/videos/ticker-bg.webm" type="video/webm">
+        </video>
         <div class="alert-scan"></div>
 
         <div class="alert-content">
@@ -473,6 +489,9 @@ function playNextBanner() {
     const text = getBannerText(data);
 
     applyTheme(data.type);
+    const bannerVideo = document.getElementById("bannerVideo");
+    bannerVideo.currentTime = 0;
+    bannerVideo.play().catch(() => {});
     playTickerSound(data.type);
 
     alertType.textContent = text.type;
