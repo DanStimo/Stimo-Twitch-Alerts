@@ -43,7 +43,13 @@ html, body {
     display: flex;
     align-items: center;
     white-space: nowrap;
-    animation: tickerMove 45s linear infinite;
+    animation: tickerMove 55s linear infinite;
+    opacity: 1;
+    transition: opacity 0.35s ease;
+}
+
+#ticker.alerting .track {
+    opacity: 0.12;
 }
 
 .item {
@@ -59,12 +65,80 @@ html, body {
 }
 
 .label {
-    color: var(--primary);
     margin-right: 12px;
 }
 
-.new {
-    animation: popIn 0.6s ease;
+.alert-banner {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transform: translateX(110%);
+    opacity: 0;
+
+    background:
+        radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 55%),
+        linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+
+    color: white;
+
+    z-index: 5;
+}
+
+.alert-banner.show {
+    animation: bannerInOut 5.2s ease forwards;
+}
+
+.alert-content {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.alert-type {
+    color: var(--primary);
+    font-size: 18px;
+    letter-spacing: 10px;
+    font-weight: 900;
+    text-shadow: 0 0 12px var(--primary);
+}
+
+.alert-main {
+    margin-top: 4px;
+    font-size: 40px;
+    letter-spacing: 4px;
+    font-weight: 900;
+    text-shadow:
+        0 0 12px rgba(255,255,255,0.9),
+        0 0 32px var(--primary);
+}
+
+.alert-detail {
+    margin-top: 2px;
+    font-size: 16px;
+    letter-spacing: 5px;
+    color: rgba(255,255,255,0.78);
+}
+
+.alert-scan {
+    position: absolute;
+    top: 0;
+    left: -15%;
+    width: 15%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--primary),
+        transparent
+    );
+    opacity: 0.35;
+    animation: alertSweep 1.1s ease-in-out infinite;
 }
 
 @keyframes tickerMove {
@@ -72,16 +146,35 @@ html, body {
     to { transform: translateX(-50%); }
 }
 
-@keyframes popIn {
+@keyframes bannerInOut {
     0% {
-        transform: scale(1.3);
+        transform: translateX(110%) scale(0.96);
         opacity: 0;
+        filter: blur(8px);
+    }
+
+    15% {
+        transform: translateX(0) scale(1.02);
+        opacity: 1;
+        filter: blur(0);
+    }
+
+    78% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+        filter: blur(0);
     }
 
     100% {
-        transform: scale(1);
-        opacity: 1;
+        transform: translateX(-110%) scale(0.96);
+        opacity: 0;
+        filter: blur(8px);
     }
+}
+
+@keyframes alertSweep {
+    from { left: -15%; }
+    to { left: 115%; }
 }
 </style>
 </head>
@@ -90,6 +183,16 @@ html, body {
 
 <div id="ticker">
     <div class="track" id="track"></div>
+
+    <div class="alert-banner" id="alertBanner">
+        <div class="alert-scan"></div>
+
+        <div class="alert-content">
+            <div class="alert-type" id="alertType"></div>
+            <div class="alert-main" id="alertMain"></div>
+            <div class="alert-detail" id="alertDetail"></div>
+        </div>
+    </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -97,7 +200,12 @@ html, body {
 <script>
 const socket = io();
 
+const ticker = document.getElementById("ticker");
 const track = document.getElementById("track");
+const alertBanner = document.getElementById("alertBanner");
+const alertType = document.getElementById("alertType");
+const alertMain = document.getElementById("alertMain");
+const alertDetail = document.getElementById("alertDetail");
 
 const alertThemes = {
     follow: { primary: "#00d9ff", secondary: "#009dff" },
@@ -110,6 +218,17 @@ const alertThemes = {
 };
 
 let items = [];
+const bannerQueue = [];
+let bannerPlaying = false;
+
+function applyTheme(type) {
+    const theme = alertThemes[type] || alertThemes.follow;
+
+    document.documentElement.style.setProperty("--primary", theme.primary);
+    document.documentElement.style.setProperty("--secondary", theme.secondary);
+
+    return theme;
+}
 
 function getTickerLabel(data) {
     if (data.type === "follow") return "FOLLOW";
@@ -125,41 +244,98 @@ function getTickerLabel(data) {
 function getTickerText(data) {
     const user = (data.user || "UNKNOWN").toUpperCase();
 
+    if (data.type === "sub") return `${user} • ${data.extra || ""}`;
+    if (data.type === "primesub") return `${user} • PRIME`;
+    if (data.type === "giftsub") return `${user}`;
+    if (data.type === "raid") return `${user} • ${data.extra || ""}`;
+    if (data.type === "bits") return `${user} • ${data.extra || ""}`;
+    if (data.type === "redemption") return `${user} • ${data.reward || ""}`;
+
+    return user;
+}
+
+function getBannerText(data) {
+    const user = (data.user || "UNKNOWN").toUpperCase();
+
+    if (data.type === "follow") {
+        return {
+            type: "NEW FOLLOWER",
+            main: user,
+            detail: "WELCOME TO THE CREW"
+        };
+    }
+
     if (data.type === "sub") {
-        return `${user} • ${data.extra || ""}`;
+        return {
+            type: "SUBSCRIPTION CONFIRMED",
+            main: user,
+            detail: data.extra || ""
+        };
     }
 
     if (data.type === "primesub") {
-        return `${user} • PRIME`;
+        return {
+            type: "PRIME LINK ESTABLISHED",
+            main: user,
+            detail: "PRIME SUBSCRIBER"
+        };
     }
 
     if (data.type === "giftsub") {
-        return `${user}`;
+        return {
+            type: "GIFT SUB TRANSFER",
+            main: user,
+            detail: data.extra || data.reward || ""
+        };
     }
 
     if (data.type === "raid") {
-        return `${user} • ${data.extra || ""}`;
+        return {
+            type: "INCOMING RAID",
+            main: user,
+            detail: data.extra || ""
+        };
     }
 
     if (data.type === "bits") {
-        return `${user} • ${data.extra || ""}`;
+        return {
+            type: "BITS TRANSMISSION",
+            main: user,
+            detail: data.extra || ""
+        };
     }
 
     if (data.type === "redemption") {
-        return `${user} • ${data.reward || ""}`;
+        return {
+            type: "REWARD REDEEMED",
+            main: user,
+            detail: data.reward || ""
+        };
     }
 
-    return user;
+    return {
+        type: "ALERT",
+        main: user,
+        detail: ""
+    };
 }
 
 function renderTicker() {
     track.innerHTML = "";
 
+    if (items.length === 0) {
+        items = [{
+            label: "SYSTEM",
+            text: "WAITING FOR ALERT DATA",
+            primary: "#ffffff"
+        }];
+    }
+
     const doubled = [...items, ...items];
 
-    doubled.forEach((item, index) => {
+    doubled.forEach((item) => {
         const el = document.createElement("div");
-        el.className = "item" + (index === 0 ? " new" : "");
+        el.className = "item";
 
         el.innerHTML = `
             <span class="label" style="color:${item.primary}; text-shadow:0 0 10px ${item.primary}">
@@ -186,8 +362,44 @@ function addTickerItem(data) {
     renderTicker();
 }
 
+function queueBanner(data) {
+    bannerQueue.push(data);
+    playNextBanner();
+}
+
+function playNextBanner() {
+    if (bannerPlaying) return;
+    if (bannerQueue.length === 0) return;
+
+    bannerPlaying = true;
+
+    const data = bannerQueue.shift();
+    const text = getBannerText(data);
+
+    applyTheme(data.type);
+
+    alertType.textContent = text.type;
+    alertMain.textContent = text.main;
+    alertDetail.textContent = text.detail;
+
+    ticker.classList.add("alerting");
+
+    alertBanner.classList.remove("show");
+    void alertBanner.offsetWidth;
+    alertBanner.classList.add("show");
+
+    setTimeout(() => {
+        ticker.classList.remove("alerting");
+        alertBanner.classList.remove("show");
+
+        bannerPlaying = false;
+        playNextBanner();
+    }, 5300);
+}
+
 socket.on("alert", (data) => {
     addTickerItem(data);
+    queueBanner(data);
 });
 
 fetch("/api/alert-history")
@@ -195,76 +407,24 @@ fetch("/api/alert-history")
     .then(history => {
         const pastAlerts = [];
 
-        (history.follows || []).forEach(item => {
-            pastAlerts.push({
-                type: "follow",
-                user: item.user,
-                time: item.time
-            });
-        });
+        (history.follows || []).forEach(item => pastAlerts.push({ type: "follow", user: item.user, time: item.time }));
+        (history.subs || []).forEach(item => pastAlerts.push({ type: "sub", user: item.user, extra: item.extra, time: item.time }));
+        (history.primesubs || []).forEach(item => pastAlerts.push({ type: "primesub", user: item.user, extra: item.extra, time: item.time }));
+        (history.giftsubs || []).forEach(item => pastAlerts.push({ type: "giftsub", user: item.user, extra: item.extra, reward: item.reward, time: item.time }));
+        (history.bits || []).forEach(item => pastAlerts.push({ type: "bits", user: item.user, extra: item.extra, time: item.time }));
+        (history.raids || []).forEach(item => pastAlerts.push({ type: "raid", user: item.user, extra: item.extra, time: item.time }));
+        (history.redemptions || []).forEach(item => pastAlerts.push({ type: "redemption", user: item.user, reward: item.reward, time: item.time }));
 
-        (history.subs || []).forEach(item => {
-            pastAlerts.push({
-                type: "sub",
-                user: item.user,
-                extra: item.extra,
-                time: item.time
-            });
-        });
-
-        (history.primesubs || []).forEach(item => {
-            pastAlerts.push({
-                type: "primesub",
-                user: item.user,
-                extra: item.extra,
-                time: item.time
-            });
-        });
-
-        (history.giftsubs || []).forEach(item => {
-            pastAlerts.push({
-                type: "giftsub",
-                user: item.user,
-                extra: item.extra,
-                reward: item.reward,
-                time: item.time
-            });
-        });
-
-        (history.bits || []).forEach(item => {
-            pastAlerts.push({
-                type: "bits",
-                user: item.user,
-                extra: item.extra,
-                time: item.time
-            });
-        });
-
-        (history.raids || []).forEach(item => {
-            pastAlerts.push({
-                type: "raid",
-                user: item.user,
-                extra: item.extra,
-                time: item.time
-            });
-        });
-
-        (history.redemptions || []).forEach(item => {
-            pastAlerts.push({
-                type: "redemption",
-                user: item.user,
-                reward: item.reward,
-                time: item.time
-            });
-        });
+        items = [];
 
         pastAlerts
             .sort((a, b) => new Date(b.time) - new Date(a.time))
             .slice(0, 10)
             .reverse()
             .forEach(addTickerItem);
+
+        renderTicker();
     });
-    
 </script>
 
 </body>
