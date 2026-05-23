@@ -168,17 +168,21 @@ html, body {
 .alert-scan {
     position: absolute;
     top: 0;
-    left: -15%;
-    width: 15%;
+    left: -20%;
+
+    width: 18%;
     height: 100%;
+
     background: linear-gradient(
         90deg,
         transparent,
         var(--primary),
         transparent
     );
+
     opacity: 0.35;
-    animation: alertSweep 1.1s ease-in-out infinite;
+
+    animation: alertSweepPingPong 2.2s ease-in-out infinite;
 }
 
 @keyframes tickerMove {
@@ -210,9 +214,22 @@ html, body {
     }
 }
 
-@keyframes alertSweep {
-    from { left: -15%; }
-    to { left: 115%; }
+@keyframes alertSweepPingPong {
+    0% {
+        left: -22%;
+    }
+
+    45% {
+        left: 104%;
+    }
+
+    55% {
+        left: 104%;
+    }
+
+    100% {
+        left: -22%;
+    }
 }
 
 @keyframes bannerOut {
@@ -459,7 +476,9 @@ function playNextBanner() {
     alertDetail.textContent = text.detail;
 
     ticker.classList.add("alerting");
-
+    
+    document.querySelector(".alert-scan").style.opacity = "0.35";
+    
     alertBanner.classList.remove("show");
     void alertBanner.offsetWidth;
     alertBanner.classList.add("show");
@@ -468,6 +487,10 @@ function playNextBanner() {
     
     alertBanner.style.setProperty("--banner-duration", `${bannerDuration}ms`);
 
+    setTimeout(() => {
+        document.querySelector(".alert-scan").style.opacity = "0";
+    }, bannerDuration - 1000);
+    
     setTimeout(() => {
         alertBanner.style.animation = "bannerOut 0.65s ease forwards";
     }, bannerDuration - 650);
