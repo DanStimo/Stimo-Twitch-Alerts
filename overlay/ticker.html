@@ -168,7 +168,7 @@ html, body {
 .alert-scan {
     position: absolute;
     top: 0;
-    left: -20%;
+    left: -22%;
 
     width: 18%;
     height: 100%;
@@ -181,8 +181,10 @@ html, body {
     );
 
     opacity: 0.35;
+}
 
-    animation: alertSweepPingPong 2.2s ease-in-out infinite;
+.alert-scan.running {
+    animation: alertSweepPingPong var(--scan-duration, 2.2s) ease-in-out forwards;
 }
 
 @keyframes tickerMove {
@@ -219,11 +221,15 @@ html, body {
         left: -22%;
     }
 
-    45% {
+    25% {
         left: 104%;
     }
 
-    55% {
+    50% {
+        left: -22%;
+    }
+
+    75% {
         left: 104%;
     }
 
@@ -477,13 +483,20 @@ function playNextBanner() {
 
     ticker.classList.add("alerting");
     
-    document.querySelector(".alert-scan").style.opacity = "0.35";
+    const scan = document.querySelector(".alert-scan");
+    scan.classList.remove("running");
+    scan.style.opacity = "0.35";
+    void scan.offsetWidth;
     
     alertBanner.classList.remove("show");
     void alertBanner.offsetWidth;
     alertBanner.classList.add("show");
 
     const bannerDuration = (data.duration || 5000) + 750;
+
+    const scanDuration = Math.max(2200, bannerDuration - 900);
+    scan.style.setProperty("--scan-duration", `${scanDuration}ms`);
+    scan.classList.add("running");
     
     alertBanner.style.setProperty("--banner-duration", `${bannerDuration}ms`);
 
