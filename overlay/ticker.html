@@ -437,7 +437,7 @@ function getBannerText(data) {
     if (data.type === "giftsub") {
         if (!data.reward) {
             return {
-                type: "GIFT SUB TRANSFER",
+                type: "GIFTED1 SUB",
                 main: user,
                 detail: data.extra || ""
             };
@@ -449,7 +449,7 @@ function getBannerText(data) {
         const right = (parts[1] || "").trim();
     
         return {
-            type: "GIFT SUB TRANSFER",
+            type: "GIFTED SUB",
             main: `
                 <div class="gift-layout">
                     <span class="gift-name left">${left}</span>
@@ -465,7 +465,7 @@ function getBannerText(data) {
         return {
             type: "INCOMING RAID",
             main: user,
-            detail: data.extra || ""
+            detail: data.extra || "REINFORCEMENTS HAVE ARRIVED"
         };
     }
 
