@@ -155,6 +155,34 @@ html, body {
         0 0 32px var(--primary);
 }
 
+.gift-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gift-name {
+    min-width: 320px;
+}
+
+.gift-name.left {
+    text-align: right;
+}
+
+.gift-name.right {
+    text-align: left;
+}
+
+.gift-diamond {
+    margin: 0 28px;
+
+    color: var(--primary);
+
+    text-shadow:
+        0 0 12px var(--primary),
+        0 0 22px var(--primary);
+}
+    
 .alert-detail {
     margin-top: 2px;
     font-size: 11px;
@@ -407,9 +435,20 @@ function getBannerText(data) {
     }
 
     if (data.type === "giftsub") {
+        const parts = user.split("◆");
+    
+        const left = (parts[0] || "").trim();
+        const right = (parts[1] || "").trim();
+    
         return {
             type: "GIFT SUB TRANSFER",
-            main: user,
+            main: `
+                <div class="gift-layout">
+                    <span class="gift-name left">${left}</span>
+                    <span class="gift-diamond">◆</span>
+                    <span class="gift-name right">${right}</span>
+                </div>
+            `,
             detail: data.extra || data.reward || ""
         };
     }
@@ -531,7 +570,7 @@ function playNextBanner() {
     bannerVideo.play().catch(() => {});
 
     alertType.textContent = text.type;
-    alertMain.textContent = text.main;
+    alertMain.innerHTML = text.main;
     alertDetail.textContent = text.detail;
 
     ticker.classList.add("alerting");
