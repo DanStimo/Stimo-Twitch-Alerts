@@ -19,9 +19,14 @@ html, body {
 }
 
 #ticker {
-    position: absolute;
-    inset: 0;
+    position: fixed;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100vw;
     height: 80px;
+
     overflow: hidden;
 
     background: linear-gradient(
@@ -35,6 +40,8 @@ html, body {
     border-bottom: 2px solid var(--primary);
 
     color: white;
+
+    z-index: 9999;
 }
 
 .track {
