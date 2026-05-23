@@ -295,6 +295,7 @@ const alertBanner = document.getElementById("alertBanner");
 const alertType = document.getElementById("alertType");
 const alertMain = document.getElementById("alertMain");
 const alertDetail = document.getElementById("alertDetail");
+const bannerVideo = document.getElementById("bannerVideo");
 
 const alertSounds = {
     follow: new Audio("assets/sounds/New Follower.mp3"),
@@ -327,6 +328,16 @@ const alertThemes = {
     raid: { primary: "#ff5533", secondary: "#ff9900" },
     bits: { primary: "#00ff99", secondary: "#00cc66" },
     redemption: { primary: "#ffe066", secondary: "#ffb300" }
+};
+
+const alertVideos = {
+    follow: "assets/videos/Follow.webm",
+    sub: "assets/videos/Sub.webm",
+    primesub: "assets/videos/PrimeSub.webm",
+    giftsub: "assets/videos/GiftSub.webm",
+    raid: "assets/videos/Raid.webm",
+    bits: "assets/videos/Bits.webm",
+    redemption: "assets/videos/Redemption.webm"
 };
 
 let items = [];
@@ -493,6 +504,16 @@ function playNextBanner() {
     bannerVideo.currentTime = 0;
     bannerVideo.play().catch(() => {});
     playTickerSound(data.type);
+
+    const videoPath = alertVideos[data.type] || alertVideos.follow;
+
+    if (bannerVideo.getAttribute("src") !== videoPath) {
+        bannerVideo.setAttribute("src", videoPath);
+        bannerVideo.load();
+    }
+    
+    bannerVideo.currentTime = 0;
+    bannerVideo.play().catch(() => {});
 
     alertType.textContent = text.type;
     alertMain.textContent = text.main;
