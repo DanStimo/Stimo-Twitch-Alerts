@@ -113,7 +113,7 @@ html, body {
 }
 
 .alert-banner.show {
-    animation: bannerInOut 5.2s ease forwards;
+    animation: bannerInOut var(--banner-duration, 5.2s) ease forwards;
 }
 
 .alert-content {
@@ -439,6 +439,8 @@ function playNextBanner() {
     alertBanner.classList.add("show");
 
     const bannerDuration = data.duration || 5000;
+    
+    alertBanner.style.setProperty("--banner-duration", `${bannerDuration}ms`);
 
     setTimeout(() => {
         ticker.classList.remove("alerting");
