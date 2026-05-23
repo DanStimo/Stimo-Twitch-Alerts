@@ -414,6 +414,8 @@ function playNextBanner() {
     void alertBanner.offsetWidth;
     alertBanner.classList.add("show");
 
+    const bannerDuration = data.duration || 5000;
+
     setTimeout(() => {
         ticker.classList.remove("alerting");
         alertBanner.classList.remove("show");
@@ -422,7 +424,7 @@ function playNextBanner() {
     
         bannerPlaying = false;
         playNextBanner();
-    }, 5300);
+    }, bannerDuration);
 }
 
 socket.on("alert", (data) => {
