@@ -172,7 +172,7 @@ function renderTicker() {
     });
 }
 
-socket.on("alert", (data) => {
+function addTickerItem(data) {
     const theme = alertThemes[data.type] || alertThemes.follow;
 
     items.unshift({
@@ -184,7 +184,87 @@ socket.on("alert", (data) => {
     items = items.slice(0, 10);
 
     renderTicker();
+}
+
+socket.on("alert", (data) => {
+    addTickerItem(data);
 });
+
+fetch("/api/alert-history")
+    .then(res => res.json())
+    .then(history => {
+        const pastAlerts = [];
+
+        (history.follows || []).forEach(item => {
+            pastAlerts.push({
+                type: "follow",
+                user: item.user,
+                time: item.time
+            });
+        });
+
+        (history.subs || []).forEach(item => {
+            pastAlerts.push({
+                type: "sub",
+                user: item.user,
+                extra: item.extra,
+                time: item.time
+            });
+        });
+
+        (history.primesubs || []).forEach(item => {
+            pastAlerts.push({
+                type: "primesub",
+                user: item.user,
+                extra: item.extra,
+                time: item.time
+            });
+        });
+
+        (history.giftsubs || []).forEach(item => {
+            pastAlerts.push({
+                type: "giftsub",
+                user: item.user,
+                extra: item.extra,
+                reward: item.reward,
+                time: item.time
+            });
+        });
+
+        (history.bits || []).forEach(item => {
+            pastAlerts.push({
+                type: "bits",
+                user: item.user,
+                extra: item.extra,
+                time: item.time
+            });
+        });
+
+        (history.raids || []).forEach(item => {
+            pastAlerts.push({
+                type: "raid",
+                user: item.user,
+                extra: item.extra,
+                time: item.time
+            });
+        });
+
+        (history.redemptions || []).forEach(item => {
+            pastAlerts.push({
+                type: "redemption",
+                user: item.user,
+                reward: item.reward,
+                time: item.time
+            });
+        });
+
+        pastAlerts
+            .sort((a, b) => new Date(b.time) - new Date(a.time))
+            .slice(0, 10)
+            .reverse()
+            .forEach(addTickerItem);
+    });
+    
 </script>
 
 </body>
