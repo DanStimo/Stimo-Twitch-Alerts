@@ -233,6 +233,29 @@ const alertType = document.getElementById("alertType");
 const alertMain = document.getElementById("alertMain");
 const alertDetail = document.getElementById("alertDetail");
 
+const alertSounds = {
+    follow: new Audio("assets/sounds/New Follower.mp3"),
+    sub: new Audio("assets/sounds/New Subscriber.mp3"),
+    primesub: new Audio("assets/sounds/New Subscriber.mp3"),
+    giftsub: new Audio("assets/sounds/New Subscriber.mp3"),
+    raid: new Audio("assets/sounds/New Raid.mp3"),
+    bits: new Audio("assets/sounds/New Bits.mp3"),
+    redemption: new Audio("assets/sounds/New Redemption.mp3")
+};
+
+function playTickerSound(type) {
+    const sound = alertSounds[type];
+
+    if (!sound) return;
+
+    sound.pause();
+    sound.currentTime = 0;
+
+    sound.play().catch(err => {
+        console.log("Ticker sound failed:", err.message);
+    });
+}
+    
 const alertThemes = {
     follow: { primary: "#00d9ff", secondary: "#009dff" },
     sub: { primary: "#a855ff", secondary: "#7b2fff" },
@@ -403,6 +426,7 @@ function playNextBanner() {
     const text = getBannerText(data);
 
     applyTheme(data.type);
+    playTickerSound(data.type);
 
     alertType.textContent = text.type;
     alertMain.textContent = text.main;
