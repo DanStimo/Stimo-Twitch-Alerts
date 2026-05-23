@@ -435,6 +435,14 @@ function getBannerText(data) {
     }
 
     if (data.type === "giftsub") {
+        if (!data.reward) {
+            return {
+                type: "GIFT SUB TRANSFER",
+                main: user,
+                detail: data.extra || ""
+            };
+        }
+    
         const parts = user.split("◆");
     
         const left = (parts[0] || "").trim();
