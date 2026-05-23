@@ -36,12 +36,24 @@ html, body {
         rgba(0,0,0,0.96)
     );
 
-    border-top: 2px solid var(--primary);
-    border-bottom: 2px solid var(--primary);
+    border-top: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    
+    transition:
+        border-color 0.35s ease,
+        box-shadow 0.35s ease;
 
     color: white;
 
     z-index: 9999;
+}
+
+#ticker.alerting {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 14px var(--primary),
+        0 0 34px rgba(255,255,255,0.18);
 }
 
 .track {
@@ -56,7 +68,7 @@ html, body {
 }
 
 #ticker.alerting .track {
-    opacity: 0.12;
+    opacity: 0;
 }
 
 .item {
