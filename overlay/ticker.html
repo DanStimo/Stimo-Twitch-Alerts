@@ -61,18 +61,35 @@ html, body {
 
 .item {
     display: inline-flex;
-    align-items: center;
-    margin-right: 70px;
-    font-size: 26px;
-    font-weight: 900;
-    letter-spacing: 2px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    height: 80px;
+
+    margin-right: 90px;
+
     text-transform: uppercase;
     color: white;
+
     text-shadow: 0 0 10px var(--primary);
 }
 
 .label {
-    margin-right: 12px;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 4px;
+
+    margin-bottom: 3px;
+
+    opacity: 0.9;
+}
+
+.ticker-name {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1;
 }
 
 .alert-banner {
@@ -350,7 +367,7 @@ function renderTicker() {
             <span class="label" style="color:${item.primary}; text-shadow:0 0 10px ${item.primary}">
                 ${item.label}
             </span>
-            <span>${item.text}</span>
+            <span class="ticker-name">${item.text}</span>
         `;
 
         track.appendChild(el);
