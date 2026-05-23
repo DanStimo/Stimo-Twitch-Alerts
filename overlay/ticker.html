@@ -412,9 +412,9 @@ function getBannerText(data) {
 
     if (data.type === "follow") {
         return {
-            type: "NEW FOLLOWER",
+            type: "NEW RECRUIT",
             main: user,
-            detail: "WELCOME TO THE CREW"
+            detail: "WELCOME TO THE SQUAD"
         };
     }
 
@@ -437,7 +437,7 @@ function getBannerText(data) {
     if (data.type === "giftsub") {
         if (!data.reward) {
             return {
-                type: "GIFTED1 SUB",
+                type: "GIFTED SUBS",
                 main: user,
                 detail: data.extra || ""
             };
@@ -463,9 +463,9 @@ function getBannerText(data) {
 
     if (data.type === "raid") {
         return {
-            type: "INCOMING RAID",
+            type: "INCOMING REINFORCEMENTS",
             main: user,
-            detail: data.extra || "REINFORCEMENTS HAVE ARRIVED"
+            detail: data.extra || ""
         };
     }
 
