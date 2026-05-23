@@ -208,6 +208,10 @@ io.on("connection", () => {
     console.log("Overlay connected");
 });
 
+app.get("/api/alert-history", (req, res) => {
+    res.json(loadHistory());
+});
+
 app.get("/test/openpack", (req, res) => {
 
     const card = rollCard();
