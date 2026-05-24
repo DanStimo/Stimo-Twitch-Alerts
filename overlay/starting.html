@@ -187,19 +187,47 @@ const loreLines = [
 
 let loreIndex = 0;
 const loreEl = document.querySelector(".lore");
-loreEl.textContent = loreLines[loreIndex];
 
-setInterval(() => {
-    loreIndex = (loreIndex + 1) % loreLines.length;
+function typeLore(text, callback) {
+    let i = 0;
+    loreEl.textContent = "";
 
-    loreEl.style.opacity = 0;
+    const timer = setInterval(() => {
+        loreEl.textContent = text.substring(0, i);
+        i++;
 
-    setTimeout(() => {
-        loreEl.textContent = loreLines[loreIndex];
-        loreEl.style.opacity = 1;
-    }, 400);
+        if (i > text.length) {
+            clearInterval(timer);
+            setTimeout(callback, 3000);
+        }
+    }, 35);
+}
 
-}, 8000);
+function eraseLore(callback) {
+    let text = loreEl.textContent;
+    let i = text.length;
+
+    const timer = setInterval(() => {
+        loreEl.textContent = text.substring(0, i);
+        i--;
+
+        if (i < 0) {
+            clearInterval(timer);
+            callback();
+        }
+    }, 18);
+}
+
+function playLoreLoop() {
+    typeLore(loreLines[loreIndex], () => {
+        eraseLore(() => {
+            loreIndex = (loreIndex + 1) % loreLines.length;
+            playLoreLoop();
+        });
+    });
+}
+
+playLoreLoop();
 </script>
     
 </body>
