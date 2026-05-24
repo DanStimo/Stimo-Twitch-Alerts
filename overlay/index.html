@@ -566,7 +566,7 @@ function typeText(element, html, speed = 35) {
 }
 
 function getEventText(data) {
-    if (data.type === "follow") return "NEW FOLLOWER DETECTED";
+    if (data.type === "follow") return "NEW RECRUIT DETECTED";
     if (data.type === "sub") return `SUBSCRIPTION CONFIRMED • ${data.extra}`;
     if (data.type === "primesub") return "PRIME SUBSCRIPTION CONFIRMED";
     if (data.type === "raid") return "INCOMING RAID: " + data.extra;
@@ -607,11 +607,11 @@ function getRankText(data, username) {
             return data.extra + " HAS COMMENDED " + data.reward;
         }
 
-    if (data.type === "tip") {
-        return "CREDITS RECEIVED FROM " + username.toUpperCase();
+        return data.user;
     }
 
-        return data.user;
+    if (data.type === "tip") {
+        return "CREDITS RECEIVED FROM " + username.toUpperCase();
     }
 
     return "WELCOME ABOARD, CAPTAIN " + username.toUpperCase();
