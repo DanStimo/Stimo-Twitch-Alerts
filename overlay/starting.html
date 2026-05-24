@@ -201,6 +201,15 @@ html, body {
     color: rgba(255,255,255,0.75);
 }
 
+.op-meta {
+    margin-top: 14px;
+
+    font-size: 11px;
+    letter-spacing: 3px;
+
+    color: rgba(255,255,255,0.55);
+}
+
 .op-line {
     margin-top: 18px;
 
@@ -268,27 +277,7 @@ html, body {
     </div>
 </div>
 
-<div class="boot">
-
-    <div class="telemetry-title">
-        BROADCAST TELEMETRY
-    </div>
-
-    <div class="telemetry-row">
-        <span>UPLINK</span>
-        <span class="good">STABLE</span>
-    </div>
-
-    <div class="telemetry-row">
-        <span>SIGNAL</span>
-        <span>98%</span>
-    </div>
-
-    <div class="telemetry-row">
-        <span>LATENCY</span>
-        <span>21MS</span>
-
-    <div class="boot operation-card">
+<div class="boot operation-card">
 
     <div class="op-label">
         CURRENT OPERATION
@@ -302,6 +291,10 @@ html, body {
         LAUNCH PREP ACTIVE
     </div>
 
+    <div class="op-meta">
+        SIGNAL 98% • LATENCY 21MS • UPLINK STABLE
+    </div>
+
     <div class="op-line"></div>
 
     <div class="op-footer">
@@ -309,7 +302,7 @@ html, body {
     </div>
 
 </div>
-
+    
 <script>
 const loreLines = [
     "Systems are coming online. Flight telemetry is syncing.",
