@@ -448,14 +448,6 @@ function getBannerText(data) {
             };
         }
 
-    if (data.type === "tip") {
-        return {
-            type: "CREDITS RECEIVED",
-            main: user,
-            detail: data.extra || ""
-        };
-    }
-    
         const parts = user.split("◆");
     
         const left = (parts[0] || "").trim();
@@ -471,6 +463,14 @@ function getBannerText(data) {
                 </div>
             `,
             detail: "SUPPLY TRANSFER COMPLETE"
+        };
+    }
+
+    if (data.type === "tip") {
+        return {
+            type: "CREDITS RECEIVED",
+            main: user,
+            detail: data.extra || ""
         };
     }
 
