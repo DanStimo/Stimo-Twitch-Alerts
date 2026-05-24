@@ -215,6 +215,9 @@ app.get("/api/alert-history", (req, res) => {
     res.json(loadHistory());
 });
 
+app.get("/webhook/kofi", (req, res) => {
+    res.send("Ko-fi webhook is online. Waiting for POST requests.");
+});
 app.post("/webhook/kofi", (req, res) => {
     try {
         const payload = req.body.data
