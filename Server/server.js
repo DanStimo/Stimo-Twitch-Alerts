@@ -508,7 +508,7 @@ function connectTwitchEventSub() {
                 let receiverName;
 
                 if (total > 1) {
-                    displayName = `${gifter.toUpperCase()} GIFTED ${total} SUBS`;
+                    displayName = `${gifter.toUpperCase()} GIFTED x${total}`;
                     extraText = `${total} GIFT SUBS`;
                     receiverName = "";
                 } else {
