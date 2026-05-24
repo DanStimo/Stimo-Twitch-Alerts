@@ -334,7 +334,8 @@ const alertSounds = {
     giftsub: new Audio("assets/sounds/New Subscriber.mp3"),
     raid: new Audio("assets/sounds/New Raid.mp3"),
     bits: new Audio("assets/sounds/New Bits.mp3"),
-    redemption: new Audio("assets/sounds/New Redemption.mp3")
+    redemption: new Audio("assets/sounds/New Redemption.mp3"),
+    tip: new Audio("assets/sounds/New Donation.mp3")
 };
 
 function playTickerSound(type) {
@@ -357,7 +358,8 @@ const alertThemes = {
     giftsub: { primary: "#ff4fd8", secondary: "#ff2fae" },
     raid: { primary: "#ff5533", secondary: "#ff9900" },
     bits: { primary: "#00ff99", secondary: "#00cc66" },
-    redemption: { primary: "#ffe066", secondary: "#ffb300" }
+    redemption: { primary: "#ffe066", secondary: "#ffb300" },
+    tip: { primary: "#ffdd66", secondary: "#ff8c00" }
 };
 
 const alertVideos = {
@@ -367,7 +369,8 @@ const alertVideos = {
     giftsub: "assets/videos/Sub.webm",
     raid: "assets/videos/Raid.webm",
     bits: "assets/videos/Bits.webm",
-    redemption: "assets/videos/Redemption.webm"
+    redemption: "assets/videos/Redemption.webm",
+    tip: "assets/videos/New Donation.webm"
 };
 
 let items = [];
@@ -391,6 +394,7 @@ function getTickerLabel(data) {
     if (data.type === "raid") return "RAID";
     if (data.type === "bits") return "BITS";
     if (data.type === "redemption") return "REDEEM";
+    if (data.type === "tip") return "TIP";
     return "ALERT";
 }
 
@@ -403,6 +407,7 @@ function getTickerText(data) {
     if (data.type === "raid") return `${user} • ${data.extra || ""}`;
     if (data.type === "bits") return `${user} • ${data.extra || ""}`;
     if (data.type === "redemption") return `${user} • ${data.reward || ""}`;
+    if (data.type === "tip") return `${user} • ${data.extra || ""}`;
 
     return user;
 }
@@ -442,6 +447,14 @@ function getBannerText(data) {
                 detail: "BULK SUPPLY TRANSFER COMPLETE"
             };
         }
+
+    if (data.type === "tip") {
+        return {
+            type: "CREDITS RECEIVED",
+            main: user,
+            detail: data.extra || ""
+        };
+    }
     
         const parts = user.split("◆");
     
@@ -636,6 +649,7 @@ fetch("/api/alert-history")
         (history.bits || []).forEach(item => pastAlerts.push({ type: "bits", user: item.user, extra: item.extra, time: item.time }));
         (history.raids || []).forEach(item => pastAlerts.push({ type: "raid", user: item.user, extra: item.extra, time: item.time }));
         (history.redemptions || []).forEach(item => pastAlerts.push({ type: "redemption", user: item.user, reward: item.reward, time: item.time }));
+        (history.tips || []).forEach(item => pastAlerts.push({ type: "tip", user: item.user, extra: item.extra, reward: item.reward, time: item.time }));
 
         items = [];
 
