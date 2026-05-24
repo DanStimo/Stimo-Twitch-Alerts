@@ -187,6 +187,7 @@ const loreLines = [
 
 let loreIndex = 0;
 const loreEl = document.querySelector(".lore");
+loreEl.textContent = loreLines[loreIndex];
 
 setInterval(() => {
     loreIndex = (loreIndex + 1) % loreLines.length;
