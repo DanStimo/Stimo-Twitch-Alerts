@@ -19,21 +19,21 @@ html, body {
     left: 0;
     top: 0;
 
-    width: 900px;
-    height: 220px;
+    width: 1920px;
+    height: 1080px;
 
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-
-    padding-top: 20px;
-
-    color: white;
-    text-transform: uppercase;
+    pointer-events: none;
 }
 
 .panel {
-    width: 720px;
+    position: absolute;
+
+    top: 40px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 760px;
     height: 120px;
 
     display: grid;
