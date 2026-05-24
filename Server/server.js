@@ -78,6 +78,7 @@ function getDefaultHistory() {
         raids: [],
         redemptions: [],
         giftsubs: [],
+        tips: [],
         totals: {
             follows: 0,
             subs: 0,
@@ -119,6 +120,7 @@ function recordAlert(type, user, extra = "", reward = "") {
     history.raids ||= [];
     history.redemptions ||= [];
     history.giftsubs ||= [];
+    history.tips ||= [];
 
     history.totals ||= {};
     history.totals.follows ||= 0;
@@ -184,6 +186,11 @@ function recordAlert(type, user, extra = "", reward = "") {
         history.redemptions.unshift(entry);
         history.redemptions = history.redemptions.slice(0, 5);
         history.totals.redemptions++;
+    }
+
+    if (type === "tip") {
+        history.tips.unshift(entry);
+        history.tips = history.tips.slice(0, 5);
     }
 
     saveHistory(history);
