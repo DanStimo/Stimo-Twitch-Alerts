@@ -261,7 +261,7 @@ app.get("/test/:type", (req, res) => {
         primesub: {
             type: "primesub",
             user: "TestPrime",
-            extra: "PRIME"
+            extra: "12 MONTHS"
         },
         raid: {
             type: "raid",
@@ -543,22 +543,33 @@ function connectTwitchEventSub() {
             if (subType === "channel.subscribe") {
 
             if (event.is_prime) {
+
+                const months = event.cumulative_months || 1;
+            
+                const monthText =
+                    months === 1
+                        ? "1 MONTH"
+                        : `${months} MONTHS`;
+            
                 const history = recordAlert(
                     "primesub",
                     event.user_name,
-                    "PRIME"
+                    monthText
                 );
             
                 queueAlert(
                     "primesub",
                     event.user_name,
-                    "PRIME",
+                    monthText,
                     "",
                     history
                 );
             
                 givePack(event.user_name);
-                announceChat(`@${event.user_name} subscribed with Prime for 1 month! Redeem your pack with !openpack`);
+            
+                announceChat(
+                    `@${event.user_name} subscribed with Prime for ${months} month${months === 1 ? "" : "s"}! Redeem your pack with !openpack`
+                );
             
                 return;
             }
