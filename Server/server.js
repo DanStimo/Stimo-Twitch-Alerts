@@ -363,7 +363,7 @@ const alertDurations = {
     giftsub: 15000,
     raid: 20500,
     bits: 9000,
-    redemption: 9000
+    redemption: 9000,
     tip: 9000
 };
 
