@@ -246,7 +246,7 @@ app.get("/test/:type", (req, res) => {
 
             return {
                 type: "giftsub",
-                user: `TESTGIFTER GIFTED ${giftCount} SUBS`,
+                user: `TESTGIFTER GIFTED x${giftCount}`,
                 extra: `${giftCount} GIFT SUBS`,
                 reward: ""
             };
