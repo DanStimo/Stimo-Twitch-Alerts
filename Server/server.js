@@ -234,7 +234,7 @@ app.post("/webhook/kofi", (req, res) => {
         const currency = payload.currency || "";
         const message = payload.message || "";
 
-        const tipText = `${amount} ${currency}`.trim();
+        const tipText = `$${amount}`;
 
         const history = recordAlert(
             "tip",
