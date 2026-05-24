@@ -130,6 +130,26 @@ body {
         0 0 10px var(--primary);
 }
 
+.alert-video {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center center;
+
+    opacity: 0;
+    z-index: 0;
+
+    transition: opacity 0.4s ease;
+}
+
+.alert-video.show {
+    opacity: 0.35;
+}
+
 .main-name {
     position: absolute;
 
@@ -416,6 +436,7 @@ body {
 
 <div id="alert">
     <div class="hud-frame">
+    <video class="alert-video" id="alertVideo" muted playsinline loop></video>
 
     <div class="corner-left"></div>
     <div class="corner-right"></div>
@@ -494,6 +515,7 @@ const eventLine = document.getElementById("eventLine");
 const barFill = document.querySelector(".bar-fill");
 const shipData = document.getElementById("shipData");
 const particleLayer = document.getElementById("particleLayer");
+const alertVideo = document.getElementById("alertVideo");
 
 const alertSounds = {
     follow: new Audio("assets/sounds/New Follower.mp3"),
@@ -793,6 +815,14 @@ async function playNextAlert() {
 
     alertBox.classList.add("show");
     particleLayer.className = "particle-layer";
+    alertVideo.classList.remove("show");
+
+    if (data.type === "tip") {
+        alertVideo.src = "assets/videos/Tip.webm";
+        alertVideo.currentTime = 0;
+        alertVideo.play().catch(() => {});
+        alertVideo.classList.add("show");
+    }
 
     if (data.type === "giftsub") {
         particleLayer.classList.add("active", "gifts");
@@ -845,8 +875,12 @@ async function playNextAlert() {
 
     setTimeout(() => {
         particleLayer.className = "particle-layer";
+    
+        alertVideo.classList.remove("show");
+        alertVideo.pause();
+    
         alertBox.classList.remove("show");
-
+    
         alertPlaying = false;
         playNextAlert();
     }, alertDuration);
