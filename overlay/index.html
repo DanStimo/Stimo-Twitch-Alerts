@@ -38,6 +38,11 @@ body {
     opacity: 1;
 }
 
+#alert.hide {
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
 .hud-frame {
     position: relative;
     width: 100%;
@@ -907,9 +912,15 @@ async function playNextAlert() {
         alertVideo.pause();
     
         alertBox.classList.remove("show");
+        alertBox.classList.add("hide");
     
-        alertPlaying = false;
-        playNextAlert();
+        setTimeout(() => {
+            alertBox.classList.remove("hide");
+    
+            alertPlaying = false;
+            playNextAlert();
+        }, 450);
+    
     }, alertDuration);
 }
 </script>
