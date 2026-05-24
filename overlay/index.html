@@ -113,6 +113,17 @@ body {
     100% { left: 105%; }
 }
 
+.top-label,
+.system-log,
+.main-name,
+.event-line,
+.ship-data,
+.corner-left,
+.corner-right,
+.bar {
+    position: relative;
+    z-index: 5;
+}
 .top-label {
     position: absolute;
 
@@ -141,13 +152,13 @@ body {
     object-position: center center;
 
     opacity: 0;
-    z-index: 0;
+    z-index: 1;
 
     transition: opacity 0.4s ease;
 }
 
 .alert-video.show {
-    opacity: 0.35;
+    opacity: 0.55;
 }
 
 .main-name {
