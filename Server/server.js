@@ -234,7 +234,7 @@ app.post("/webhook/kofi", (req, res) => {
         const currency = payload.currency || "";
         const message = payload.message || "";
 
-        const tipText = `$${amount}`;
+        const tipText = `£${amount}`;
 
         const history = recordAlert(
             "tip",
@@ -370,7 +370,7 @@ const alertDurations = {
     raid: 20500,
     bits: 9000,
     redemption: 9000,
-    tip: 12000
+    tip: 11000
 };
 
 function queueAlert(type, user, extra = "", reward = "", history = null) {
