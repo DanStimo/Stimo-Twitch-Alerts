@@ -180,6 +180,11 @@ const alertThemes = {
     redemption: {
         primary: "#ffe066",
         secondary: "#ffb300"
+    },
+
+    tip: {
+        primary: "#ffdd66",
+        secondary: "#ff8c00"
     }
 };
 
@@ -194,6 +199,7 @@ function getAlertLabel(data) {
     if (data.type === "raid") return "RAIDED";
     if (data.type === "bits") return "CHEERED";
     if (data.type === "redemption") return "REDEEMED";
+    if (data.type === "tip") return "TIPPED";
     return "ALERT";
 }
 
