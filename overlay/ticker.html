@@ -157,14 +157,29 @@ html, body {
     text-align: center;
     text-transform: uppercase;
     white-space: nowrap;
+    padding: 10px 40px;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(0,0,0,0.42),
+            rgba(0,0,0,0.12) 70%,
+            transparent
+        );
 }
 
 .alert-type {
     color: var(--primary);
-    font-size: 12px;
+
+    font-size: 16px;
     letter-spacing: 6px;
     font-weight: 900;
-    text-shadow: 0 0 12px var(--primary);
+
+    opacity: 1;
+
+    text-shadow:
+        0 0 8px var(--primary),
+        0 0 18px var(--primary),
+        0 0 28px rgba(0,0,0,0.9);
 }
 
 .alert-main {
