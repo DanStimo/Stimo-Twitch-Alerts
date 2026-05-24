@@ -168,6 +168,69 @@ html, body {
     text-shadow: 0 0 8px #00d9ff;
 }
 
+    .telemetry-title {
+    margin-bottom: 18px;
+
+    font-size: 14px;
+    letter-spacing: 4px;
+    font-weight: 900;
+
+    color: white;
+}
+
+.telemetry-row {
+    display: flex;
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+.good {
+    color: #00ff99;
+}
+
+.bars {
+    display: flex;
+    align-items: flex-end;
+
+    gap: 8px;
+
+    margin-top: 22px;
+
+    height: 40px;
+}
+
+.bars div {
+    width: 14px;
+
+    background: #00d9ff;
+
+    box-shadow: 0 0 12px #00d9ff;
+
+    animation: telemetryBars 1.8s ease-in-out infinite;
+}
+
+.bars div:nth-child(1) { height: 20px; animation-delay: 0s; }
+.bars div:nth-child(2) { height: 34px; animation-delay: 0.2s; }
+.bars div:nth-child(3) { height: 26px; animation-delay: 0.4s; }
+.bars div:nth-child(4) { height: 38px; animation-delay: 0.6s; }
+.bars div:nth-child(5) { height: 18px; animation-delay: 0.8s; }
+
+@keyframes telemetryBars {
+    0%, 100% {
+        opacity: 0.45;
+        transform: scaleY(0.75);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
 .boot div {
     opacity: 0;
     animation: bootLine 8s linear infinite;
@@ -213,12 +276,44 @@ html, body {
 </div>
 
 <div class="boot">
-    <div>&gt; CONNECTING TO DEEP SPACE RELAY...</div>
-    <div>&gt; VERIFYING PILOT SIGNATURE...</div>
-    <div>&gt; CALIBRATING QUANTUM DRIVE...</div>
-    <div>&gt; SYNCING FLEET TELEMETRY...</div>
-    <div>&gt; OPENING BROADCAST CHANNEL...</div>
-    <div>&gt; LAUNCH SEQUENCE READY...</div>
+
+    <div class="telemetry-title">
+        BROADCAST TELEMETRY
+    </div>
+
+    <div class="telemetry-row">
+        <span>UPLINK</span>
+        <span class="good">STABLE</span>
+    </div>
+
+    <div class="telemetry-row">
+        <span>SIGNAL</span>
+        <span>98%</span>
+    </div>
+
+    <div class="telemetry-row">
+        <span>LATENCY</span>
+        <span>21MS</span>
+    </div>
+
+    <div class="telemetry-row">
+        <span>FRAME SYNC</span>
+        <span class="good">ONLINE</span>
+    </div>
+
+    <div class="telemetry-row">
+        <span>CHANNEL</span>
+        <span>CONNECTED</span>
+    </div>
+
+    <div class="bars">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
 </div>
 
 <script>
