@@ -828,10 +828,26 @@ async function playNextAlert() {
     particleLayer.className = "particle-layer";
     alertVideo.classList.remove("show");
 
-    if (data.type === "tip") {
-        alertVideo.src = "assets/videos/Donation.webm";
+    const alertVideos = {
+        follow: "assets/videos/Follow.webm",
+        sub: "assets/videos/Sub.webm",
+        primesub: "assets/videos/Sub.webm",
+        giftsub: "assets/videos/Sub.webm",
+        raid: "assets/videos/Raid.webm",
+        bits: "assets/videos/Bits.webm",
+        redemption: "assets/videos/Redemption.webm",
+        tip: "assets/videos/Tip.webm"
+    };
+    
+    const videoPath = alertVideos[data.type];
+    
+    if (videoPath) {
+        alertVideo.src = videoPath;
+    
         alertVideo.currentTime = 0;
+    
         alertVideo.play().catch(() => {});
+    
         alertVideo.classList.add("show");
     }
 
