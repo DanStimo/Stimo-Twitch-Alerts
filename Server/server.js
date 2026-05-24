@@ -326,6 +326,12 @@ app.get("/test/:type", (req, res) => {
             user: "TestRedeemer",
             reward: "Hydrate",
             extra: "Drink water!"
+        },
+        tip: {
+            type: "tip",
+            user: "TestTipper",
+            extra: "$5.00",
+            reward: "Great stream!"
         }
     };
 
