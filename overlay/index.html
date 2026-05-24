@@ -479,6 +479,11 @@ const alertThemes = {
     redemption: {
         primary: "#ffe066",
         secondary: "#ffb300"
+    },
+
+    tip: {
+        primary: "#ffdd66",
+        secondary: "#ff8c00"
     }
 };
 
@@ -497,7 +502,8 @@ const alertSounds = {
     giftsub: new Audio("assets/sounds/New Subscriber.mp3"),
     raid: new Audio("assets/sounds/New Raid.mp3"),
     bits: new Audio("assets/sounds/New Bits.mp3"),
-    redemption: new Audio("assets/sounds/New Redemption.mp3")
+    redemption: new Audio("assets/sounds/New Redemption.mp3"),
+    tip: new Audio("assets/sounds/New Donation.mp3")
 };
 
 const minimumAlertDurations = {
@@ -506,7 +512,8 @@ const minimumAlertDurations = {
     giftsub: 7000,
     raid: 7000,
     bits: 5500,
-    redemption: 5500
+    redemption: 5500,
+    tip: 28000
 };
 
 function playAlertSound(type) {
@@ -566,6 +573,7 @@ function getEventText(data) {
     if (data.type === "bits") return "BITS TRANSMISSION: " + data.extra;
     if (data.type === "redemption") return "REWARD REDEEMED: " + data.reward;
     if (data.type === "giftsub") return "GIFT SUB TRANSFER CONFIRMED";
+    if (data.type === "tip") return "TIP RECEIVED: " + data.extra;
     return "SYSTEM EVENT RECEIVED";
 }
 
@@ -598,6 +606,10 @@ function getRankText(data, username) {
         if (data.reward) {
             return data.extra + " HAS COMMENDED " + data.reward;
         }
+
+    if (data.type === "tip") {
+        return "CREDITS RECEIVED FROM " + username.toUpperCase();
+    }
 
         return data.user;
     }
@@ -675,6 +687,14 @@ function formatRightPanel(data) {
             .join("\n");
 
         return buildList("RECENT REDEMPTIONS", redemptions);
+    }
+
+    if (data.type === "tip") {
+        const tips = (history.tips || []).slice(0, 5)
+            .map(item => `${item.user.toUpperCase()} - ${item.extra} <`)
+            .join("\n");
+    
+        return buildList("RECENT TIPS", tips);
     }
 
     return buildList("SYSTEM LOG", "");
