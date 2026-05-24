@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HUD Alerts</title>
+
+<style>
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: Consolas, monospace;
+}
+
+#hud {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+    text-transform: uppercase;
+}
+
+.panel {
+    width: 720px;
+    height: 120px;
+
+    display: grid;
+    grid-template-columns: 1fr 120px 1fr;
+    align-items: center;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,0.12),
+            rgba(0,217,255,0.10),
+            rgba(0,0,0,0.12)
+        );
+
+    border-top: 1px solid rgba(0,217,255,0.55);
+    border-bottom: 1px solid rgba(0,217,255,0.25);
+
+    backdrop-filter: blur(8px);
+
+    clip-path: polygon(
+        5% 0%,
+        95% 0%,
+        100% 50%,
+        95% 100%,
+        5% 100%,
+        0% 50%
+    );
+}
+
+.side {
+    padding: 0 26px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin: 8px 0;
+
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 1px;
+
+    text-shadow: 0 0 8px rgba(255,255,255,0.75);
+}
+
+.label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: #00d9ff;
+}
+
+.value {
+    white-space: nowrap;
+}
+
+.core {
+    width: 92px;
+    height: 92px;
+
+    margin: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 18px;
+
+    background:
+        radial-gradient(circle, rgba(0,217,255,0.28), rgba(0,0,0,0.22));
+
+    box-shadow:
+        0 0 18px rgba(0,217,255,0.7),
+        inset 0 0 18px rgba(255,255,255,0.25);
+
+    animation: corePulse 3s ease-in-out infinite;
+}
+
+.core-inner {
+    font-size: 32px;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow:
+        0 0 10px rgba(255,255,255,0.9),
+        0 0 22px rgba(0,217,255,0.9);
+}
+
+.counts {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    font-size: 11px;
+    letter-spacing: 3px;
+
+    color: rgba(255,255,255,0.75);
+}
+
+.flash {
+    animation: flashUpdate 0.8s ease;
+}
+
+@keyframes corePulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow:
+            0 0 18px rgba(0,217,255,0.7),
+            inset 0 0 18px rgba(255,255,255,0.25);
+    }
+
+    50% {
+        transform: scale(1.04);
+        box-shadow:
+            0 0 34px rgba(0,217,255,0.95),
+            inset 0 0 24px rgba(255,255,255,0.35);
+    }
+}
+
+@keyframes flashUpdate {
+    0% {
+        transform: scale(1.08);
+        filter: brightness(1.8);
+    }
+
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="hud">
+    <div class="panel" id="panel">
+
+        <div class="side">
+            <div class="label">LATEST FOLLOW</div>
+            <div class="row">
+                <span>✦</span>
+                <span class="value" id="latestFollow">WAITING</span>
+            </div>
+
+            <div class="label">LATEST SUB</div>
+            <div class="row">
+                <span>⬡</span>
+                <span class="value" id="latestSub">WAITING</span>
+            </div>
+        </div>
+
+        <div class="core">
+            <div class="core-inner">S</div>
+        </div>
+
+        <div class="side">
+            <div class="label">LATEST TIP</div>
+            <div class="row">
+                <span>◆</span>
+                <span class="value" id="latestTip">WAITING</span>
+            </div>
+
+            <div class="label">LATEST RAID</div>
+            <div class="row">
+                <span>▲</span>
+                <span class="value" id="latestRaid">WAITING</span>
+            </div>
+        </div>
+
+        <div class="counts" id="counts">
+            FOLLOWERS 0 • SUBS 0 • BITS 0 • RAIDS 0
+        </div>
+
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+const latestFollow = document.getElementById("latestFollow");
+const latestSub = document.getElementById("latestSub");
+const latestTip = document.getElementById("latestTip");
+const latestRaid = document.getElementById("latestRaid");
+const counts = document.getElementById("counts");
+const panel = document.getElementById("panel");
+
+let state = {
+    follows: 0,
+    subs: 0,
+    bits: 0,
+    raids: 0
+};
+
+function flash() {
+    panel.classList.remove("flash");
+    void panel.offsetWidth;
+    panel.classList.add("flash");
+}
+
+function updateCounts(history) {
+    const totals = history.totals || {};
+
+    state.follows = totals.follows || 0;
+    state.subs = (totals.subs || 0) + (totals.primesubs || 0) + (totals.giftsubs || 0);
+    state.bits = totals.totalBits || 0;
+    state.raids = totals.raids || 0;
+
+    counts.textContent =
+        `FOLLOWERS ${state.follows} • SUBS ${state.subs} • BITS ${state.bits} • RAIDS ${state.raids}`;
+}
+
+function loadFromHistory(history) {
+    if ((history.follows || [])[0]) {
+        latestFollow.textContent = history.follows[0].user;
+    }
+
+    if ((history.subs || [])[0]) {
+        latestSub.textContent = history.subs[0].user;
+    }
+
+    if ((history.primesubs || [])[0]) {
+        latestSub.textContent = history.primesubs[0].user + " • PRIME";
+    }
+
+    if ((history.tips || [])[0]) {
+        latestTip.textContent = history.tips[0].user + " • " + history.tips[0].extra;
+    }
+
+    if ((history.raids || [])[0]) {
+        latestRaid.textContent = history.raids[0].user + " • " + history.raids[0].extra;
+    }
+
+    updateCounts(history);
+}
+
+socket.on("alert", (data) => {
+    if (data.type === "follow") {
+        latestFollow.textContent = data.user;
+    }
+
+    if (data.type === "sub") {
+        latestSub.textContent = `${data.user} • ${data.extra || ""}`;
+    }
+
+    if (data.type === "primesub") {
+        latestSub.textContent = `${data.user} • PRIME`;
+    }
+
+    if (data.type === "giftsub") {
+        latestSub.textContent = data.user;
+    }
+
+    if (data.type === "tip") {
+        latestTip.textContent = `${data.user} • ${data.extra || ""}`;
+    }
+
+    if (data.type === "raid") {
+        latestRaid.textContent = `${data.user} • ${data.extra || ""}`;
+    }
+
+    if (data.history) {
+        updateCounts(data.history);
+    }
+
+    flash();
+});
+
+fetch("/api/alert-history")
+    .then(res => res.json())
+    .then(loadFromHistory);
+</script>
+
+</body>
+</html>
