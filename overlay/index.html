@@ -840,6 +840,19 @@ async function playNextAlert() {
     };
     
     const videoPath = alertVideos[data.type];
+    const videoPositions = {
+        follow: "center 45%",
+        sub: "center 30%",
+        primesub: "center 30%",
+        giftsub: "center 30%",
+        raid: "center 40%",
+        bits: "center center",
+        redemption: "center center",
+        tip: "center 55%"
+    };
+
+alertVideo.style.objectPosition =
+    videoPositions[data.type] || "center center";
     
     if (videoPath) {
         alertVideo.src = videoPath;
