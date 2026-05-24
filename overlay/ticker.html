@@ -430,7 +430,7 @@ function getBannerText(data) {
         return {
             type: "PRIME LINK ESTABLISHED",
             main: user,
-            detail: "PRIME SUBSCRIBER"
+            detail: data.extra || ""
         };
     }
 
