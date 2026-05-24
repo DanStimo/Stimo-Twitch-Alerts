@@ -198,6 +198,9 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 app.use(express.static("../overlay"));
 
 server.listen(3000, () => {
@@ -210,6 +213,48 @@ io.on("connection", () => {
 
 app.get("/api/alert-history", (req, res) => {
     res.json(loadHistory());
+});
+
+app.post("/webhook/kofi", (req, res) => {
+    try {
+        const payload = req.body.data
+            ? JSON.parse(req.body.data)
+            : req.body;
+
+        if (payload.verification_token !== process.env.KOFI_VERIFICATION_TOKEN) {
+            console.log("Invalid Ko-fi verification token");
+            return res.status(403).send("Invalid token");
+        }
+
+        const fromName = payload.from_name || "Anonymous";
+        const amount = payload.amount || "0";
+        const currency = payload.currency || "";
+        const message = payload.message || "";
+
+        const tipText = `${amount} ${currency}`.trim();
+
+        const history = recordAlert(
+            "tip",
+            fromName,
+            tipText,
+            message
+        );
+
+        queueAlert(
+            "tip",
+            fromName,
+            tipText,
+            message,
+            history
+        );
+
+        announceChat(`@${fromName} tipped ${tipText}! Thank you!`);
+
+        res.status(200).send("OK");
+    } catch (err) {
+        console.log("Ko-fi webhook error:", err.message);
+        res.status(500).send("Ko-fi webhook error");
+    }
 });
 
 app.get("/test/openpack", (req, res) => {
@@ -316,6 +361,7 @@ const alertDurations = {
     raid: 20500,
     bits: 9000,
     redemption: 9000
+    tip: 9000,
 };
 
 function queueAlert(type, user, extra = "", reward = "", history = null) {
