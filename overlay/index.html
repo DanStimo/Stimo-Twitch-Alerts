@@ -38,11 +38,6 @@ body {
     opacity: 1;
 }
 
-#alert.hide {
-    transform: translateY(-100%);
-    opacity: 0;
-}
-
 .hud-frame {
     position: relative;
     width: 100%;
@@ -906,19 +901,19 @@ async function playNextAlert() {
     }, 1500);
 
     setTimeout(() => {
-        particleLayer.className = "particle-layer";
-    
-        alertVideo.classList.remove("show");
-        alertVideo.pause();
-    
+
         alertBox.classList.remove("show");
-        alertBox.classList.add("hide");
     
         setTimeout(() => {
-            alertBox.classList.remove("hide");
+    
+            particleLayer.className = "particle-layer";
+    
+            alertVideo.classList.remove("show");
+            alertVideo.pause();
     
             alertPlaying = false;
             playNextAlert();
+    
         }, 450);
     
     }, alertDuration);
