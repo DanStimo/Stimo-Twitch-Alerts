@@ -145,6 +145,7 @@ html, body {
     letter-spacing: 2px;
 
     color: rgba(255,255,255,0.72);
+    transition: opacity 0.4s ease;
 }
 
 .boot {
@@ -220,5 +221,31 @@ html, body {
     <div>&gt; LAUNCH SEQUENCE READY...</div>
 </div>
 
+<script>
+const loreLines = [
+    "Systems are coming online. Flight telemetry is syncing.",
+    "Long range communications established with Stanton relay.",
+    "Quantum navigation systems are calibrating.",
+    "Traffic control has cleared the channel for broadcast.",
+    "Awaiting final launch confirmation from command.",
+    "Synchronising fleet telemetry and comms uplink."
+];
+
+let loreIndex = 0;
+const loreEl = document.querySelector(".lore");
+
+setInterval(() => {
+    loreIndex = (loreIndex + 1) % loreLines.length;
+
+    loreEl.style.opacity = 0;
+
+    setTimeout(() => {
+        loreEl.textContent = loreLines[loreIndex];
+        loreEl.style.opacity = 1;
+    }, 400);
+
+}, 8000);
+</script>
+    
 </body>
 </html>
