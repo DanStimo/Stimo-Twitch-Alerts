@@ -272,6 +272,14 @@ html, body {
 
 }
 
+.chat-emote {
+    height: 28px;
+
+    vertical-align: middle;
+
+    margin: 0 2px;
+}
+
 </style>
 </head>
 
@@ -394,6 +402,61 @@ socket.on("connect", () => {
 
 });
 
+function renderTwitchMessage(message, emotes) {
+
+    if (!emotes || Object.keys(emotes).length === 0) {
+        return escapeHtml(message);
+    }
+
+    let result = escapeHtml(message);
+
+    const replacements = [];
+
+    for (const emoteId in emotes) {
+
+        emotes[emoteId].forEach(position => {
+
+            const [start, end] =
+                position.split("-").map(Number);
+
+            replacements.push({
+                start,
+                end,
+                id: emoteId,
+                text: message.substring(start, end + 1)
+            });
+
+        });
+
+    }
+
+    replacements.sort((a, b) => b.start - a.start);
+
+    replacements.forEach(emote => {
+
+        const img =
+            `<img
+                class="chat-emote"
+                src="https://static-cdn.jtvnw.net/emoticons/v2/${emote.id}/default/dark/2.0"
+            >`;
+
+        result =
+            result.substring(0, emote.start) +
+            img +
+            result.substring(emote.end + 1);
+
+    });
+
+    return result;
+}
+
+function escapeHtml(text) {
+    return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+}
+
 socket.on("chat-message", (data) => {
     const row = document.createElement("div");
     row.className = "chat-message";
@@ -403,7 +466,7 @@ socket.on("chat-message", (data) => {
             ${data.user}:
         </span>
         <span class="chat-text">
-            ${data.message}
+            ${renderTwitchMessage(data.message, data.emotes)}
         </span>
     `;
 
