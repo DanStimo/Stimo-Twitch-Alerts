@@ -27,12 +27,13 @@ html, body {
     left: 50%;
     transform: translateX(-50%);
 
-    width: 1180px;
-
     display: grid;
-    grid-template-columns: 1fr 64px 1fr;
+    grid-template-columns: max-content 64px max-content;
+
+    justify-content: center;
+    column-gap: 12px;
+
     align-items: center;
-    gap: 18px;
 }
 
 .chip-group {
