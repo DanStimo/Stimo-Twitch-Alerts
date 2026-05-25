@@ -401,11 +401,6 @@ playLoreLoop();
     <div id="chatMessages" class="chat-messages"></div>
 </div>
 
-<div class="chat-message">
-    <span class="chat-user">Stimo:</span>
-    <span class="chat-text">Testing comms.</span>
-</div>
-
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
@@ -493,23 +488,53 @@ function escapeHtml(text) {
 }
 
 socket.on("chat-message", (data) => {
+
     const row = document.createElement("div");
-    row.className = "chat-message";
+
+    row.className = "chat-message new-message";
 
     row.innerHTML = `
-        <span class="chat-user" style="color:${data.color || "#00d9ff"}">
-            ${data.user}:
-        </span>
-        <span class="chat-text">
-            ${renderTwitchMessage(data.message, data.emotes)}
-        </span>
+        <div class="chat-meta">
+
+            <span
+                class="chat-user"
+                style="color:${data.color || "#00d9ff"}">
+
+                ${data.user}
+
+            </span>
+
+            <span class="chat-time">
+
+                ${new Date().toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                })}
+
+            </span>
+
+        </div>
+
+        <div class="chat-text">
+
+            ${renderTwitchMessage(
+                data.message,
+                data.emotes
+            )}
+
+        </div>
     `;
 
     chatMessages.appendChild(row);
 
     while (chatMessages.children.length > 12) {
-        chatMessages.removeChild(chatMessages.firstChild);
+
+        chatMessages.removeChild(
+            chatMessages.firstChild
+        );
+
     }
+
 });
 </script>
     
