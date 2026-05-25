@@ -220,8 +220,12 @@ const twitchChat = new tmi.Client({
 });
 
 twitchChat.connect();
+twitchChat.on("connected", () => {
+    console.log("[TWITCH CHAT] Connected to stimo");
+});
 
 twitchChat.on("message", (channel, tags, message, self) => {
+console.log("[TWITCH CHAT]", tags["display-name"], message);
 
     if (self) return;
 
