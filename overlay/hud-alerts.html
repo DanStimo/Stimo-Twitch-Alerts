@@ -533,10 +533,12 @@ const chips = {
 
 const alertQueue = [];
 let alertPlaying = false;
+    
+let currentAlertDuration = 5000;
 
 function pulse(type) {
     const chip = chips[type];
-    const duration = alertDurations[type] || 8000;
+    const duration = currentAlertDuration || alertDurations[type] || 5000;
     const color = alertColors[type] || "#00d9ff";
 
     if (chip) {
@@ -755,8 +757,10 @@ function playNextAlert() {
     const data = alertQueue.shift();
 
     const duration =
-        alertDurations[data.type] || 5000;
-
+        data.duration || alertDurations[data.type] || 5000;
+    
+    currentAlertDuration = duration;
+    
     processAlert(data);
 
     setTimeout(() => {
