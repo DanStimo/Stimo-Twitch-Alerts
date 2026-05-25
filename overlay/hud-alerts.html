@@ -123,7 +123,7 @@ html, body {
 }
 
 .chip.active {
-    transform: translateY(-7px) scale(1.12);
+    transform: translateY(-4px) scale(1.06);
 
     background: linear-gradient(
         90deg,
@@ -212,6 +212,14 @@ html, body {
     color: white;
 
     text-transform: uppercase;
+    opacity: 0.45;
+    transition:
+        opacity 0.4s ease,
+        box-shadow 0.4s ease;
+}
+
+.sub-train.running {
+    opacity: 1;
 }
 
 .train-top {
@@ -243,7 +251,7 @@ html, body {
         #ffffff
     );
 
-    transition: width 0.35s linear;
+    transition: width 0.5s ease-out;
 }
 
 .train-timer {
@@ -278,12 +286,121 @@ html, body {
         box-shadow: 0 0 22px rgba(0,217,255,0.45);
     }
 }
+
+.sub-train.active {
+    box-shadow:
+        0 0 18px rgba(184,77,255,0.55),
+        inset 0 0 12px rgba(255,255,255,0.06);
+
+    border-top-color: rgba(184,77,255,0.9);
+}
+
+.train-bar::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,0.18),
+            transparent
+        );
+
+    animation: trainSweep 2s linear infinite;
+}
+
+.train-bar {
+    position: relative;
+}
+
+@keyframes trainSweep {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(100%);
+    }
+}
+
+#trainCount.bump {
+    animation: trainBump 0.4s ease;
+}
+
+@keyframes trainBump {
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1.45);
+        text-shadow: 0 0 18px white;
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.sub-train.running {
+    animation: trainIdlePulse 3s ease-in-out infinite;
+}
+
+@keyframes trainIdlePulse {
+    0%, 100% {
+        transform: translateX(-50%) scale(1);
+    }
+
+    50% {
+        transform: translateX(-50%) scale(1.01);
+    }
+}
+
+.hud-glow {
+    position: absolute;
+
+    top: 20px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 1200px;
+    height: 160px;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(0,217,255,0.12),
+            transparent 70%
+        );
+
+    filter: blur(40px);
+
+    animation: hudGlow 6s ease-in-out infinite;
+
+    pointer-events: none;
+}
+
+@keyframes hudGlow {
+    0%, 100% {
+        opacity: 0.45;
+    }
+
+    50% {
+        opacity: 0.85;
+    }
+}
+    
 </style>
 </head>
 
 <body>
 
 <div id="hud">
+    <div class="hud-glow"></div>
     <div class="chip-row">
 
         <div class="chip" id="chipFollow" style="--chip-color:#00d9ff">
@@ -381,18 +498,36 @@ let trainInterval = null;
 
 function startSubTrain(addAmount = 1) {
     trainActive = true;
-    trainCountValue += addAmount;
+    trainCountValue = Math.min(
+        trainCountValue + addAmount,
+        999
+    );
 
     // 5 minute train window
     trainEndsAt = Date.now() + (5 * 60 * 1000);
 
     trainCount.textContent = String(trainCountValue).padStart(2, "0");
 
+    trainCount.classList.remove("bump");
+    void trainCount.offsetWidth;
+    trainCount.classList.add("bump");
+
     if (!trainInterval) {
-        trainInterval = setInterval(updateSubTrainTimer, 500);
+        trainInterval = setInterval(updateSubTrainTimer, 100);
     }
 
     updateSubTrainTimer();
+
+    subTrain.classList.remove("active");
+    void subTrain.offsetWidth;
+    subTrain.classList.add("active");
+    
+    setTimeout(() => {
+        subTrain.classList.remove("active");
+    }, 700);
+
+    subTrain.classList.add("running");
+    
 }
 
 function updateSubTrainTimer() {
@@ -407,19 +542,42 @@ function updateSubTrainTimer() {
 
     const percent = (remaining / total) * 100;
 
+    if (remaining <= 30000) {
+        subTrain.style.borderTopColor = "#ff4444";
+        trainTimer.style.color = "#ff8888";
+    }
+    else {
+        subTrain.style.borderTopColor = "rgba(184,77,255,0.45)";
+        trainTimer.style.color = "rgba(255,255,255,0.65)";
+    }
+
     trainFill.style.width = `${percent}%`;
+
+    if (trainCountValue >= 25) {
+        trainFill.style.background =
+            "linear-gradient(90deg,#ff4dff,#ffffff)";
+    }
+    else if (trainCountValue >= 10) {
+        trainFill.style.background =
+            "linear-gradient(90deg,#b84dff,#ffffff)";
+    }
+    else {
+        trainFill.style.background =
+            "linear-gradient(90deg,#7a2cff,#ffffff)";
+    }
 
     const mins = Math.floor(remaining / 60000);
     const secs = Math.floor((remaining % 60000) / 1000);
 
     trainTimer.textContent =
-        `NEXT SUB EXTENDS TRAIN • ${mins}:${String(secs).padStart(2, "0")}`;
+        `SUB TRAIN ACTIVE • ${mins}:${String(secs).padStart(2, "0")}`;
 
     if (remaining <= 0) {
         trainActive = false;
         trainCountValue = 0;
         trainTimer.textContent = "TRAIN ENDED";
         trainFill.style.width = "0%";
+        subTrain.classList.remove("running");
 
         clearInterval(trainInterval);
         trainInterval = null;
