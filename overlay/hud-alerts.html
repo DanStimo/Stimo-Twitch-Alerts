@@ -116,6 +116,31 @@ html, body {
     box-shadow: 0 0 22px rgba(0,217,255,0.45);
 
     animation: coreIdle 4s ease-in-out infinite;
+    overflow: hidden;
+    position: relative;
+}
+
+.core-logo {
+    width: 70%;
+    height: 70%;
+
+    object-fit: contain;
+
+    filter:
+        drop-shadow(0 0 12px rgba(255,255,255,0.65))
+        drop-shadow(0 0 22px rgba(0,217,255,0.55));
+
+    animation: logoFloat 4s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    50% {
+        transform: scale(1.04) rotate(1deg);
+    }
 }
 
 .core.pulse {
@@ -181,7 +206,9 @@ html, body {
             <div class="chip-value" id="latestSub">WAITING</div>
         </div>
 
-        <div class="core" id="core">S</div>
+        <div class="core" id="core">
+            <img src="assets/images/Stimo.png" class="core-logo">
+        </div>
 
         <div class="chip" id="chipTip" style="--chip-color:#ffdd66">
             <div class="chip-label">TIP</div>
