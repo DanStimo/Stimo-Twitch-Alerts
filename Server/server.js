@@ -226,6 +226,7 @@ twitchChat.on("connected", () => {
 
 twitchChat.on("message", (channel, tags, message, self) => {
 console.log("[TWITCH CHAT]", tags["display-name"], message);
+console.log("[TWITCH CHAT MSG]", tags["display-name"], message);
 
     if (self) return;
 
