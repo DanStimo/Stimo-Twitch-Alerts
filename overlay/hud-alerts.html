@@ -330,6 +330,24 @@ function updateCounts(history) {
     counts.textContent = `FOLLOWERS ${follows} • SUBS ${subs} • BITS ${bits} • RAIDS ${raids}`;
 }
 
+function formatGiftSubText(user, extra, reward) {
+    const gifter =
+        (extra && reward)
+            ? extra
+            : (user || "").split("◆")[0].split("♦")[0].trim();
+
+    let count = "1";
+
+    const countMatch =
+        String(extra || user || "").match(/(\d+)/);
+
+    if (!reward && countMatch) {
+        count = countMatch[1];
+    }
+
+    return `${gifter} GIFTED X${count}`;
+}
+    
 function loadFromHistory(history) {
     if ((history.follows || [])[0]) {
         latestFollow.textContent = history.follows[0].user;
@@ -344,18 +362,13 @@ function loadFromHistory(history) {
     }
 
     if ((history.giftsubs || [])[0]) {
-
         const gift = history.giftsubs[0];
     
-        const count = gift.extra || "1";
-    
-        const gifter =
-            (gift.user || "")
-            .split("♦")[0]
-            .trim();
-    
-        latestSub.textContent =
-            `${gifter} GIFTED X${count}`;
+        latestSub.textContent = formatGiftSubText(
+            gift.user,
+            gift.extra,
+            gift.reward
+        );
     }
 
     if ((history.tips || [])[0]) {
@@ -383,16 +396,11 @@ socket.on("alert", (data) => {
     }
 
     if (data.type === "giftsub") {
-
-        const count = data.extra || "1";
-    
-        const gifter =
-            (data.user || "")
-            .split("♦")[0]
-            .trim();
-    
-        latestSub.textContent =
-            `${gifter} GIFTED X${count}`;
+        latestSub.textContent = formatGiftSubText(
+            data.user,
+            data.extra,
+            data.reward
+        );
     }
 
     if (data.type === "tip") {
