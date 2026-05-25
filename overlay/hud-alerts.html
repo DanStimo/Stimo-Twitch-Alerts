@@ -136,6 +136,46 @@ html, body {
         inset 0 0 22px rgba(255,255,255,0.12);
 }
 
+.chip.expanded {
+    height: 64px;
+    width: 360px;
+
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+
+    gap: 3px;
+
+    transform: translateY(-8px) scale(1.04);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,0.82),
+            color-mix(in srgb, var(--chip-color) 32%, transparent)
+        );
+
+    box-shadow:
+        0 0 34px var(--chip-color),
+        inset 0 0 24px rgba(255,255,255,0.12);
+
+    z-index: 20;
+}
+
+.chip-extra {
+    display: none;
+
+    font-size: 9px;
+    letter-spacing: 2px;
+    font-weight: 900;
+
+    color: rgba(255,255,255,0.72);
+}
+
+.chip.expanded .chip-extra {
+    display: block;
+}
+
 .core {
     width: 48px;
     height: 48px;
@@ -416,11 +456,13 @@ html, body {
         <div class="chip" id="chipFollow" style="--chip-color:#00d9ff">
             <div class="chip-label">FOLLOW</div>
             <div class="chip-value" id="latestFollow">WAITING</div>
+            <div class="chip-extra" id="extraFollow">NEW SIGNAL DETECTED</div>
         </div>
 
         <div class="chip" id="chipSub" style="--chip-color:#b84dff">
             <div class="chip-label">SUB</div>
             <div class="chip-value" id="latestSub">WAITING</div>
+            <div class="chip-extra" id="extraSub">SIGNAL VERIFIED</div>
         </div>
 
         <div class="core" id="core">
@@ -430,11 +472,13 @@ html, body {
         <div class="chip" id="chipTip" style="--chip-color:#ffdd66">
             <div class="chip-label">TIP</div>
             <div class="chip-value" id="latestTip">WAITING</div>
+            <div class="chip-extra" id="extraTip">CREDITS RECEIVED</div>
         </div>
 
         <div class="chip" id="chipBits" style="--chip-color:#00ff99">
             <div class="chip-label">BITS</div>
             <div class="chip-value" id="latestBits">WAITING</div>
+            <div class="chip-extra" id="extraBits">ENERGY TRANSFER</div>
         </div>
 
     </div>
@@ -478,6 +522,34 @@ const chips = {
     tip: document.getElementById("chipTip"),
     bits: document.getElementById("chipBits")
 };
+
+const chipExtras = {
+    follow: document.getElementById("extraFollow"),
+    sub: document.getElementById("extraSub"),
+    primesub: document.getElementById("extraSub"),
+    giftsub: document.getElementById("extraSub"),
+    tip: document.getElementById("extraTip"),
+    bits: document.getElementById("extraBits")
+};
+
+function expandChip(type, message) {
+    const chip = chips[type];
+    const extra = chipExtras[type];
+
+    if (!chip) return;
+
+    if (extra && message) {
+        extra.textContent = message;
+    }
+
+    chip.classList.remove("expanded");
+    void chip.offsetWidth;
+    chip.classList.add("expanded");
+
+    setTimeout(() => {
+        chip.classList.remove("expanded");
+    }, 3000);
+}
 
 function pulse(type) {
     const chip = chips[type];
@@ -669,16 +741,19 @@ function loadFromHistory(history) {
 socket.on("alert", (data) => {
     if (data.type === "follow") {
         latestFollow.textContent = data.user;
+        expandChip("follow", "NEW SIGNAL DETECTED");
     }
 
     if (data.type === "sub") {
         latestSub.textContent = `${data.user} • ${data.extra || ""}`;
         startSubTrain(1);
+        expandChip("sub", "LOYALTY SIGNAL VERIFIED");
     }
 
     if (data.type === "primesub") {
         latestSub.textContent = `${data.user} • PRIME`;
         startSubTrain(1);
+        expandChip("sub", "PRIME LINK VERIFIED");
     }
 
     if (data.type === "giftsub") {
@@ -687,6 +762,7 @@ socket.on("alert", (data) => {
             data.user,
             data.extra,
             data.reward
+        expandChip("giftsub", "SUB TRAIN BOOSTED");
         );
     
         const giftAmount =
@@ -701,10 +777,12 @@ socket.on("alert", (data) => {
 
     if (data.type === "tip") {
         latestTip.textContent = `${data.user} • ${data.extra || ""}`;
+        expandChip("tip", "CREDITS RECEIVED");
     }
 
     if (data.type === "bits") {
         latestBits.textContent = `${data.user} • ${data.extra || ""}`;
+        expandChip("bits", "ENERGY TRANSFER COMPLETE");
     }
 
     if (data.history) {
