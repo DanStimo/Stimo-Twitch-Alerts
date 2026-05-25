@@ -158,7 +158,7 @@ html, body {
 
     background: radial-gradient(
         circle,
-        rgba(0,217,255,0.32),
+        color-mix(in srgb, var(--core-alert-color, #00d9ff) 32%, transparent)
         rgba(0,0,0,0.52)
     );
 
@@ -170,12 +170,16 @@ html, body {
     text-shadow: 0 0 12px rgba(255,255,255,0.9);
 
     box-shadow:
-        0 0 22px rgba(0,217,255,0.45);
+        0 0 22px var(--core-alert-color, #00d9ff);
 
     animation: coreIdle 4s ease-in-out infinite;
 
     overflow: hidden;
     position: relative;
+    
+    transition:
+    box-shadow 0.35s ease,
+    background 0.35s ease;
 }
 
 .core-logo {
@@ -489,6 +493,25 @@ html, body {
 <script>
 const socket = io();
 
+const alertDurations = {
+    follow: 5000,
+    sub: 6500,
+    giftsub: 7000,
+    raid: 7000,
+    bits: 5500,
+    redemption: 5500,
+    tip: 28000
+};
+
+const alertColors = {
+    follow: "#00d9ff",
+    sub: "#b84dff",
+    primesub: "#b84dff",
+    giftsub: "#b84dff",
+    tip: "#ffdd66",
+    bits: "#00ff99"
+};
+
 const latestFollow = document.getElementById("latestFollow");
 const latestSub = document.getElementById("latestSub");
 const latestTip = document.getElementById("latestTip");
@@ -510,16 +533,21 @@ const chips = {
 
 function pulse(type) {
     const chip = chips[type];
+    const duration = alertDurations[type] || 8000;
+    const color = alertColors[type] || "#00d9ff";
 
     if (chip) {
+        chip.style.setProperty("--chip-color", color);
         chip.classList.remove("active");
         void chip.offsetWidth;
         chip.classList.add("active");
 
         setTimeout(() => {
             chip.classList.remove("active");
-        }, 1100);
+        }, duration);
     }
+
+    core.style.setProperty("--core-alert-color", color);
 
     core.classList.remove("pulse");
     void core.offsetWidth;
@@ -527,7 +555,8 @@ function pulse(type) {
 
     setTimeout(() => {
         core.classList.remove("pulse");
-    }, 800);
+        core.style.setProperty("--core-alert-color", "#00d9ff");
+    }, duration);
 }
 
 let trainActive = false;
