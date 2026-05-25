@@ -70,6 +70,24 @@ html, body {
     position: relative;
 }
 
+.right-chip {
+    flex-direction: row-reverse;
+
+    border-left: none;
+    border-right: 2px solid var(--chip-color);
+
+    background: linear-gradient(
+        270deg,
+        rgba(0,0,0,0.62),
+        rgba(0,217,255,0.08)
+    );
+}
+
+.right-chip .chip-text {
+    justify-content: flex-end;
+    text-align: right;
+}
+
 @keyframes chipIdle {
     0%, 100% {
         transform: translateY(0px);
@@ -450,7 +468,7 @@ html, body {
         <img src="assets/images/Stimo.png" class="core-logo">
     </div>
 
-    <div class="chip" id="chipTip" style="--chip-color:#ffdd66">
+    <div class="chip right-chip" id="chipTip" style="--chip-color:#ffdd66">
         <div class="chip-label">TIP</div>
 
         <div class="chip-text">
@@ -460,7 +478,7 @@ html, body {
         </div>
     </div>
 
-    <div class="chip" id="chipBits" style="--chip-color:#00ff99">
+    <div class="chip right-chip" id="chipBits" style="--chip-color:#00ff99">
         <div class="chip-label">BITS</div>
 
         <div class="chip-text">
