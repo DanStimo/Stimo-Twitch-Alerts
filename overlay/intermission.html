@@ -350,18 +350,13 @@ const chatMessages =
     document.getElementById("chatMessages");
 
 socket.on("chat-message", (data) => {
-
     const row = document.createElement("div");
-
     row.className = "chat-message";
 
     row.innerHTML = `
-        <span
-            class="chat-user"
-            style="color:${data.color}">
+        <span class="chat-user" style="color:${data.color || "#00d9ff"}">
             ${data.user}:
         </span>
-
         <span class="chat-text">
             ${data.message}
         </span>
@@ -370,11 +365,8 @@ socket.on("chat-message", (data) => {
     chatMessages.appendChild(row);
 
     while (chatMessages.children.length > 12) {
-        chatMessages.removeChild(
-            chatMessages.firstChild
-        );
+        chatMessages.removeChild(chatMessages.firstChild);
     }
-
 });
 </script>
     
