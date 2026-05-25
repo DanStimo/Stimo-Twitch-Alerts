@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>HUD Alerts</title>
+<title>HUD Alert Chips</title>
 
 <style>
 html, body {
@@ -15,261 +15,152 @@ html, body {
 
 #hud {
     position: absolute;
-
-    left: 0;
-    top: 0;
-
+    inset: 0;
     width: 1920px;
     height: 1080px;
-
     pointer-events: none;
 }
 
-.panel {
+.chip-row {
     position: absolute;
-
-    top: 40px;
+    top: 42px;
     left: 50%;
-
     transform: translateX(-50%);
 
-    width: 700px;
-    height: 120px;
-
-    display: grid;
-    grid-template-columns: 1fr 120px 1fr;
+    display: flex;
     align-items: center;
-    padding-bottom: 24px;
-    
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(0,0,0,0.70),
-            rgba(0,217,255,0.10),
-            rgba(0,0,0,0.70)
-        );
-
-    border-top: 2px solid rgba(0,217,255,0.75);
-    border-bottom: 2px solid rgba(0,217,255,0.45);
-    border-left: 1px solid rgba(0,217,255,0.25);
-    border-right: 1px solid rgba(0,217,255,0.25);
-
-    box-shadow:
-        0 0 10px rgba(0,217,255,0.18),
-        inset 0 0 28px rgba(0,0,0,0.65);
-    animation: hudFloat 8s ease-in-out infinite;
+    gap: 14px;
 }
 
-@keyframes hudFloat {
-    0%, 100% {
-        transform: translateX(-50%) translateY(0px);
-    }
-
-    50% {
-        transform: translateX(-50%) translateY(-3px);
-    }
-}
-
-.side {
-    padding: 0 26px;
-}
-
-.row {
-    position: relative;
-    z-index: 2;
+.chip {
+    min-width: 170px;
+    height: 42px;
 
     display: flex;
     align-items: center;
     gap: 10px;
 
-    margin: 8px 0;
+    padding: 0 16px;
 
-    font-size: 18px;
-    font-weight: 900;
-    letter-spacing: 1px;
+    background: linear-gradient(
+        90deg,
+        rgba(0,0,0,0.62),
+        rgba(0,217,255,0.08)
+    );
 
-    color: rgba(255,255,255,0.95);
+    border-left: 2px solid var(--chip-color);
+    border-top: 1px solid rgba(255,255,255,0.12);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
 
-    text-shadow:
-        0 0 8px rgba(255,255,255,0.22);
+    color: white;
+    text-transform: uppercase;
+
+    box-shadow:
+        0 0 12px rgba(0,0,0,0.7),
+        inset 0 0 18px rgba(255,255,255,0.04);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
 }
 
-.label {
+.chip-label {
     font-size: 10px;
     letter-spacing: 3px;
-    color: #00d9ff;
-    opacity: 1;
-    text-shadow: 0 0 8px rgba(0,217,255,0.8);
-    }
+    color: var(--chip-color);
+    font-weight: 900;
+}
 
-.value {
+.chip-value {
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 1px;
     white-space: nowrap;
+
+    text-shadow: 0 0 8px rgba(255,255,255,0.45);
+}
+
+.chip.active {
+    transform: translateY(-5px) scale(1.08);
+
+    background: linear-gradient(
+        90deg,
+        rgba(0,0,0,0.75),
+        color-mix(in srgb, var(--chip-color) 28%, transparent)
+    );
+
+    box-shadow:
+        0 0 28px var(--chip-color),
+        inset 0 0 22px rgba(255,255,255,0.12);
 }
 
 .core {
-    width: 92px;
-    height: 92px;
-
-    margin: auto;
+    width: 54px;
+    height: 54px;
 
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
 
-    border: 2px solid rgba(255,255,255,0.8);
-    border-radius: 18px;
+    border: 2px solid rgba(255,255,255,0.7);
+    border-radius: 14px;
 
-    background:
-        radial-gradient(circle, rgba(0,217,255,0.28), rgba(0,0,0,0.22));
+    background: radial-gradient(circle, rgba(0,217,255,0.32), rgba(0,0,0,0.52));
 
-    box-shadow:
-        0 0 18px rgba(0,217,255,0.7),
-        inset 0 0 18px rgba(255,255,255,0.25);
-
-    animation: corePulse 3s ease-in-out infinite;
-}
-
-.core-inner {
-    font-size: 32px;
+    color: white;
+    font-size: 24px;
     font-weight: 900;
-    color: #ffffff;
-    text-shadow:
-        0 0 10px rgba(255,255,255,0.9),
-        0 0 22px rgba(0,217,255,0.9);
+
+    text-shadow: 0 0 12px rgba(255,255,255,0.9);
+    box-shadow: 0 0 22px rgba(0,217,255,0.45);
+
+    animation: coreIdle 4s ease-in-out infinite;
 }
 
-.core::before {
-    content: "";
+.core.pulse {
+    animation: coreHit 0.75s ease;
+}
 
+.count-strip {
     position: absolute;
-    inset: -40%;
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(255,255,255,0.12),
-            transparent
-        );
-
-    animation: coreSweep 4s linear infinite;
-}
-
-@keyframes coreSweep {
-    from {
-        transform: translateX(-120%);
-    }
-
-    to {
-        transform: translateX(120%);
-    }
-}
-
-.counts {
-    position: absolute;
-
-    bottom: 4px;
+    top: 104px;
     left: 50%;
-
     transform: translateX(-50%);
 
+    padding: 5px 16px;
+
+    background: rgba(0,0,0,0.38);
+    border-top: 1px solid rgba(0,217,255,0.24);
+
+    color: rgba(255,255,255,0.75);
+
     font-size: 10px;
-    line-height: 1.4;
     letter-spacing: 3px;
-
-    color: rgba(255,255,255,0.72);
+    text-transform: uppercase;
 }
 
-.flash {
-    animation: flashUpdate 0.8s ease;
-}
-
-@keyframes corePulse {
+@keyframes coreIdle {
     0%, 100% {
         transform: scale(1);
-        box-shadow:
-            0 0 18px rgba(0,217,255,0.7),
-            inset 0 0 18px rgba(255,255,255,0.25);
+        box-shadow: 0 0 18px rgba(0,217,255,0.35);
     }
 
     50% {
         transform: scale(1.04);
-        box-shadow:
-            0 0 34px rgba(0,217,255,0.95),
-            inset 0 0 24px rgba(255,255,255,0.35);
+        box-shadow: 0 0 30px rgba(0,217,255,0.65);
     }
 }
 
-@keyframes flashUpdate {
+@keyframes coreHit {
     0% {
-        transform: scale(1.08);
-        filter: brightness(1.8);
+        transform: scale(1.22) rotate(4deg);
+        box-shadow: 0 0 42px white;
     }
 
     100% {
-        transform: scale(1);
-        filter: brightness(1);
-    }
-}
-
-.flash-follow {
-    animation: followPulse 0.8s ease;
-}
-
-.flash-sub {
-    animation: subPulse 0.8s ease;
-}
-
-.flash-tip {
-    animation: tipPulse 0.8s ease;
-}
-
-.flash-raid {
-    animation: raidPulse 0.8s ease;
-}
-
-@keyframes followPulse {
-    0% {
-        box-shadow: 0 0 45px rgba(0,217,255,1);
-    }
-
-    100% {
-        box-shadow: 0 0 18px rgba(0,217,255,0.35);
-    }
-}
-
-@keyframes subPulse {
-    0% {
-        box-shadow: 0 0 45px rgba(180,80,255,1);
-        border-color: rgba(180,80,255,1);
-    }
-
-    100% {
-        box-shadow: 0 0 18px rgba(0,217,255,0.35);
-    }
-}
-
-@keyframes tipPulse {
-    0% {
-        box-shadow: 0 0 45px rgba(255,200,80,1);
-        border-color: rgba(255,200,80,1);
-    }
-
-    100% {
-        box-shadow: 0 0 18px rgba(0,217,255,0.35);
-    }
-}
-
-@keyframes raidPulse {
-    0% {
-        box-shadow: 0 0 45px rgba(255,80,80,1);
-        border-color: rgba(255,80,80,1);
-    }
-
-    100% {
-        box-shadow: 0 0 18px rgba(0,217,255,0.35);
+        transform: scale(1) rotate(0deg);
+        box-shadow: 0 0 22px rgba(0,217,255,0.45);
     }
 }
 </style>
@@ -278,44 +169,34 @@ html, body {
 <body>
 
 <div id="hud">
-    <div class="panel" id="panel">
+    <div class="chip-row">
 
-        <div class="side">
-            <div class="label">LATEST FOLLOW</div>
-            <div class="row">
-                <span>✦</span>
-                <span class="value" id="latestFollow">WAITING</span>
-            </div>
-
-            <div class="label">LATEST SUB</div>
-            <div class="row">
-                <span>⬡</span>
-                <span class="value" id="latestSub">WAITING</span>
-            </div>
+        <div class="chip" id="chipFollow" style="--chip-color:#00d9ff">
+            <div class="chip-label">FOLLOW</div>
+            <div class="chip-value" id="latestFollow">WAITING</div>
         </div>
 
-        <div class="core">
-            <div class="core-inner">S</div>
+        <div class="chip" id="chipSub" style="--chip-color:#b84dff">
+            <div class="chip-label">SUB</div>
+            <div class="chip-value" id="latestSub">WAITING</div>
         </div>
 
-        <div class="side">
-            <div class="label">LATEST TIP</div>
-            <div class="row">
-                <span>◆</span>
-                <span class="value" id="latestTip">WAITING</span>
-            </div>
+        <div class="core" id="core">S</div>
 
-            <div class="label">LATEST RAID</div>
-            <div class="row">
-                <span>▲</span>
-                <span class="value" id="latestRaid">WAITING</span>
-            </div>
+        <div class="chip" id="chipTip" style="--chip-color:#ffdd66">
+            <div class="chip-label">TIP</div>
+            <div class="chip-value" id="latestTip">WAITING</div>
         </div>
 
-        <div class="counts" id="counts">
-            FOLLOWERS 0 • SUBS 0 • BITS 0 • RAIDS 0
+        <div class="chip" id="chipRaid" style="--chip-color:#ff5533">
+            <div class="chip-label">RAID</div>
+            <div class="chip-value" id="latestRaid">WAITING</div>
         </div>
 
+    </div>
+
+    <div class="count-strip" id="counts">
+        FOLLOWERS 0 • SUBS 0 • BITS 0 • RAIDS 0
     </div>
 </div>
 
@@ -329,44 +210,48 @@ const latestSub = document.getElementById("latestSub");
 const latestTip = document.getElementById("latestTip");
 const latestRaid = document.getElementById("latestRaid");
 const counts = document.getElementById("counts");
-const panel = document.getElementById("panel");
+const core = document.getElementById("core");
 
-let state = {
-    follows: 0,
-    subs: 0,
-    bits: 0,
-    raids: 0
+const chips = {
+    follow: document.getElementById("chipFollow"),
+    sub: document.getElementById("chipSub"),
+    primesub: document.getElementById("chipSub"),
+    giftsub: document.getElementById("chipSub"),
+    tip: document.getElementById("chipTip"),
+    raid: document.getElementById("chipRaid")
 };
 
-function flash(type = "default") {
+function pulse(type) {
+    const chip = chips[type];
 
-    panel.classList.remove(
-        "flash-follow",
-        "flash-sub",
-        "flash-tip",
-        "flash-raid",
-        "flash-default"
-    );
+    if (chip) {
+        chip.classList.remove("active");
+        void chip.offsetWidth;
+        chip.classList.add("active");
 
-    void panel.offsetWidth;
+        setTimeout(() => {
+            chip.classList.remove("active");
+        }, 1100);
+    }
 
-    panel.classList.add(`flash-${type}`);
+    core.classList.remove("pulse");
+    void core.offsetWidth;
+    core.classList.add("pulse");
 
     setTimeout(() => {
-        panel.classList.remove(`flash-${type}`);
-    }, 900);
+        core.classList.remove("pulse");
+    }, 800);
 }
 
 function updateCounts(history) {
     const totals = history.totals || {};
 
-    state.follows = totals.follows || 0;
-    state.subs = (totals.subs || 0) + (totals.primesubs || 0) + (totals.giftsubs || 0);
-    state.bits = totals.totalBits || 0;
-    state.raids = totals.raids || 0;
+    const follows = totals.follows || 0;
+    const subs = (totals.subs || 0) + (totals.primesubs || 0) + (totals.giftsubs || 0);
+    const bits = totals.totalBits || 0;
+    const raids = totals.raids || 0;
 
-    counts.textContent =
-        `FOLLOWERS ${state.follows} • SUBS ${state.subs} • BITS ${state.bits} • RAIDS ${state.raids}`;
+    counts.textContent = `FOLLOWERS ${follows} • SUBS ${subs} • BITS ${bits} • RAIDS ${raids}`;
 }
 
 function loadFromHistory(history) {
@@ -375,11 +260,15 @@ function loadFromHistory(history) {
     }
 
     if ((history.subs || [])[0]) {
-        latestSub.textContent = history.subs[0].user;
+        latestSub.textContent = history.subs[0].user + " • " + history.subs[0].extra;
     }
 
     if ((history.primesubs || [])[0]) {
         latestSub.textContent = history.primesubs[0].user + " • PRIME";
+    }
+
+    if ((history.giftsubs || [])[0]) {
+        latestSub.textContent = history.giftsubs[0].user;
     }
 
     if ((history.tips || [])[0]) {
@@ -394,44 +283,35 @@ function loadFromHistory(history) {
 }
 
 socket.on("alert", (data) => {
-
-    let flashType = "default";
-
     if (data.type === "follow") {
         latestFollow.textContent = data.user;
-        flashType = "follow";
     }
 
     if (data.type === "sub") {
         latestSub.textContent = `${data.user} • ${data.extra || ""}`;
-        flashType = "sub";
     }
 
     if (data.type === "primesub") {
         latestSub.textContent = `${data.user} • PRIME`;
-        flashType = "sub";
     }
 
     if (data.type === "giftsub") {
         latestSub.textContent = data.user;
-        flashType = "sub";
     }
 
     if (data.type === "tip") {
         latestTip.textContent = `${data.user} • ${data.extra || ""}`;
-        flashType = "tip";
     }
 
     if (data.type === "raid") {
         latestRaid.textContent = `${data.user} • ${data.extra || ""}`;
-        flashType = "raid";
     }
 
     if (data.history) {
         updateCounts(data.history);
     }
 
-    flash(flashType);
+    pulse(data.type);
 });
 
 fetch("/api/alert-history")
