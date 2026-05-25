@@ -344,7 +344,13 @@ function loadFromHistory(history) {
     }
 
     if ((history.giftsubs || [])[0]) {
-        latestSub.textContent = history.giftsubs[0].user;
+
+        const gift = history.giftsubs[0];
+    
+        const count = gift.extra || "1";
+    
+        latestSub.textContent =
+            `${gift.user} GIFTED X${count}`;
     }
 
     if ((history.tips || [])[0]) {
