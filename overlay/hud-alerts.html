@@ -27,9 +27,26 @@ html, body {
     left: 50%;
     transform: translateX(-50%);
 
+    width: 1180px;
+
+    display: grid;
+    grid-template-columns: 1fr 64px 1fr;
+    align-items: center;
+    gap: 18px;
+}
+
+.chip-group {
     display: flex;
     align-items: center;
     gap: 14px;
+}
+
+.left-group {
+    justify-content: flex-end;
+}
+
+.right-group {
+    justify-content: flex-start;
 }
 
 .chip {
@@ -232,32 +249,32 @@ html, body {
 <body>
 
 <div id="hud">
-    <div class="chip-row">
-
+    <div class="chip-group left-group">
         <div class="chip" id="chipFollow" style="--chip-color:#00d9ff">
             <div class="chip-label">FOLLOW</div>
             <div class="chip-value" id="latestFollow">WAITING</div>
         </div>
-
+    
         <div class="chip" id="chipSub" style="--chip-color:#b84dff">
             <div class="chip-label">SUB</div>
             <div class="chip-value" id="latestSub">WAITING</div>
         </div>
-
-        <div class="core" id="core">
-            <img src="assets/images/Stimo.png" class="core-logo">
-        </div>
-
+    </div>
+    
+    <div class="core" id="core">
+        <img src="assets/images/Stimo.png" class="core-logo">
+    </div>
+    
+    <div class="chip-group right-group">
         <div class="chip" id="chipTip" style="--chip-color:#ffdd66">
             <div class="chip-label">TIP</div>
             <div class="chip-value" id="latestTip">WAITING</div>
         </div>
-
-        <div class="chip" id="chipRaid" style="--chip-color:#ff5533">
-            <div class="chip-label">RAID</div>
-            <div class="chip-value" id="latestRaid">WAITING</div>
+    
+        <div class="chip" id="chipBits" style="--chip-color:#00ff99">
+            <div class="chip-label">BITS</div>
+            <div class="chip-value" id="latestBits">WAITING</div>
         </div>
-
     </div>
 
     <div class="count-strip" id="counts">
@@ -273,7 +290,7 @@ const socket = io();
 const latestFollow = document.getElementById("latestFollow");
 const latestSub = document.getElementById("latestSub");
 const latestTip = document.getElementById("latestTip");
-const latestRaid = document.getElementById("latestRaid");
+const latestBits = document.getElementById("latestBits");
 const counts = document.getElementById("counts");
 const core = document.getElementById("core");
 
@@ -283,7 +300,7 @@ const chips = {
     primesub: document.getElementById("chipSub"),
     giftsub: document.getElementById("chipSub"),
     tip: document.getElementById("chipTip"),
-    raid: document.getElementById("chipRaid")
+    bits: document.getElementById("chipBits")
 };
 
 function pulse(type) {
@@ -340,8 +357,8 @@ function loadFromHistory(history) {
         latestTip.textContent = history.tips[0].user + " • " + history.tips[0].extra;
     }
 
-    if ((history.raids || [])[0]) {
-        latestRaid.textContent = history.raids[0].user + " • " + history.raids[0].extra;
+    if ((history.bits || [])[0]) {
+        latestBits.textContent = history.bits[0].user + " • " + history.bits[0].extra;
     }
 
     updateCounts(history);
@@ -368,8 +385,8 @@ socket.on("alert", (data) => {
         latestTip.textContent = `${data.user} • ${data.extra || ""}`;
     }
 
-    if (data.type === "raid") {
-        latestRaid.textContent = `${data.user} • ${data.extra || ""}`;
+    if (data.type === "bits") {
+        latestBits.textContent = `${data.user} • ${data.extra || ""}`;
     }
 
     if (data.history) {
