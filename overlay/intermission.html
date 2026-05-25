@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Stream Starting</title>
+
+<style>
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+    font-family: Consolas, monospace;
+}
+
+.video-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    animation: slowZoom 35s ease-in-out infinite alternate;
+}
+
+@keyframes slowZoom {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.06);
+    }
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at center, transparent 35%, rgba(0,0,0,0.75)),
+        linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.85));
+    box-shadow: inset 0 0 220px rgba(0,0,0,0.8);
+}
+
+.scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.04) 0px,
+        rgba(255,255,255,0.04) 1px,
+        transparent 3px,
+        transparent 7px
+    );
+    animation: scan 2s linear infinite;
+    pointer-events: none;
+}
+
+.dust {
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);
+
+    background-size: 180px 180px;
+
+    opacity: 0.22;
+
+    animation: dustMove 60s linear infinite;
+
+    pointer-events: none;
+}
+
+@keyframes dustMove {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-180px);
+    }
+}
+
+.content {
+    position: absolute;
+    left: 90px;
+    bottom: 190px;
+    width: 900px;
+    color: white;
+    text-transform: uppercase;
+}
+
+.status {
+    display: inline-block;
+    padding: 6px 14px;
+    margin-bottom: 18px;
+
+    font-size: 13px;
+    letter-spacing: 5px;
+
+    color: #00d9ff;
+    border: 1px solid rgba(0,217,255,0.7);
+    background: rgba(0,217,255,0.08);
+
+    text-shadow: 0 0 10px #00d9ff;
+}
+
+.title {
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: 10px;
+    line-height: 1.2;
+
+    color: rgba(255,255,255,0.95);
+
+    text-shadow:
+        0 0 12px rgba(255,255,255,0.8),
+        0 0 35px rgba(0,217,255,0.35);
+}
+
+.title::after {
+    content: "";
+    display: block;
+
+    margin-top: 18px;
+
+    width: 620px;
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        #00d9ff,
+        rgba(255,255,255,0.7),
+        transparent
+    );
+}
+
+.lore {
+    margin-top: 20px;
+
+    width: 760px;
+    padding: 18px 22px;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+
+    font-size: 15px;
+    line-height: 1.7;
+    letter-spacing: 2px;
+
+    color: rgba(255,255,255,0.72);
+
+    background: rgba(0,0,0,0.32);
+    border-left: 2px solid #00d9ff;
+
+    text-shadow: 0 0 8px rgba(0,217,255,0.45);
+
+    transition: opacity 0.4s ease;
+    backdrop-filter: blur(6px);
+    animation: lorePulse 5s ease-in-out infinite;
+}
+
+@keyframes lorePulse {
+    0%, 100% {
+        box-shadow: 0 0 12px rgba(0,217,255,0.08);
+    }
+
+    50% {
+        box-shadow: 0 0 24px rgba(0,217,255,0.22);
+    }
+}
+
+.chat-panel {
+    position: absolute;
+    right: 90px;
+    bottom: 180px;
+
+    width: 430px;
+    height: 520px;
+
+    background: rgba(0,0,0,0.42);
+    border-left: 2px solid rgba(0,217,255,0.9);
+    border-right: 1px solid rgba(255,255,255,0.08);
+    border-top: 1px solid rgba(0,217,255,0.35);
+    border-bottom: 1px solid rgba(0,217,255,0.25);
+
+    box-shadow:
+        0 0 28px rgba(0,217,255,0.18),
+        inset 0 0 22px rgba(255,255,255,0.04);
+
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.chat-title {
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+
+    padding-left: 16px;
+
+    font-size: 11px;
+    letter-spacing: 4px;
+    font-weight: 900;
+
+    color: #00d9ff;
+    text-transform: uppercase;
+
+    border-bottom: 1px solid rgba(0,217,255,0.25);
+    text-shadow: 0 0 10px #00d9ff;
+}
+
+.chat-frame {
+    width: 100%;
+    height: calc(100% - 36px);
+
+    border: 0;
+}
+
+</style>
+</head>
+
+<body>
+
+<video class="video-bg" autoplay muted loop playsinline>
+    <source src="assets/videos/Intermission.webm" type="video/webm">
+</video>
+
+<div class="overlay"></div>
+<div class="scanlines"></div>
+<div class="dust"></div>
+
+<div class="content">
+    <div class="status">BROADCAST HOLDING PATTERN</div>
+
+    <div class="title">
+        INTERMISSION<br>
+        IN PROGRESS
+    </div>
+
+    <div class="lore" id="loreLine">
+        STAND BY. STIMO IS AWAY FROM THE COMMAND DECK.
+    </div>
+</div>
+
+<div class="chat-panel">
+    <div class="chat-title">LIVE COMMS</div>
+
+    <iframe
+        class="chat-frame"
+        src="https://www.twitch.tv/embed/stimo/chat?parent=84.8.154.164"
+    </iframe>
+</div>
+    
+<script>
+const loreLines = [
+    "COMMAND DECK TEMPORARILY UNMANNED.",
+    "LIVE BROADCAST RELAY REMAINS ACTIVE.",
+    "CREW SYSTEMS OPERATING WITHIN NORMAL PARAMETERS.",
+    "LONG RANGE SIGNALS REMAIN STABLE.",
+    "STANDBY FOR RETURN TO ACTIVE DUTY."
+];
+
+let loreIndex = 0;
+const loreEl = document.querySelector(".lore");
+
+function typeLore(text, callback) {
+    let i = 0;
+    loreEl.textContent = "";
+
+    const timer = setInterval(() => {
+        loreEl.textContent = text.substring(0, i);
+        i++;
+
+        if (i > text.length) {
+            clearInterval(timer);
+            setTimeout(callback, 8000);
+        }
+    }, 35);
+}
+
+function eraseLore(callback) {
+    let text = loreEl.textContent;
+    let i = text.length;
+
+    const timer = setInterval(() => {
+        loreEl.textContent = text.substring(0, i);
+        i--;
+
+        if (i < 0) {
+            clearInterval(timer);
+            callback();
+        }
+    }, 18);
+}
+
+function playLoreLoop() {
+    typeLore(loreLines[loreIndex], () => {
+        eraseLore(() => {
+            loreIndex = (loreIndex + 1) % loreLines.length;
+            playLoreLoop();
+        });
+    });
+}
+
+playLoreLoop();
+</script>
+    
+</body>
+</html>
