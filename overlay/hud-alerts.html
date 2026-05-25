@@ -349,8 +349,13 @@ function loadFromHistory(history) {
     
         const count = gift.extra || "1";
     
+        const gifter =
+            (gift.user || "")
+            .split("♦")[0]
+            .trim();
+    
         latestSub.textContent =
-            `${gift.user} GIFTED X${count}`;
+            `${gifter} GIFTED X${count}`;
     }
 
     if ((history.tips || [])[0]) {
@@ -378,11 +383,16 @@ socket.on("alert", (data) => {
     }
 
     if (data.type === "giftsub") {
-    
+
         const count = data.extra || "1";
     
+        const gifter =
+            (data.user || "")
+            .split("♦")[0]
+            .trim();
+    
         latestSub.textContent =
-            `${data.user} GIFTED X${count}`;
+            `${gifter} GIFTED X${count}`;
     }
 
     if (data.type === "tip") {
