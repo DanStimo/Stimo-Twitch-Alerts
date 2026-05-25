@@ -40,7 +40,7 @@ html, body {
     box-sizing: border-box;
 
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
 
     padding: 0 16px;
@@ -164,15 +164,6 @@ html, body {
 }
 
 .chip-extra {
-    position: absolute;
-
-    left: 92px;
-    right: 16px;
-
-    text-align: left;
-
-    bottom: -14px;
-
     opacity: 0;
 
     font-size: 8px;
@@ -181,9 +172,19 @@ html, body {
 
     color: rgba(255,255,255,0.72);
 
-    transition:
-        opacity 0.25s ease,
-        bottom 0.25s ease;
+    transition: opacity 0.25s ease;
+}
+
+.chip-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+    padding-top: 7px;
+}
+
+.chip.expanded .chip-extra {
+    opacity: 1;
 }
 
 .chip.expanded .chip-extra {
@@ -472,35 +473,55 @@ html, body {
     <div class="hud-glow"></div>
     <div class="chip-row">
 
-        <div class="chip" id="chipFollow" style="--chip-color:#00d9ff">
-            <div class="chip-label">FOLLOW</div>
+    <div class="chip" id="chipFollow" style="--chip-color:#00d9ff">
+        <div class="chip-label">FOLLOW</div>
+
+        <div class="chip-text">
             <div class="chip-value" id="latestFollow">WAITING</div>
-            <div class="chip-extra" id="extraFollow">NEW SIGNAL DETECTED</div>
+            <div class="chip-extra" id="extraFollow">
+                NEW SIGNAL DETECTED
+            </div>
         </div>
-
-        <div class="chip" id="chipSub" style="--chip-color:#b84dff">
-            <div class="chip-label">SUB</div>
-            <div class="chip-value" id="latestSub">WAITING</div>
-            <div class="chip-extra" id="extraSub">SIGNAL VERIFIED</div>
-        </div>
-
-        <div class="core" id="core">
-            <img src="assets/images/Stimo.png" class="core-logo">
-        </div>
-
-        <div class="chip" id="chipTip" style="--chip-color:#ffdd66">
-            <div class="chip-label">TIP</div>
-            <div class="chip-value" id="latestTip">WAITING</div>
-            <div class="chip-extra" id="extraTip">CREDITS RECEIVED</div>
-        </div>
-
-        <div class="chip" id="chipBits" style="--chip-color:#00ff99">
-            <div class="chip-label">BITS</div>
-            <div class="chip-value" id="latestBits">WAITING</div>
-            <div class="chip-extra" id="extraBits">ENERGY TRANSFER</div>
-        </div>
-
     </div>
+
+    <div class="chip" id="chipSub" style="--chip-color:#b84dff">
+        <div class="chip-label">SUB</div>
+
+        <div class="chip-text">
+            <div class="chip-value" id="latestSub">WAITING</div>
+            <div class="chip-extra" id="extraSub">
+                SIGNAL VERIFIED
+            </div>
+        </div>
+    </div>
+
+    <div class="core" id="core">
+        <img src="assets/images/Stimo.png" class="core-logo">
+    </div>
+
+    <div class="chip" id="chipTip" style="--chip-color:#ffdd66">
+        <div class="chip-label">TIP</div>
+
+        <div class="chip-text">
+            <div class="chip-value" id="latestTip">WAITING</div>
+            <div class="chip-extra" id="extraTip">
+                CREDITS RECEIVED
+            </div>
+        </div>
+    </div>
+
+    <div class="chip" id="chipBits" style="--chip-color:#00ff99">
+        <div class="chip-label">BITS</div>
+
+        <div class="chip-text">
+            <div class="chip-value" id="latestBits">WAITING</div>
+            <div class="chip-extra" id="extraBits">
+                ENERGY TRANSFER
+            </div>
+        </div>
+    </div>
+
+</div>
 
     <div class="sub-train" id="subTrain">
         <div class="train-top">
