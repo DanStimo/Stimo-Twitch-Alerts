@@ -248,6 +248,8 @@ html, body {
 
     text-shadow:
         0 0 10px rgba(0,217,255,0.18);
+    padding-left: 10px;
+    border-left: 2px solid rgba(0,217,255,0.35);
 }
 
 .chat-user {
@@ -278,6 +280,36 @@ html, body {
     vertical-align: middle;
 
     margin: 0 2px;
+}
+
+.chat-message.new-message {
+    animation:
+        chatIn 0.35s ease forwards,
+        messagePulse 1.2s ease;
+}
+
+@keyframes messagePulse {
+    0% {
+        text-shadow: 0 0 18px rgba(0,217,255,0.9);
+    }
+
+    100% {
+        text-shadow: 0 0 10px rgba(0,217,255,0.18);
+    }
+}
+
+.chat-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+
+    margin-bottom: 2px;
+}
+
+.chat-time {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 1px;
 }
 
 </style>
@@ -386,16 +418,19 @@ socket.on("connect", () => {
 
     const row = document.createElement("div");
 
-    row.className = "chat-message";
+    row.className = "chat-message new-message";
 
     row.innerHTML = `
-        <span class="chat-user" style="color:#00d9ff">
-            SYSTEM:
-        </span>
-
-        <span class="chat-text">
-            LIVE COMMS LINK ESTABLISHED
-        </span>
+        <div class="chat-meta">
+            <span class="chat-user" style="color:${data.color || "#00d9ff"}">
+                ${data.user}
+            </span>
+            <span class="chat-time">${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+        </div>
+    
+        <div class="chat-text">
+            ${renderTwitchMessage(data.message, data.emotes)}
+        </div>
     `;
 
     chatMessages.appendChild(row);
