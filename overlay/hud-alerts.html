@@ -196,22 +196,63 @@ html, body {
     animation: coreHit 0.75s ease;
 }
 
-.count-strip {
+.sub-train {
     position: absolute;
     top: 104px;
     left: 50%;
     transform: translateX(-50%);
 
-    padding: 5px 16px;
+    width: 360px;
 
-    background: rgba(0,0,0,0.38);
-    border-top: 1px solid rgba(0,217,255,0.24);
+    padding: 6px 14px;
 
-    color: rgba(255,255,255,0.52);
+    background: rgba(0,0,0,0.42);
+    border-top: 1px solid rgba(184,77,255,0.45);
+
+    color: white;
+
+    text-transform: uppercase;
+}
+
+.train-top {
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 10px;
+    letter-spacing: 3px;
+
+    color: #b84dff;
+}
+
+.train-bar {
+    margin-top: 5px;
+
+    height: 4px;
+
+    background: rgba(255,255,255,0.12);
+    overflow: hidden;
+}
+
+.train-fill {
+    width: 0%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        #b84dff,
+        #ffffff
+    );
+
+    transition: width 0.35s linear;
+}
+
+.train-timer {
+    margin-top: 4px;
 
     font-size: 9px;
     letter-spacing: 3px;
-    text-transform: uppercase;
+
+    color: rgba(255,255,255,0.65);
 }
 
 @keyframes coreIdle {
@@ -271,8 +312,19 @@ html, body {
 
     </div>
 
-    <div class="count-strip" id="counts">
-        FOLLOWERS 0 • SUBS 0 • BITS 0
+    <div class="sub-train" id="subTrain">
+        <div class="train-top">
+            <span>SUB TRAIN</span>
+            <span id="trainCount">00</span>
+        </div>
+    
+        <div class="train-bar">
+            <div class="train-fill" id="trainFill"></div>
+        </div>
+    
+        <div class="train-timer" id="trainTimer">
+            STANDING BY
+        </div>
     </div>
 </div>
 
@@ -285,7 +337,10 @@ const latestFollow = document.getElementById("latestFollow");
 const latestSub = document.getElementById("latestSub");
 const latestTip = document.getElementById("latestTip");
 const latestBits = document.getElementById("latestBits");
-const counts = document.getElementById("counts");
+const subTrain = document.getElementById("subTrain");
+const trainCount = document.getElementById("trainCount");
+const trainFill = document.getElementById("trainFill");
+const trainTimer = document.getElementById("trainTimer");
 const core = document.getElementById("core");
 
 const chips = {
@@ -319,15 +374,72 @@ function pulse(type) {
     }, 800);
 }
 
+let trainActive = false;
+let trainCountValue = 0;
+let trainEndsAt = 0;
+let trainInterval = null;
+
+function startSubTrain(addAmount = 1) {
+    trainActive = true;
+    trainCountValue += addAmount;
+
+    // 5 minute train window
+    trainEndsAt = Date.now() + (5 * 60 * 1000);
+
+    trainCount.textContent = String(trainCountValue).padStart(2, "0");
+
+    if (!trainInterval) {
+        trainInterval = setInterval(updateSubTrainTimer, 500);
+    }
+
+    updateSubTrainTimer();
+}
+
+function updateSubTrainTimer() {
+    if (!trainActive) {
+        trainFill.style.width = "0%";
+        trainTimer.textContent = "STANDING BY";
+        return;
+    }
+
+    const remaining = Math.max(0, trainEndsAt - Date.now());
+    const total = 5 * 60 * 1000;
+
+    const percent = (remaining / total) * 100;
+
+    trainFill.style.width = `${percent}%`;
+
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+
+    trainTimer.textContent =
+        `NEXT SUB EXTENDS TRAIN • ${mins}:${String(secs).padStart(2, "0")}`;
+
+    if (remaining <= 0) {
+        trainActive = false;
+        trainCountValue = 0;
+        trainTimer.textContent = "TRAIN ENDED";
+        trainFill.style.width = "0%";
+
+        clearInterval(trainInterval);
+        trainInterval = null;
+
+        setTimeout(() => {
+            trainTimer.textContent = "STANDING BY";
+            trainCount.textContent = "00";
+        }, 3000);
+    }
+}
+    
 function updateCounts(history) {
-    const totals = history.totals || {};
+ //   const totals = history.totals || {};
 
-    const follows = totals.follows || 0;
-    const subs = (totals.subs || 0) + (totals.primesubs || 0) + (totals.giftsubs || 0);
-    const bits = totals.totalBits || 0;
-    const raids = totals.raids || 0;
+ //   const follows = totals.follows || 0;
+ //   const subs = (totals.subs || 0) + (totals.primesubs || 0) + (totals.giftsubs || 0);
+ //   const bits = totals.totalBits || 0;
+ //   const raids = totals.raids || 0;
 
-    counts.textContent = `FOLLOWERS ${follows} • SUBS ${subs} • BITS ${bits} • RAIDS ${raids}`;
+ //   counts.textContent = `FOLLOWERS ${follows} • SUBS ${subs} • BITS ${bits} • RAIDS ${raids}`;
 }
 
 function formatGiftSubText(user, extra, reward) {
@@ -393,18 +505,30 @@ socket.on("alert", (data) => {
 
     if (data.type === "sub") {
         latestSub.textContent = `${data.user} • ${data.extra || ""}`;
+        startSubTrain(1);
     }
 
     if (data.type === "primesub") {
         latestSub.textContent = `${data.user} • PRIME`;
+        startSubTrain(1);
     }
 
     if (data.type === "giftsub") {
+
         latestSub.textContent = formatGiftSubText(
             data.user,
             data.extra,
             data.reward
         );
+    
+        const giftAmount =
+            parseInt(
+                String(data.user || data.extra || "")
+                    .match(/(\d+)/)?.[0] || "1",
+                10
+            );
+    
+        startSubTrain(giftAmount);
     }
 
     if (data.type === "tip") {
