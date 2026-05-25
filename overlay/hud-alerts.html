@@ -426,8 +426,8 @@ html, body {
         <div class="chip-label">FOLLOW</div>
 
         <div class="chip-text">
-            <div class="chip-value" id="latestFollow">WAITING</div>
-                NEW SIGNAL DETECTED
+            <div class="chip-value" id="latestFollow">
+                WAITING
             </div>
         </div>
     </div>
@@ -436,8 +436,8 @@ html, body {
         <div class="chip-label">SUB</div>
 
         <div class="chip-text">
-            <div class="chip-value" id="latestSub">WAITING</div>
-                SIGNAL VERIFIED
+            <div class="chip-value" id="latestSub">
+                WAITING
             </div>
         </div>
     </div>
@@ -450,8 +450,8 @@ html, body {
         <div class="chip-label">TIP</div>
 
         <div class="chip-text">
-            <div class="chip-value" id="latestTip">WAITING</div>
-                CREDITS RECEIVED
+            <div class="chip-value" id="latestTip">
+                WAITING
             </div>
         </div>
     </div>
@@ -460,8 +460,8 @@ html, body {
         <div class="chip-label">BITS</div>
 
         <div class="chip-text">
-            <div class="chip-value" id="latestBits">WAITING</div>
-                ENERGY TRANSFER
+            <div class="chip-value" id="latestBits">
+                WAITING
             </div>
         </div>
     </div>
@@ -717,9 +717,7 @@ socket.on("alert", (data) => {
             data.extra,
             data.reward
         );
-    
-        expandChip("giftsub", "SUB TRAIN BOOSTED");
-    
+        
         const giftAmount =
             parseInt(
                 String(data.user || data.extra || "")
