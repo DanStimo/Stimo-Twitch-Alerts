@@ -210,6 +210,29 @@ app.use(express.json());
 
 app.use(express.static("../overlay"));
 
+const twitchChat = new tmi.Client({
+    connection: {
+        reconnect: true,
+        secure: true
+    },
+
+    channels: ["stimo"]
+});
+
+twitchChat.connect();
+
+twitchChat.on("message", (channel, tags, message, self) => {
+
+    if (self) return;
+
+    io.emit("chat-message", {
+        user: tags["display-name"] || tags.username,
+        message: message,
+        color: tags.color || "#00d9ff"
+    });
+
+});
+
 server.listen(3000, () => {
     console.log("Server running on http://localhost:3000");
 });
