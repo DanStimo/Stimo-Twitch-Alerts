@@ -203,11 +203,48 @@ html, body {
     text-shadow: 0 0 10px #00d9ff;
 }
 
-.chat-frame {
-    width: 100%;
+.chat-messages {
     height: calc(100% - 36px);
 
-    border: 0;
+    padding: 14px;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+}
+
+.chat-message {
+    font-size: 14px;
+
+    color: white;
+
+    animation: chatIn 0.35s ease forwards;
+
+    opacity: 0;
+
+    transform: translateX(20px);
+}
+
+.chat-user {
+    font-weight: 900;
+}
+
+.chat-text {
+    color: rgba(255,255,255,0.8);
+}
+
+@keyframes chatIn {
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
 }
 
 </style>
@@ -303,6 +340,43 @@ playLoreLoop();
     <span class="chat-user">Stimo:</span>
     <span class="chat-text">Testing comms.</span>
 </div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+const chatMessages =
+    document.getElementById("chatMessages");
+
+socket.on("chat-message", (data) => {
+
+    const row = document.createElement("div");
+
+    row.className = "chat-message";
+
+    row.innerHTML = `
+        <span
+            class="chat-user"
+            style="color:${data.color}">
+            ${data.user}:
+        </span>
+
+        <span class="chat-text">
+            ${data.message}
+        </span>
+    `;
+
+    chatMessages.appendChild(row);
+
+    while (chatMessages.children.length > 12) {
+        chatMessages.removeChild(
+            chatMessages.firstChild
+        );
+    }
+
+});
+</script>
     
 </body>
 </html>
