@@ -39,10 +39,9 @@ html, body {
     height: 42px;
     box-sizing: border-box;
 
-    display: grid;
-    grid-template-columns: 48px 1fr;
+    display: flex;
     align-items: center;
-    column-gap: 12px;
+    gap: 10px;
 
     padding: 0 16px;
 
@@ -64,7 +63,6 @@ html, body {
         inset 0 0 18px rgba(255,255,255,0.04);
 
     transition:
-        transform 0.25s ease,
         box-shadow 0.25s ease,
         background 0.25s ease;
 
@@ -107,22 +105,14 @@ html, body {
     }
 }
 
-.chip.expanded::before {
-    animation: chipSweep 2.5s linear infinite;
-}
-
 .chip-label {
-    display: flex;
-    align-items: center;
-
-    height: 42px;
-
     font-size: 10px;
     letter-spacing: 2px;
     color: var(--chip-color);
     font-weight: 900;
 
     line-height: 1;
+    transform: translateY(1px);
 }
 
 .chip-value {
@@ -136,14 +126,6 @@ html, body {
     text-shadow: 0 0 8px rgba(255,255,255,0.45);
 }
 
-.chip.expanded .chip-label {
-    height: 72px;
-}
-
-.chip.expanded .chip-text {
-    height: 72px;
-}
-    
 .chip.active {
     
     background: linear-gradient(
@@ -157,60 +139,10 @@ html, body {
         inset 0 0 22px rgba(255,255,255,0.12);
 }
 
-.chip.expanded {
-    z-index: 50;
-
-    height: 72px;
-
-    transform: translateY(-10px);
-
-    margin-top: -30px;
-    margin-bottom: -30px;
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(0,0,0,0.92),
-            color-mix(in srgb, var(--chip-color) 38%, transparent)
-        );
-
-    box-shadow:
-        0 0 42px var(--chip-color),
-        inset 0 0 28px rgba(255,255,255,0.12);
-
-    overflow: visible;
-}
-
-.chip-extra {
-    opacity: 0;
-
-    font-size: 8px;
-    letter-spacing: 2px;
-    font-weight: 900;
-
-    color: rgba(255,255,255,0.72);
-
-    transform: translateY(6px);
-
-    transition:
-        opacity 0.25s ease,
-        transform 0.25s ease;
-}
-
 .chip-text {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    height: 42px;
-    gap: 4px;
-
-    transition: transform 0.25s ease;
-}
-
-.chip.expanded .chip-extra {
-    opacity: 1;
-    transform: translateY(0);
+    align-items: center;
+    height: 100%;
 }
 
 .core {
@@ -495,7 +427,6 @@ html, body {
 
         <div class="chip-text">
             <div class="chip-value" id="latestFollow">WAITING</div>
-            <div class="chip-extra" id="extraFollow">
                 NEW SIGNAL DETECTED
             </div>
         </div>
@@ -506,7 +437,6 @@ html, body {
 
         <div class="chip-text">
             <div class="chip-value" id="latestSub">WAITING</div>
-            <div class="chip-extra" id="extraSub">
                 SIGNAL VERIFIED
             </div>
         </div>
@@ -521,7 +451,6 @@ html, body {
 
         <div class="chip-text">
             <div class="chip-value" id="latestTip">WAITING</div>
-            <div class="chip-extra" id="extraTip">
                 CREDITS RECEIVED
             </div>
         </div>
@@ -532,7 +461,6 @@ html, body {
 
         <div class="chip-text">
             <div class="chip-value" id="latestBits">WAITING</div>
-            <div class="chip-extra" id="extraBits">
                 ENERGY TRANSFER
             </div>
         </div>
@@ -579,34 +507,6 @@ const chips = {
     tip: document.getElementById("chipTip"),
     bits: document.getElementById("chipBits")
 };
-
-const chipExtras = {
-    follow: document.getElementById("extraFollow"),
-    sub: document.getElementById("extraSub"),
-    primesub: document.getElementById("extraSub"),
-    giftsub: document.getElementById("extraSub"),
-    tip: document.getElementById("extraTip"),
-    bits: document.getElementById("extraBits")
-};
-
-function expandChip(type, message) {
-    const chip = chips[type];
-    const extra = chipExtras[type];
-
-    if (!chip) return;
-
-    if (extra && message) {
-        extra.textContent = message;
-    }
-
-    chip.classList.remove("expanded");
-    void chip.offsetWidth;
-    chip.classList.add("expanded");
-
-    setTimeout(() => {
-        chip.classList.remove("expanded");
-    }, 3000);
-}
 
 function pulse(type) {
     const chip = chips[type];
@@ -798,19 +698,16 @@ function loadFromHistory(history) {
 socket.on("alert", (data) => {
     if (data.type === "follow") {
         latestFollow.textContent = data.user;
-        expandChip("follow", "NEW SIGNAL DETECTED");
     }
 
     if (data.type === "sub") {
         latestSub.textContent = `${data.user} • ${data.extra || ""}`;
         startSubTrain(1);
-        expandChip("sub", "LOYALTY SIGNAL VERIFIED");
     }
 
     if (data.type === "primesub") {
         latestSub.textContent = `${data.user} • PRIME`;
         startSubTrain(1);
-        expandChip("sub", "PRIME LINK VERIFIED");
     }
 
     if (data.type === "giftsub") {
@@ -835,12 +732,10 @@ socket.on("alert", (data) => {
 
     if (data.type === "tip") {
         latestTip.textContent = `${data.user} • ${data.extra || ""}`;
-        expandChip("tip", "CREDITS RECEIVED");
     }
 
     if (data.type === "bits") {
         latestBits.textContent = `${data.user} • ${data.extra || ""}`;
-        expandChip("bits", "ENERGY TRANSFER COMPLETE");
     }
 
     if (data.history) {
