@@ -158,7 +158,11 @@ html, body {
 
     background: radial-gradient(
         circle,
-        color-mix(in srgb, var(--core-alert-color, #00d9ff) 32%, transparent)
+        color-mix(
+            in srgb,
+            var(--core-alert-color, #00d9ff) 32%,
+            transparent
+        ),
         rgba(0,0,0,0.52)
     );
 
@@ -203,10 +207,6 @@ html, body {
     50% {
         transform: scale(1.04) rotate(1deg);
     }
-}
-
-.core.pulse {
-    animation: coreHit 0.75s ease;
 }
 
 .sub-train {
@@ -531,6 +531,9 @@ const chips = {
     bits: document.getElementById("chipBits")
 };
 
+const alertQueue = [];
+let alertPlaying = false;
+
 function pulse(type) {
     const chip = chips[type];
     const duration = alertDurations[type] || 8000;
@@ -549,9 +552,17 @@ function pulse(type) {
 
     core.style.setProperty("--core-alert-color", color);
 
-    core.classList.remove("pulse");
-    void core.offsetWidth;
-    core.classList.add("pulse");
+    core.animate(
+        [
+            { transform: "scale(1)" },
+            { transform: "scale(1.18) rotate(3deg)" },
+            { transform: "scale(1)" }
+        ],
+        {
+            duration: 700,
+            easing: "ease"
+        }
+    );
 
     setTimeout(() => {
         core.classList.remove("pulse");
@@ -724,18 +735,59 @@ function loadFromHistory(history) {
     updateCounts(history);
 }
 
-socket.on("alert", (data) => {
+function queueAlert(data) {
+    alertQueue.push(data);
+
+    if (!alertPlaying) {
+        playNextAlert();
+    }
+}
+
+function playNextAlert() {
+
+    if (alertQueue.length === 0) {
+        alertPlaying = false;
+        return;
+    }
+
+    alertPlaying = true;
+
+    const data = alertQueue.shift();
+
+    const duration =
+        alertDurations[data.type] || 5000;
+
+    processAlert(data);
+
+    setTimeout(() => {
+
+        if (alertQueue.length === 0) {
+            alertPlaying = false;
+            return;
+        }
+    
+        playNextAlert();
+    
+    }, duration);
+}
+
+function processAlert(data) {
+
     if (data.type === "follow") {
         latestFollow.textContent = data.user;
     }
 
     if (data.type === "sub") {
-        latestSub.textContent = `${data.user} • ${data.extra || ""}`;
+        latestSub.textContent =
+            `${data.user} • ${data.extra || ""}`;
+
         startSubTrain(1);
     }
 
     if (data.type === "primesub") {
-        latestSub.textContent = `${data.user} • PRIME`;
+        latestSub.textContent =
+            `${data.user} • PRIME`;
+
         startSubTrain(1);
     }
 
@@ -746,23 +798,25 @@ socket.on("alert", (data) => {
             data.extra,
             data.reward
         );
-        
+
         const giftAmount =
             parseInt(
                 String(data.user || data.extra || "")
                     .match(/(\d+)/)?.[0] || "1",
                 10
             );
-    
+
         startSubTrain(giftAmount);
     }
 
     if (data.type === "tip") {
-        latestTip.textContent = `${data.user} • ${data.extra || ""}`;
+        latestTip.textContent =
+            `${data.user} • ${data.extra || ""}`;
     }
 
     if (data.type === "bits") {
-        latestBits.textContent = `${data.user} • ${data.extra || ""}`;
+        latestBits.textContent =
+            `${data.user} • ${data.extra || ""}`;
     }
 
     if (data.history) {
@@ -770,6 +824,10 @@ socket.on("alert", (data) => {
     }
 
     pulse(data.type);
+}
+    
+socket.on("alert", (data) => {
+    queueAlert(data);
 });
 
 fetch("/api/alert-history")
