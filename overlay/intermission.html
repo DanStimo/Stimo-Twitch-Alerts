@@ -240,9 +240,7 @@ html, body {
         IN PROGRESS
     </div>
 
-    <div class="lore" id="loreLine">
-        STAND BY. STIMO IS AWAY FROM THE COMMAND DECK.
-    </div>
+    <div class="lore" id="loreLine"></div>
 </div>
 
 <div class="chat-panel">
@@ -264,7 +262,7 @@ const loreLines = [
 ];
 
 let loreIndex = 0;
-const loreEl = document.querySelector(".lore");
+const loreEl = document.getElementById("loreLine");
 
 function typeLore(text, callback) {
     let i = 0;
