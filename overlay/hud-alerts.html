@@ -40,7 +40,7 @@ html, body {
     box-sizing: border-box;
 
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 10px;
 
     padding: 0 16px;
@@ -111,11 +111,15 @@ html, body {
 }
 
 .chip-label {
+    width: 48px;
+
     font-size: 10px;
     letter-spacing: 2px;
     color: var(--chip-color);
     font-weight: 900;
+
     line-height: 1;
+    flex-shrink: 0;
 }
 
 .chip-value {
@@ -124,7 +128,6 @@ html, body {
     letter-spacing: 1px;
     white-space: nowrap;
     transition: transform 0.25s ease;
-    line-height: 1;
 
     text-shadow: 0 0 8px rgba(255,255,255,0.45);
 }
@@ -181,6 +184,8 @@ html, body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+
+    transition: transform 0.25s ease;
 }
 
 .chip.expanded .chip-extra {
