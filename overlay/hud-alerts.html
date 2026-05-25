@@ -765,12 +765,11 @@ function playNextAlert() {
 
     setTimeout(() => {
 
-        if (alertQueue.length === 0) {
-            alertPlaying = false;
-            return;
-        }
+        alertPlaying = false;
     
-        playNextAlert();
+        if (alertQueue.length > 0) {
+            playNextAlert();
+        }
     
     }, duration);
 }
