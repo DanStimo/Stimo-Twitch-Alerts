@@ -204,30 +204,39 @@ html, body {
 }
 
 .chat-messages {
-    height: calc(100% - 36px);
+    position: absolute;
 
-    padding: 14px;
-
-    overflow: hidden;
+    top: 50px;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
 
     display: flex;
     flex-direction: column;
-
     justify-content: flex-end;
 
-    gap: 10px;
+    gap: 14px;
+
+    overflow: hidden;
 }
 
 .chat-message {
-    font-size: 14px;
+    font-size: 15px;
+    line-height: 1.45;
 
     color: white;
+
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 
     animation: chatIn 0.35s ease forwards;
 
     opacity: 0;
 
-    transform: translateX(20px);
+    transform: translateY(12px);
+
+    text-shadow:
+        0 0 10px rgba(0,217,255,0.18);
 }
 
 .chat-user {
@@ -240,9 +249,14 @@ html, body {
 
 @keyframes chatIn {
 
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
     to {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateY(0);
     }
 
 }
