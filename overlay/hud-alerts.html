@@ -97,13 +97,19 @@ html, body {
         );
 
     transform: translateX(-120%);
-    animation: chipSweep 5s linear infinite;
+    animation: chipSweep 8s linear infinite;
+    opacity: 0.4;
 }
 
 @keyframes chipSweep {
     to {
         transform: translateX(140%);
     }
+}
+
+.chip.expanded::before {
+    animation: chipSweep 1.2s linear infinite;
+    opacity: 1;
 }
 
 .chip-label {
@@ -118,13 +124,13 @@ html, body {
     font-weight: 900;
     letter-spacing: 1px;
     white-space: nowrap;
+    transition: transform 0.25s ease;
 
     text-shadow: 0 0 8px rgba(255,255,255,0.45);
 }
 
 .chip.active {
-    transform: translateY(-4px) scale(1.06);
-
+    
     background: linear-gradient(
         90deg,
         rgba(0,0,0,0.75),
@@ -137,16 +143,7 @@ html, body {
 }
 
 .chip.expanded {
-    height: 64px;
-    width: 360px;
-
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
-
-    gap: 3px;
-
-    transform: translateY(-8px) scale(1.04);
+    transform: none;
 
     background:
         linear-gradient(
@@ -160,16 +157,36 @@ html, body {
         inset 0 0 24px rgba(255,255,255,0.12);
 
     z-index: 20;
+    filter: brightness(1.12);
+}
+
+.chip.expanded .chip-value {
+    transform: translateY(-3px);
+    font-size: 13px;
 }
 
 .chip-extra {
-    display: none;
+    position: absolute;
 
-    font-size: 9px;
+    left: 16px;
+    bottom: -14px;
+
+    opacity: 0;
+
+    font-size: 8px;
     letter-spacing: 2px;
     font-weight: 900;
 
     color: rgba(255,255,255,0.72);
+
+    transition:
+        opacity 0.25s ease,
+        bottom 0.25s ease;
+}
+
+.chip.expanded .chip-extra {
+    opacity: 1;
+    bottom: 6px;
 }
 
 .chip.expanded .chip-extra {
@@ -548,7 +565,7 @@ function expandChip(type, message) {
 
     setTimeout(() => {
         chip.classList.remove("expanded");
-    }, 3000);
+    }, 1800);
 }
 
 function pulse(type) {
