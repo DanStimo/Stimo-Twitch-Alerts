@@ -159,6 +159,57 @@ html, body {
     transition: opacity 0.4s ease;
 }
 
+.chat-panel {
+    position: absolute;
+    right: 90px;
+    bottom: 180px;
+
+    width: 430px;
+    height: 520px;
+
+    background: rgba(0,0,0,0.42);
+
+    border-left: 2px solid rgba(0,217,255,0.9);
+    border-right: 1px solid rgba(255,255,255,0.08);
+    border-top: 1px solid rgba(0,217,255,0.35);
+    border-bottom: 1px solid rgba(0,217,255,0.25);
+
+    box-shadow:
+        0 0 28px rgba(0,217,255,0.18),
+        inset 0 0 22px rgba(255,255,255,0.04);
+
+    overflow: hidden;
+
+    backdrop-filter: blur(10px);
+}
+
+.chat-title {
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+
+    padding-left: 16px;
+
+    font-size: 11px;
+    letter-spacing: 4px;
+    font-weight: 900;
+
+    color: #00d9ff;
+    text-transform: uppercase;
+
+    border-bottom: 1px solid rgba(0,217,255,0.25);
+
+    text-shadow: 0 0 10px #00d9ff;
+}
+
+.chat-frame {
+    width: 100%;
+    height: calc(100% - 36px);
+
+    border: 0;
+}
+
 </style>
 </head>
 
@@ -241,6 +292,15 @@ function playLoreLoop() {
 
 playLoreLoop();
 </script>
+
+<div class="chat-panel">
+    <div class="chat-title">LIVE COMMS</div>
+
+    <iframe
+        class="chat-frame"
+        src="https://www.twitch.tv/embed/stimo/chat?parent=localhost">
+    </iframe>
+</div>    
     
 </body>
 </html>
