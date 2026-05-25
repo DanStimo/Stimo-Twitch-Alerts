@@ -198,24 +198,31 @@ html, body {
 
 .sub-train {
     position: absolute;
-    top: 104px;
+    top: 88px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(-8px);
 
-    width: 360px;
-
-    padding: 6px 14px;
+    width: 300px;
+    padding: 4px 10px;
 
     background: rgba(0,0,0,0.42);
     border-top: 1px solid rgba(184,77,255,0.45);
 
     color: white;
-
     text-transform: uppercase;
-    opacity: 0.45;
+
+    opacity: 0;
+    pointer-events: none;
+
     transition:
-        opacity 0.4s ease,
-        box-shadow 0.4s ease;
+        opacity 0.35s ease,
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+.sub-train.running {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 .sub-train.running {
@@ -226,16 +233,17 @@ html, body {
     display: flex;
     justify-content: space-between;
 
-    font-size: 10px;
-    letter-spacing: 3px;
+    font-size: 8px;
+    letter-spacing: 2px;
 
     color: #b84dff;
 }
 
 .train-bar {
-    margin-top: 5px;
+    position: relative;
 
-    height: 4px;
+    margin-top: 3px;
+    height: 3px;
 
     background: rgba(255,255,255,0.12);
     overflow: hidden;
@@ -255,10 +263,10 @@ html, body {
 }
 
 .train-timer {
-    margin-top: 4px;
+    margin-top: 2px;
 
-    font-size: 9px;
-    letter-spacing: 3px;
+    font-size: 8px;
+    letter-spacing: 2px;
 
     color: rgba(255,255,255,0.65);
 }
