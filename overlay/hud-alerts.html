@@ -66,8 +66,7 @@ html, body {
         transform 0.25s ease,
         box-shadow 0.25s ease,
         background 0.25s ease;
-    animation: chipIdle 5s ease-in-out infinite;
-    
+        
     overflow: hidden;
     position: relative;
 }
@@ -108,8 +107,7 @@ html, body {
 }
 
 .chip.expanded::before {
-    animation: chipSweep 1.2s linear infinite;
-    opacity: 1;
+    animation: chipSweep 2.5s linear infinite;
 }
 
 .chip-label {
@@ -444,7 +442,7 @@ html, body {
             transparent 70%
         );
 
-    filter: blur(40px);
+    filter: blur(18px);
 
     animation: hudGlow 6s ease-in-out infinite;
 
@@ -612,7 +610,7 @@ function startSubTrain(addAmount = 1) {
     trainCount.classList.add("bump");
 
     if (!trainInterval) {
-        trainInterval = setInterval(updateSubTrainTimer, 100);
+        trainInterval = setInterval(updateSubTrainTimer, 500);
     }
 
     updateSubTrainTimer();
