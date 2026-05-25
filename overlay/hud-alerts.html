@@ -331,19 +331,23 @@ function updateCounts(history) {
 }
 
 function formatGiftSubText(user, extra, reward) {
-    const gifter =
-        (extra && reward)
-            ? extra
-            : (user || "").split("◆")[0].split("♦")[0].trim();
+    const rawUser = String(user || "").trim();
+    const rawExtra = String(extra || "").trim();
 
-    let count = "1";
-
-    const countMatch =
-        String(extra || user || "").match(/(\d+)/);
-
-    if (!reward && countMatch) {
-        count = countMatch[1];
+    // Multi gift already arrives like: TESTGIFTER GIFTED X6
+    if (/GIFTED\s+X?\d+/i.test(rawUser)) {
+        return rawUser;
     }
+
+    // Single gift: user = TESTGIFTER ◆ TESTRECEIVER, extra = TESTGIFTER
+    if (reward) {
+        return `${rawExtra || rawUser.split("◆")[0].trim()} GIFTED X1`;
+    }
+
+    const countMatch = rawExtra.match(/(\d+)/) || rawUser.match(/(\d+)/);
+    const count = countMatch ? countMatch[1] : "1";
+
+    const gifter = rawUser.split("◆")[0].split("♦")[0].trim();
 
     return `${gifter} GIFTED X${count}`;
 }
