@@ -271,10 +271,10 @@ function typeLore(text, callback) {
     loreEl.textContent = "";
 
     const timer = setInterval(() => {
-        loreEl.textContent = text.substring(0, i);
+        loreEl.textContent += text.charAt(i);
         i++;
 
-        if (i > text.length) {
+        if (i >= text.length) {
             clearInterval(timer);
             setTimeout(callback, 8000);
         }
@@ -283,18 +283,29 @@ function typeLore(text, callback) {
 
 function eraseLore(callback) {
     let text = loreEl.textContent;
-    let i = text.length;
 
     const timer = setInterval(() => {
-        loreEl.textContent = text.substring(0, i);
-        i--;
+        text = text.slice(0, -1);
+        loreEl.textContent = text;
 
-        if (i < 0) {
+        if (text.length === 0) {
             clearInterval(timer);
             callback();
         }
     }, 18);
 }
+
+function playLoreLoop() {
+    typeLore(loreLines[loreIndex], () => {
+        eraseLore(() => {
+            loreIndex = (loreIndex + 1) % loreLines.length;
+            playLoreLoop();
+        });
+    });
+}
+
+playLoreLoop();
+</script>
 
 <script>
 const loreLines = [
