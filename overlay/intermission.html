@@ -157,66 +157,6 @@ html, body {
     text-shadow: 0 0 8px rgba(0,217,255,0.45);
 
     transition: opacity 0.4s ease;
-    backdrop-filter: blur(6px);
-    animation: lorePulse 5s ease-in-out infinite;
-}
-
-@keyframes lorePulse {
-    0%, 100% {
-        box-shadow: 0 0 12px rgba(0,217,255,0.08);
-    }
-
-    50% {
-        box-shadow: 0 0 24px rgba(0,217,255,0.22);
-    }
-}
-
-.chat-panel {
-    position: absolute;
-    right: 90px;
-    bottom: 180px;
-
-    width: 430px;
-    height: 520px;
-
-    background: rgba(0,0,0,0.42);
-    border-left: 2px solid rgba(0,217,255,0.9);
-    border-right: 1px solid rgba(255,255,255,0.08);
-    border-top: 1px solid rgba(0,217,255,0.35);
-    border-bottom: 1px solid rgba(0,217,255,0.25);
-
-    box-shadow:
-        0 0 28px rgba(0,217,255,0.18),
-        inset 0 0 22px rgba(255,255,255,0.04);
-
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-}
-
-.chat-title {
-    height: 36px;
-
-    display: flex;
-    align-items: center;
-
-    padding-left: 16px;
-
-    font-size: 11px;
-    letter-spacing: 4px;
-    font-weight: 900;
-
-    color: #00d9ff;
-    text-transform: uppercase;
-
-    border-bottom: 1px solid rgba(0,217,255,0.25);
-    text-shadow: 0 0 10px #00d9ff;
-}
-
-.chat-frame {
-    width: 100%;
-    height: calc(100% - 36px);
-
-    border: 0;
 }
 
 </style>
@@ -233,46 +173,33 @@ html, body {
 <div class="dust"></div>
 
 <div class="content">
-    <div class="status">BROADCAST HOLDING PATTERN</div>
-
-    <div class="title">
-        INTERMISSION<br>
-        IN PROGRESS
-    </div>
-
-    <div class="lore" id="loreLine"></div>
-</div>
-
-<div class="chat-panel">
-    <div class="chat-title">LIVE COMMS</div>
-
-    <iframe
-        class="chat-frame"
-        src="https://www.twitch.tv/embed/stimo/chat?parent=84.8.154.164"
-    </iframe>
+    <div class="status">BROADCAST RELAY ONLINE</div>
+    <div class="title">MISSION BRIEFING<br>IN PROGRESS</div>
+    <div class="lore"></div>
 </div>
     
 <script>
 const loreLines = [
-    "COMMAND DECK TEMPORARILY UNMANNED.",
-    "LIVE BROADCAST RELAY REMAINS ACTIVE.",
-    "CREW SYSTEMS OPERATING WITHIN NORMAL PARAMETERS.",
-    "LONG RANGE SIGNALS REMAIN STABLE.",
-    "STANDBY FOR RETURN TO ACTIVE DUTY."
+    "Systems are coming online. Flight telemetry is syncing.",
+    "Long range communications established with Stanton relay.",
+    "Quantum navigation systems are calibrating.",
+    "Traffic control has cleared the channel for broadcast.",
+    "Awaiting final launch confirmation from command.",
+    "Synchronising fleet telemetry and comms uplink."
 ];
 
 let loreIndex = 0;
-const loreEl = document.getElementById("loreLine");
+const loreEl = document.querySelector(".lore");
 
 function typeLore(text, callback) {
     let i = 0;
     loreEl.textContent = "";
 
     const timer = setInterval(() => {
-        loreEl.textContent += text.charAt(i);
+        loreEl.textContent = text.substring(0, i);
         i++;
 
-        if (i >= text.length) {
+        if (i > text.length) {
             clearInterval(timer);
             setTimeout(callback, 8000);
         }
@@ -281,12 +208,13 @@ function typeLore(text, callback) {
 
 function eraseLore(callback) {
     let text = loreEl.textContent;
+    let i = text.length;
 
     const timer = setInterval(() => {
-        text = text.slice(0, -1);
-        loreEl.textContent = text;
+        loreEl.textContent = text.substring(0, i);
+        i--;
 
-        if (text.length === 0) {
+        if (i < 0) {
             clearInterval(timer);
             callback();
         }
