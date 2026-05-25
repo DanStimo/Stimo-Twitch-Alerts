@@ -372,7 +372,11 @@ socket.on("alert", (data) => {
     }
 
     if (data.type === "giftsub") {
-        latestSub.textContent = data.user;
+    
+        const count = data.extra || "1";
+    
+        latestSub.textContent =
+            `${data.user} GIFTED X${count}`;
     }
 
     if (data.type === "tip") {
