@@ -40,7 +40,7 @@ html, body {
     box-sizing: border-box;
 
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
 
     padding: 0 16px;
@@ -179,21 +179,14 @@ html, body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    
-    padding-top: 7px;
 }
 
 .chip.expanded .chip-extra {
     opacity: 1;
 }
 
-.chip.expanded .chip-extra {
-    opacity: 1;
-    bottom: 5px;
-}
-
-.chip.expanded .chip-extra {
-    display: block;
+.chip.expanded .chip-text {
+    transform: translateY(2px);
 }
 
 .core {
