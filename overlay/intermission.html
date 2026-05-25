@@ -349,6 +349,26 @@ const socket = io();
 const chatMessages =
     document.getElementById("chatMessages");
 
+socket.on("connect", () => {
+
+    const row = document.createElement("div");
+
+    row.className = "chat-message";
+
+    row.innerHTML = `
+        <span class="chat-user" style="color:#00d9ff">
+            SYSTEM:
+        </span>
+
+        <span class="chat-text">
+            LIVE COMMS LINK ESTABLISHED
+        </span>
+    `;
+
+    chatMessages.appendChild(row);
+
+});
+
 socket.on("chat-message", (data) => {
     const row = document.createElement("div");
     row.className = "chat-message";
