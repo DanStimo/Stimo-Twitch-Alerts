@@ -233,7 +233,8 @@ console.log("[TWITCH CHAT MSG]", tags["display-name"], message);
     io.emit("chat-message", {
         user: tags["display-name"] || tags.username,
         message: message,
-        color: tags.color || "#00d9ff"
+        color: tags.color || "#00d9ff",
+        emotes: tags.emotes || {}
     });
 
 });
