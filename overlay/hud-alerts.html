@@ -249,38 +249,40 @@ html, body {
 <body>
 
 <div id="hud">
-    <div class="chip-group left-group">
-        <div class="chip" id="chipFollow" style="--chip-color:#00d9ff">
-            <div class="chip-label">FOLLOW</div>
-            <div class="chip-value" id="latestFollow">WAITING</div>
+    <div class="chip-row">
+        <div class="chip-group left-group">
+            <div class="chip" id="chipFollow" style="--chip-color:#00d9ff">
+                <div class="chip-label">FOLLOW</div>
+                <div class="chip-value" id="latestFollow">WAITING</div>
+            </div>
+        
+            <div class="chip" id="chipSub" style="--chip-color:#b84dff">
+                <div class="chip-label">SUB</div>
+                <div class="chip-value" id="latestSub">WAITING</div>
+            </div>
         </div>
-    
-        <div class="chip" id="chipSub" style="--chip-color:#b84dff">
-            <div class="chip-label">SUB</div>
-            <div class="chip-value" id="latestSub">WAITING</div>
+        
+        <div class="core" id="core">
+            <img src="assets/images/Stimo.png" class="core-logo">
+        </div>
+        
+        <div class="chip-group right-group">
+            <div class="chip" id="chipTip" style="--chip-color:#ffdd66">
+                <div class="chip-label">TIP</div>
+                <div class="chip-value" id="latestTip">WAITING</div>
+            </div>
+        
+            <div class="chip" id="chipBits" style="--chip-color:#00ff99">
+                <div class="chip-label">BITS</div>
+                <div class="chip-value" id="latestBits">WAITING</div>
+            </div>
         </div>
     </div>
     
-    <div class="core" id="core">
-        <img src="assets/images/Stimo.png" class="core-logo">
-    </div>
-    
-    <div class="chip-group right-group">
-        <div class="chip" id="chipTip" style="--chip-color:#ffdd66">
-            <div class="chip-label">TIP</div>
-            <div class="chip-value" id="latestTip">WAITING</div>
-        </div>
-    
-        <div class="chip" id="chipBits" style="--chip-color:#00ff99">
-            <div class="chip-label">BITS</div>
-            <div class="chip-value" id="latestBits">WAITING</div>
+        <div class="count-strip" id="counts">
+            FOLLOWERS 0 • SUBS 0 • BITS 0 • RAIDS 0
         </div>
     </div>
-
-    <div class="count-strip" id="counts">
-        FOLLOWERS 0 • SUBS 0 • BITS 0 • RAIDS 0
-    </div>
-</div>
 
 <script src="/socket.io/socket.io.js"></script>
 
