@@ -28,7 +28,7 @@ html, body {
     transform: translateX(-50%);
 
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
 
     gap: 14px;
@@ -147,28 +147,27 @@ html, body {
 }
 
 .chip.expanded {
-    transform: none;
+    z-index: 50;
+
+    height: 72px;
+
+    transform: translateY(-10px);
 
     background:
         linear-gradient(
             90deg,
-            rgba(0,0,0,0.82),
-            color-mix(in srgb, var(--chip-color) 32%, transparent)
+            rgba(0,0,0,0.92),
+            color-mix(in srgb, var(--chip-color) 38%, transparent)
         );
 
     box-shadow:
-        0 0 34px var(--chip-color),
-        inset 0 0 24px rgba(255,255,255,0.12);
+        0 0 42px var(--chip-color),
+        inset 0 0 28px rgba(255,255,255,0.12);
 
-    z-index: 20;
-    filter: brightness(1.12);
+    overflow: visible;
 }
 
 .chip-extra {
-    position: absolute;
-    left: 78px;
-    bottom: 3px;
-
     opacity: 0;
 
     font-size: 8px;
@@ -177,21 +176,26 @@ html, body {
 
     color: rgba(255,255,255,0.72);
 
-    transition: opacity 0.25s ease;
+    transform: translateY(6px);
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
 }
 
 .chip-text {
     display: flex;
-    align-items: center;
-    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+
+    gap: 4px;
+
+    transition: transform 0.25s ease;
 }
 
 .chip.expanded .chip-extra {
     opacity: 1;
-}
-
-.chip.expanded .chip-text {
-    transform: translateY(-5px);
+    transform: translateY(0);
 }
 
 .core {
