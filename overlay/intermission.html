@@ -170,7 +170,7 @@ html, body {
     right: 70px;
     bottom: 190px;
 
-    width: 650px;
+    width: 760px;
     height: 220px;
 
     background: rgba(0,0,0,0.42);
@@ -274,7 +274,10 @@ html, body {
 }
 
 .chat-message {
-    width: 170px;
+    min-width: 140px;
+    max-width: 320px;
+    width: fit-content;
+    
     flex-shrink: 0;
 
     max-height: 110px;
