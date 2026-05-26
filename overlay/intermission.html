@@ -327,7 +327,7 @@ html, body {
 
     background: linear-gradient(
         270deg,
-        rgba(0,0,0,0.65),
+        rgba(0,0,0,0.38),
         transparent
     );
 }
@@ -656,7 +656,30 @@ socket.on("chat-message", (data) => {
     });
 
     while (chatTrack.children.length > 8) {
-        chatTrack.removeChild(chatTrack.firstChild);
+
+        const first =
+            chatTrack.firstChild;
+    
+        first.style.opacity = "0";
+    
+        first.style.transform =
+            "translateY(10px)";
+    
+        setTimeout(() => {
+    
+            if (first.parentNode) {
+                first.remove();
+    
+                const overflow =
+                    chatTrack.scrollWidth -
+                    chatTrack.parentElement.clientWidth;
+    
+                chatTrack.style.transform =
+                    `translateX(-${Math.max(0, overflow)}px)`;
+            }
+    
+        }, 250);
+    
     }
 });
 </script>
