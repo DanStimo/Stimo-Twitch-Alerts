@@ -166,11 +166,12 @@ html, body {
 
 .chat-panel {
     position: absolute;
-    right: 90px;
-    bottom: 180px;
 
-    width: 430px;
-    height: 520px;
+    left: 90px;
+    bottom: 58px;
+
+    width: 900px;
+    height: 150px;
 
     background: rgba(0,0,0,0.42);
 
@@ -211,29 +212,26 @@ html, body {
 .chat-messages {
     position: absolute;
 
-    top: 50px;
+    top: 42px;
     left: 16px;
     right: 16px;
-    bottom: 16px;
+    bottom: 12px;
 
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    flex-direction: row;
+    align-items: flex-end;
 
-    gap: 14px;
+    gap: 18px;
 
     overflow: hidden;
 }
 
 .chat-message {
-    font-family:
-        Consolas,
-        "Segoe UI Emoji",
-        "Apple Color Emoji",
-        "Noto Color Emoji",
-        monospace;
-    font-size: 15px;
-    line-height: 1.45;
+    width: 200px;
+    flex-shrink: 0;
+
+    font-size: 13px;
+    line-height: 1.35;
 
     color: white;
 
@@ -248,8 +246,18 @@ html, body {
 
     text-shadow:
         0 0 10px rgba(0,217,255,0.18);
-    padding-left: 10px;
-    border-left: 2px solid rgba(0,217,255,0.35);
+
+    background: linear-gradient(
+        90deg,
+        rgba(0,217,255,0.08),
+        transparent
+    );
+
+    padding: 6px 8px 6px 10px;
+    border-left: 2px solid rgba(0,217,255,0.65);
+
+    box-shadow:
+        inset 0 0 12px rgba(0,217,255,0.04);
 }
 
 .chat-user {
