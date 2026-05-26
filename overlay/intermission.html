@@ -258,13 +258,19 @@ html, body {
     right: 12px;
     bottom: 12px;
 
+    overflow: hidden;
+}
+
+.chat-track {
+    height: 100%;
+
     display: flex;
     flex-direction: row;
     align-items: flex-end;
 
     gap: 14px;
 
-    overflow: hidden;
+    transition: transform 0.45s ease;
 }
 
 .chat-message {
@@ -452,7 +458,8 @@ playLoreLoop();
     </span>
 </div>
 
-    <div id="chatMessages" class="chat-messages"></div>
+    <div class="chat-messages">
+    <div id="chatTrack" class="chat-track"></div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -460,8 +467,8 @@ playLoreLoop();
 <script>
 const socket = io();
 
-const chatMessages =
-    document.getElementById("chatMessages");
+const chatTrack =
+    document.getElementById("chatTrack");
 
 socket.on("connect", () => {
 
@@ -482,7 +489,7 @@ socket.on("connect", () => {
         </div>
     `;
 
-    chatMessages.appendChild(row);
+    chatTrack.appendChild(row);
 
 });
 
@@ -544,51 +551,40 @@ function escapeHtml(text) {
 socket.on("chat-message", (data) => {
 
     const row = document.createElement("div");
-
     row.className = "chat-message new-message";
 
     row.innerHTML = `
         <div class="chat-meta">
-
-            <span
-                class="chat-user"
-                style="color:${data.color || "#00d9ff"}">
-
+            <span class="chat-user" style="color:${data.color || "#00d9ff"}">
                 ${data.user}
-
             </span>
 
             <span class="chat-time">
-
                 ${new Date().toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit"
                 })}
-
             </span>
-
         </div>
 
         <div class="chat-text">
-
-            ${renderTwitchMessage(
-                data.message,
-                data.emotes
-            )}
-
+            ${renderTwitchMessage(data.message, data.emotes)}
         </div>
     `;
 
-    chatMessages.appendChild(row);
+    chatTrack.appendChild(row);
 
-    while (chatMessages.children.length > 4) {
+    requestAnimationFrame(() => {
+        const overflow =
+            chatTrack.scrollWidth - chatTrack.parentElement.clientWidth;
 
-        chatMessages.removeChild(
-            chatMessages.firstChild
-        );
+        chatTrack.style.transform =
+            `translateX(-${Math.max(0, overflow)}px)`;
+    });
 
+    while (chatTrack.children.length > 8) {
+        chatTrack.removeChild(chatTrack.firstChild);
     }
-
 });
 </script>
     
