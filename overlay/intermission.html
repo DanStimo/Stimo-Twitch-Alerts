@@ -170,8 +170,8 @@ html, body {
     right: 90px;
     bottom: 190px;
 
-    width: 430px;
-    height: 455px;
+    width: 520px;
+    height: 220px;
 
     background: rgba(0,0,0,0.42);
 
@@ -212,14 +212,14 @@ html, body {
 .chat-messages {
     position: absolute;
 
-    top: 50px;
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
+    top: 42px;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
 
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    flex-direction: row;
+    align-items: flex-end;
 
     gap: 14px;
 
@@ -227,7 +227,8 @@ html, body {
 }
 
 .chat-message {
-    width: 200px;
+    width: 160px;
+
     flex-shrink: 0;
 
     font-size: 13px;
@@ -254,6 +255,7 @@ html, body {
     );
 
     padding: 6px 8px 6px 10px;
+
     border-left: 2px solid rgba(0,217,255,0.65);
 
     box-shadow:
