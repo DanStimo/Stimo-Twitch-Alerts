@@ -543,10 +543,11 @@ socket.on("chat-message", (data) => {
             </span>
 
             <span class="chat-time">
-                ${new Date().toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit"
-                })}
+                ${new Date().toLocaleTimeString("en-GB", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false
+                            })}
             </span>
         </div>
 
