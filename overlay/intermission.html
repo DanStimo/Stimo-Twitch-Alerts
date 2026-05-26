@@ -189,6 +189,8 @@ html, body {
 }
 
 .chat-title {
+    position: relative;
+    overflow: hidden;
     height: 36px;
 
     display: flex;
@@ -207,6 +209,40 @@ html, body {
     border-bottom: 1px solid rgba(0,217,255,0.25);
 
     text-shadow: 0 0 10px #00d9ff;
+}
+
+.chat-title::after {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: -30%;
+
+    width: 20%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0,217,255,0.28),
+        transparent
+    );
+
+    animation: chatHeaderSweep 5s ease-in-out infinite;
+}
+
+@keyframes chatHeaderSweep {
+    0% {
+        left: -30%;
+    }
+
+    45% {
+        left: 110%;
+    }
+
+    100% {
+        left: 110%;
+    }
 }
 
 .chat-online {
@@ -262,6 +298,40 @@ html, body {
     overflow: hidden;
 }
 
+.chat-messages::before,
+.chat-messages::after {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+
+    width: 42px;
+
+    z-index: 5;
+    pointer-events: none;
+}
+
+.chat-messages::before {
+    left: 0;
+
+    background: linear-gradient(
+        90deg,
+        rgba(0,0,0,0.65),
+        transparent
+    );
+}
+
+.chat-messages::after {
+    right: 0;
+
+    background: linear-gradient(
+        270deg,
+        rgba(0,0,0,0.65),
+        transparent
+    );
+}
+
 .chat-track {
     height: 100%;
 
@@ -311,6 +381,25 @@ html, body {
 
     box-shadow:
         inset 0 0 12px rgba(0,217,255,0.04);
+}
+
+.chat-message {
+    transition:
+        opacity 0.35s ease,
+        filter 0.35s ease;
+}
+
+.chat-message:not(:last-child) {
+    opacity: 0.72;
+    filter: saturate(0.75);
+}
+
+.chat-track .chat-message:last-child {
+    box-shadow:
+        0 0 18px rgba(0,217,255,0.22),
+        inset 0 0 14px rgba(0,217,255,0.08);
+
+    border-left-color: #00d9ff;
 }
 
 .chat-user {
