@@ -336,6 +336,30 @@ html, body {
     border-top-color: rgba(184,77,255,0.9);
 }
 
+.sub-train.medium {
+    border-top-color: rgba(0,217,255,0.85);
+}
+
+.sub-train.medium .train-fill {
+    background: linear-gradient(90deg, #00d9ff, #ffffff);
+}
+
+.sub-train.low {
+    border-top-color: rgba(255,170,0,0.9);
+}
+
+.sub-train.low .train-fill {
+    background: linear-gradient(90deg, #ffaa00, #ffffff);
+}
+
+.sub-train.warning {
+    border-top-color: rgba(255,68,68,0.95);
+}
+
+.sub-train.warning .train-fill {
+    background: linear-gradient(90deg, #ff4444, #ffffff);
+}
+
 .train-bar::after {
     content: "";
 
@@ -654,21 +678,20 @@ function updateSubTrainDisplay() {
     trainTimer.textContent =
         `SUB TRAIN ACTIVE • ${mins}:${String(secs).padStart(2, "0")}`;
 
+    subTrain.classList.remove("medium", "low", "warning");
+
+    trainTimer.style.color =
+        "rgba(255,255,255,0.65)";
+    
     if (remaining <= 30000) {
-
-        subTrain.style.borderTopColor =
-            "#ff4444";
-
-        trainTimer.style.color =
-            "#ff8888";
-
-    } else {
-
-        subTrain.style.borderTopColor =
-            "rgba(184,77,255,0.45)";
-
-        trainTimer.style.color =
-            "rgba(255,255,255,0.65)";
+        subTrain.classList.add("warning");
+        trainTimer.style.color = "#ff8888";
+    } else if (remaining <= 90000) {
+        subTrain.classList.add("low");
+        trainTimer.style.color = "#ffaa00";
+    } else if (remaining <= 180000) {
+        subTrain.classList.add("medium");
+        trainTimer.style.color = "#00d9ff";
     }
 }
     
