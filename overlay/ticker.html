@@ -347,7 +347,7 @@ html, body {
     bottom: 76px;
 
     width: 100vw;
-    height: 18px;
+    height: 28px;
 
     opacity: 0;
     background: rgba(0,0,0,0.55);
@@ -363,6 +363,7 @@ html, body {
 
 .sub-train-strip.running {
     opacity: 1;
+    z-index: 999999;
 }
 
 .sub-train-fill {
@@ -895,6 +896,10 @@ function updateTickerSubTrain() {
         subTrainStrip.classList.remove("warning");
     }
 }
+
+socket.on("connect", () => {
+    console.log("[TICKER] Connected to socket");
+});
     
 socket.on("alert", (data) => {
     queueBanner(data);
