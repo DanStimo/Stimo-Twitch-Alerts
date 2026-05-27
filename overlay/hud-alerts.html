@@ -590,101 +590,85 @@ function pulse(type) {
     }, duration);
 }
 
-let trainActive = false;
-let trainCountValue = 0;
-let trainEndsAt = 0;
-let trainInterval = null;
-
-function startSubTrain(addAmount = 1) {
-    trainActive = true;
-    trainCountValue = Math.min(
-        trainCountValue + addAmount,
-        999
-    );
-
-    // 5 minute train window
-    trainEndsAt = Date.now() + (5 * 60 * 1000);
-
-    trainCount.textContent = String(trainCountValue).padStart(2, "0");
-
-    trainCount.classList.remove("bump");
-    void trainCount.offsetWidth;
-    trainCount.classList.add("bump");
-
-    if (!trainInterval) {
-        trainInterval = setInterval(updateSubTrainTimer, 500);
-    }
-
-    updateSubTrainTimer();
-
-    subTrain.classList.remove("active");
-    void subTrain.offsetWidth;
-    subTrain.classList.add("active");
+let serverSubTrainCount = 0;
+let serverSubTrainEndsAt = 0;
+let serverSubTrainInterval = null;
     
-    setTimeout(() => {
-        subTrain.classList.remove("active");
-    }, 700);
+function updateSubTrainDisplay() {
 
-    subTrain.classList.add("running");
-    
-}
+    const remaining =
+        Math.max(
+            0,
+            serverSubTrainEndsAt - Date.now()
+        );
 
-function updateSubTrainTimer() {
-    if (!trainActive) {
+    const total =
+        5 * 60 * 1000;
+
+    if (
+        serverSubTrainCount <= 0 ||
+        remaining <= 0
+    ) {
+
+        subTrain.classList.remove("running");
+
+        trainCount.textContent = "00";
+
         trainFill.style.width = "0%";
-        trainTimer.textContent = "STANDING BY";
+
+        trainTimer.textContent =
+            "STANDING BY";
+
+        if (serverSubTrainInterval) {
+
+            clearInterval(
+                serverSubTrainInterval
+            );
+
+            serverSubTrainInterval = null;
+        }
+
         return;
     }
 
-    const remaining = Math.max(0, trainEndsAt - Date.now());
-    const total = 5 * 60 * 1000;
+    subTrain.classList.add("running");
 
-    const percent = (remaining / total) * 100;
+    trainCount.textContent =
+        String(serverSubTrainCount)
+            .padStart(2, "0");
 
-    if (remaining <= 30000) {
-        subTrain.style.borderTopColor = "#ff4444";
-        trainTimer.style.color = "#ff8888";
-    }
-    else {
-        subTrain.style.borderTopColor = "rgba(184,77,255,0.45)";
-        trainTimer.style.color = "rgba(255,255,255,0.65)";
-    }
+    const percent =
+        (remaining / total) * 100;
 
-    trainFill.style.width = `${percent}%`;
+    trainFill.style.width =
+        `${percent}%`;
 
-    if (trainCountValue >= 25) {
-        trainFill.style.background =
-            "linear-gradient(90deg,#ff4dff,#ffffff)";
-    }
-    else if (trainCountValue >= 10) {
-        trainFill.style.background =
-            "linear-gradient(90deg,#b84dff,#ffffff)";
-    }
-    else {
-        trainFill.style.background =
-            "linear-gradient(90deg,#7a2cff,#ffffff)";
-    }
+    const mins =
+        Math.floor(remaining / 60000);
 
-    const mins = Math.floor(remaining / 60000);
-    const secs = Math.floor((remaining % 60000) / 1000);
+    const secs =
+        Math.floor(
+            (remaining % 60000) / 1000
+        );
 
     trainTimer.textContent =
         `SUB TRAIN ACTIVE • ${mins}:${String(secs).padStart(2, "0")}`;
 
-    if (remaining <= 0) {
-        trainActive = false;
-        trainCountValue = 0;
-        trainTimer.textContent = "TRAIN ENDED";
-        trainFill.style.width = "0%";
-        subTrain.classList.remove("running");
+    if (remaining <= 30000) {
 
-        clearInterval(trainInterval);
-        trainInterval = null;
+        subTrain.style.borderTopColor =
+            "#ff4444";
 
-        setTimeout(() => {
-            trainTimer.textContent = "STANDING BY";
-            trainCount.textContent = "00";
-        }, 3000);
+        trainTimer.style.color =
+            "#ff8888";
+
+    } else {
+
+        subTrain.style.borderTopColor =
+            "rgba(184,77,255,0.45)";
+
+        trainTimer.style.color =
+            "rgba(255,255,255,0.65)";
     }
 }
     
@@ -802,14 +786,12 @@ function processAlert(data) {
         latestSub.textContent =
             `${data.user} • ${data.extra || ""}`;
 
-        startSubTrain(1);
     }
 
     if (data.type === "primesub") {
         latestSub.textContent =
             `${data.user} • PRIME`;
 
-        startSubTrain(1);
     }
 
     if (data.type === "giftsub") {
@@ -827,7 +809,6 @@ function processAlert(data) {
                 10
             );
 
-        startSubTrain(giftAmount);
     }
 
     if (data.type === "tip") {
@@ -846,6 +827,37 @@ function processAlert(data) {
 
     pulse(data.type);
 }
+
+socket.on("sub-train-update", (data) => {
+
+    serverSubTrainCount =
+        data.count || 0;
+
+    serverSubTrainEndsAt =
+        data.endsAt || 0;
+
+    updateSubTrainDisplay();
+
+    if (serverSubTrainInterval) {
+
+        clearInterval(
+            serverSubTrainInterval
+        );
+    }
+
+    if (
+        serverSubTrainCount > 0 &&
+        serverSubTrainEndsAt > Date.now()
+    ) {
+
+        serverSubTrainInterval =
+            setInterval(
+                updateSubTrainDisplay,
+                500
+            );
+    }
+
+});
     
 socket.on("alert", (data) => {
     queueAlert(data);
