@@ -438,6 +438,38 @@ html, body {
     box-shadow: 0 0 18px rgba(255,68,68,0.75);
 }
 
+.sub-train-strip.medium {
+    border-top-color: rgba(0,217,255,0.7);
+    border-bottom-color: rgba(0,217,255,0.45);
+}
+
+.sub-train-strip.medium .sub-train-fill {
+    background: linear-gradient(
+        90deg,
+        rgba(0,217,255,0.9),
+        rgba(255,255,255,0.9)
+    );
+
+    box-shadow:
+        0 0 18px rgba(0,217,255,0.7);
+}
+
+.sub-train-strip.low {
+    border-top-color: rgba(255,170,0,0.8);
+    border-bottom-color: rgba(255,170,0,0.45);
+}
+
+.sub-train-strip.low .sub-train-fill {
+    background: linear-gradient(
+        90deg,
+        rgba(255,170,0,0.9),
+        rgba(255,255,255,0.9)
+    );
+
+    box-shadow:
+        0 0 18px rgba(255,170,0,0.75);
+}
+
 .ticker-train-bar::after {
     content: "";
 
@@ -905,10 +937,23 @@ function updateTickerSubTrain() {
     subTrainTimer.textContent =
         `${mins}:${String(secs).padStart(2, "0")} REMAINING`;
 
+    subTrainStrip.classList.remove(
+        "medium",
+        "low",
+        "warning"
+    );
+    
     if (remaining <= 30000) {
+    
         subTrainStrip.classList.add("warning");
-    } else {
-        subTrainStrip.classList.remove("warning");
+    
+    } else if (remaining <= 90000) {
+    
+        subTrainStrip.classList.add("low");
+    
+    } else if (remaining <= 180000) {
+    
+        subTrainStrip.classList.add("medium");
     }
 }
 
