@@ -449,15 +449,15 @@ function queueAlert(type, user, extra = "", reward = "", history = null) {
         type === "giftsub"
     ) {
         let amount = 1;
-
+    
         if (type === "giftsub") {
             const match =
                 String(user || extra || "")
                     .match(/x?(\d+)/i);
-
+    
             amount = match ? parseInt(match[1], 10) : 1;
         }
-
+    
         startOrExtendSubTrain(amount);
     }
 
