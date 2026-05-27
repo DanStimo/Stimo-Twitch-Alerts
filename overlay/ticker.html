@@ -45,7 +45,7 @@ html, body {
     bottom: 0;
 
     width: 100vw;
-    height: 76px;
+    height: 104px;
 
     overflow: hidden;
 
@@ -83,7 +83,8 @@ html, body {
 
 .track {
     position: absolute;
-    height: 100%;
+    bottom: 0;
+    height: 76px;
     display: flex;
     align-items: center;
     white-space: nowrap;
@@ -129,7 +130,10 @@ html, body {
 
 .alert-banner {
     position: absolute;
-    inset: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 76px;
 
     display: flex;
     align-items: center;
@@ -342,26 +346,24 @@ html, body {
 }
 
 .sub-train-strip {
-    position: fixed;
-
+    position: absolute;
     left: 0;
-    bottom: 76px;
+    top: 0;
 
-    width: 100vw;
-    height: 26px;
+    width: 100%;
+    height: 28px;
 
     opacity: 0;
 
-    background: rgba(184,77,255,0.85);
+    background: rgba(0,0,0,0.55);
 
-    border-top: 1px solid rgba(255,255,255,0.45);
-    border-bottom: 1px solid rgba(184,77,255,0.55);
+    border-top: 1px solid rgba(184,77,255,0.45);
+    border-bottom: 1px solid rgba(184,77,255,0.35);
 
     overflow: hidden;
-
     transition: opacity 0.35s ease;
 
-    z-index: 2147483647;
+    z-index: 999999;
 }
 
 .sub-train-strip.running {
