@@ -22,7 +22,12 @@ html, body {
     content: "";
 
     position: absolute;
-    inset: 0;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 76px;
 
     background:
         repeating-linear-gradient(
@@ -31,11 +36,23 @@ html, body {
             rgba(255,255,255,0.025) 1px,
             transparent 3px,
             transparent 6px
+        ),
+        linear-gradient(
+            180deg,
+            rgba(0,217,255,0.12) 0%,
+            rgba(0,217,255,0.04) 10%,
+            rgba(8,12,18,0.42) 35%,
+            rgba(4,6,10,0.58) 100%
         );
 
-    opacity: 0.16;
+    border-top: 1px solid rgba(0,217,255,0.38);
+    border-bottom: 1px solid rgba(0,217,255,0.12);
+
+    opacity: 1;
 
     pointer-events: none;
+
+    z-index: 0;
 }
 
 #ticker {
@@ -49,20 +66,10 @@ html, body {
 
     overflow: hidden;
 
-    background:
-        linear-gradient(
-            180deg,
-            rgba(0,217,255,0.12) 0%,
-            rgba(0,217,255,0.04) 10%,
-            rgba(8,12,18,0.42) 35%,
-            rgba(4,6,10,0.58) 100%
-        );
-
-    backdrop-filter: blur(10px) saturate(140%);
-
-    border-top: 1px solid rgba(0,217,255,0.38);
-    border-bottom: 1px solid rgba(0,217,255,0.12);
-
+    background: transparent;
+    backdrop-filter: none;
+    border: none;
+    
     transition:
         border-color 0.35s ease,
         box-shadow 0.35s ease,
@@ -85,12 +92,14 @@ html, body {
     position: absolute;
     bottom: 0;
     height: 76px;
+    z-index: 2;
     display: flex;
     align-items: center;
     white-space: nowrap;
     animation: tickerMove 55s linear infinite;
     opacity: 1;
     transition: opacity 0.35s ease;
+    
 }
 
 #ticker.alerting .track {
