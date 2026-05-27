@@ -345,31 +345,27 @@ html, body {
     position: fixed;
 
     left: 0;
-    bottom: 82px;
+    bottom: 76px;
 
     width: 100vw;
-    height: 34px;
+    height: 26px;
 
     opacity: 0;
-    transform: translateY(8px);
 
-    background: rgba(0,0,0,0.55);
+    background: rgba(184,77,255,0.85);
 
-    border-top: 1px solid rgba(184,77,255,0.45);
-    border-bottom: 1px solid rgba(184,77,255,0.35);
+    border-top: 1px solid rgba(255,255,255,0.45);
+    border-bottom: 1px solid rgba(184,77,255,0.55);
 
     overflow: hidden;
 
-    transition:
-        opacity 0.35s ease,
-        transform 0.35s ease;
+    transition: opacity 0.35s ease;
 
-    z-index: 999999;
+    z-index: 2147483647;
 }
 
 .sub-train-strip.running {
     opacity: 1;
-    transform: translateY(0);
 }
 
 .sub-train-fill {
