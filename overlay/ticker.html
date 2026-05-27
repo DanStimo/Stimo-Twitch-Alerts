@@ -900,6 +900,13 @@ function updateTickerSubTrain() {
 socket.on("connect", () => {
     console.log("[TICKER] Connected to socket");
 });
+
+setTimeout(() => {
+    subTrainStrip.classList.add("running");
+    subTrainCount.textContent = "99";
+    subTrainTimer.textContent = "TEST ACTIVE";
+    subTrainFill.style.width = "75%";
+}, 1000);
     
 socket.on("alert", (data) => {
     queueBanner(data);
