@@ -45,7 +45,7 @@ html, body {
     bottom: 0;
 
     width: 100vw;
-    height: 104px;
+    height: 76px;
 
     overflow: hidden;
 
@@ -83,8 +83,7 @@ html, body {
 
 .track {
     position: absolute;
-    height: 76px;
-    bottom: 0;
+    height: 100%;
     display: flex;
     align-items: center;
     white-space: nowrap;
@@ -345,23 +344,31 @@ html, body {
 .sub-train-strip {
     position: fixed;
     left: 0;
-    bottom: 0;
-
-    transform: translateY(0);
+    bottom: 76px;
 
     width: 100vw;
-    height: 28px;
+    height: 22px;
 
     opacity: 0;
+    transform: translateY(22px);
+
     background: rgba(0,0,0,0.55);
 
     border-top: 1px solid rgba(184,77,255,0.4);
     border-bottom: 1px solid rgba(184,77,255,0.25);
 
     overflow: hidden;
-    transition: opacity 0.35s ease;
 
-    z-index: 10000;
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
+
+    z-index: 999999;
+}
+
+.sub-train-strip.running {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .sub-train-strip.running {
