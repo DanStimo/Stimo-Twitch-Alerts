@@ -267,7 +267,7 @@ html, body {
     font-size: 8px;
     letter-spacing: 2px;
 
-    color: #b84dff;
+    color: var(--train-color, #b84dff);
 }
 
 .train-bar {
@@ -301,7 +301,7 @@ html, body {
     font-size: 8px;
     letter-spacing: 1px;
 
-    color: rgba(255,255,255,0.65);
+    color: var(--train-color-soft, rgba(255,255,255,0.65));
 }
 
 @keyframes coreIdle {
@@ -336,28 +336,54 @@ html, body {
     border-top-color: rgba(184,77,255,0.9);
 }
 
+.sub-train {
+    --train-color: #b84dff;
+    --train-color-soft: rgba(255,255,255,0.65);
+}
+
 .sub-train.medium {
     border-top-color: rgba(0,217,255,0.85);
+
+    --train-color: #00d9ff;
+    --train-color-soft: #66e7ff;
 }
 
 .sub-train.medium .train-fill {
-    background: linear-gradient(90deg, #00d9ff, #ffffff);
+    background: linear-gradient(
+        90deg,
+        #00d9ff,
+        #ffffff
+    );
 }
 
 .sub-train.low {
     border-top-color: rgba(255,170,0,0.9);
+
+    --train-color: #ffaa00;
+    --train-color-soft: #ffd166;
 }
 
 .sub-train.low .train-fill {
-    background: linear-gradient(90deg, #ffaa00, #ffffff);
+    background: linear-gradient(
+        90deg,
+        #ffaa00,
+        #ffffff
+    );
 }
-
+    
 .sub-train.warning {
     border-top-color: rgba(255,68,68,0.95);
+
+    --train-color: #ff4444;
+    --train-color-soft: #ff8888;
 }
 
 .sub-train.warning .train-fill {
-    background: linear-gradient(90deg, #ff4444, #ffffff);
+    background: linear-gradient(
+        90deg,
+        #ff4444,
+        #ffffff
+    );
 }
 
 .train-bar::after {
@@ -680,19 +706,6 @@ function updateSubTrainDisplay() {
 
     subTrain.classList.remove("medium", "low", "warning");
 
-    trainTimer.style.color =
-        "rgba(255,255,255,0.65)";
-    
-    if (remaining <= 30000) {
-        subTrain.classList.add("warning");
-        trainTimer.style.color = "#ff8888";
-    } else if (remaining <= 90000) {
-        subTrain.classList.add("low");
-        trainTimer.style.color = "#ffaa00";
-    } else if (remaining <= 180000) {
-        subTrain.classList.add("medium");
-        trainTimer.style.color = "#00d9ff";
-    }
 }
     
 function updateCounts(history) {
