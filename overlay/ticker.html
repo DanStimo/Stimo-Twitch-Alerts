@@ -96,10 +96,13 @@ html, body {
     display: flex;
     align-items: center;
     white-space: nowrap;
-    animation: tickerMove 55s linear infinite;
+    animation: tickerMove 75s linear infinite;
     opacity: 1;
     transition: opacity 0.35s ease;
-    
+
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
 }
 
 #ticker.alerting .track {
@@ -290,8 +293,13 @@ html, body {
 }
 
 @keyframes tickerMove {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+
+    to {
+        transform: translate3d(-50%, 0, 0);
+    }
 }
 
 @keyframes bannerIn {
