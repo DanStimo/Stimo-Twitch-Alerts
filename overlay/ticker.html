@@ -341,69 +341,85 @@ html, body {
     }
 }
 
-.ticker-sub-train {
-    position: absolute;
+.sub-train-strip {
+    position: fixed;
+    left: 0;
+    bottom: 76px;
 
-    right: 42px;
-    top: 8px;
-
-    width: 300px;
+    width: 100vw;
+    height: 18px;
 
     opacity: 0;
-    transform: translateY(8px);
+    background: rgba(0,0,0,0.55);
 
-    pointer-events: none;
+    border-top: 1px solid rgba(184,77,255,0.4);
+    border-bottom: 1px solid rgba(184,77,255,0.25);
 
-    transition:
-        opacity 0.35s ease,
-        transform 0.35s ease;
+    overflow: hidden;
+    transition: opacity 0.35s ease;
 
-    z-index: 10;
+    z-index: 10000;
 }
 
-.ticker-sub-train.running {
+.sub-train-strip.running {
     opacity: 1;
-    transform: translateY(0);
 }
 
-.ticker-train-top {
+.sub-train-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    height: 100%;
+    width: 0%;
+
+    background: linear-gradient(
+        90deg,
+        rgba(184,77,255,0.85),
+        rgba(255,255,255,0.85)
+    );
+
+    box-shadow: 0 0 18px rgba(184,77,255,0.65);
+
+    transition: width 0.4s linear;
+}
+
+.sub-train-text {
+    position: absolute;
+    inset: 0;
+
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
+
+    gap: 18px;
 
     font-size: 10px;
     letter-spacing: 3px;
     font-weight: 900;
 
-    color: #b84dff;
+    color: white;
 
     text-shadow:
-        0 0 10px rgba(184,77,255,0.8);
+        0 0 8px rgba(255,255,255,0.85),
+        0 0 14px rgba(184,77,255,0.9);
+
+    pointer-events: none;
 }
 
-.ticker-train-bar {
-    position: relative;
-
-    margin-top: 5px;
-
-    width: 100%;
-    height: 4px;
-
-    background: rgba(255,255,255,0.12);
-
-    overflow: hidden;
+.sub-train-strip.warning {
+    border-top-color: rgba(255,68,68,0.8);
+    border-bottom-color: rgba(255,68,68,0.45);
 }
 
-.ticker-train-fill {
-    width: 0%;
-    height: 100%;
-
+.sub-train-strip.warning .sub-train-fill {
     background: linear-gradient(
         90deg,
-        #b84dff,
-        #ffffff
+        rgba(255,68,68,0.9),
+        rgba(255,255,255,0.9)
     );
 
-    transition: width 0.4s linear;
+    box-shadow: 0 0 18px rgba(255,68,68,0.75);
 }
 
 .ticker-train-bar::after {
@@ -461,20 +477,15 @@ html, body {
 <div id="ticker">
     <div class="track" id="track"></div>
 
-    <div class="ticker-sub-train" id="tickerSubTrain">
-        <div class="ticker-train-top">
-            <span>SUB TRAIN</span>
-            <span id="tickerTrainCount">00</span>
-        </div>
-    
-        <div class="ticker-train-bar">
-            <div class="ticker-train-fill" id="tickerTrainFill"></div>
-        </div>
-    
-        <div class="ticker-train-timer" id="tickerTrainTimer">
-            STANDING BY
-        </div>
+    <div class="sub-train-strip" id="subTrainStrip">
+    <div class="sub-train-fill" id="subTrainFill"></div>
+
+    <div class="sub-train-text">
+        <span>SUB TRAIN</span>
+        <span id="subTrainCount">00</span>
+        <span id="subTrainTimer">STANDING BY</span>
     </div>
+</div>
 
     <div class="alert-banner" id="alertBanner">
         <video class="banner-video" id="bannerVideo" muted playsinline loop>
@@ -502,10 +513,10 @@ const alertType = document.getElementById("alertType");
 const alertMain = document.getElementById("alertMain");
 const alertDetail = document.getElementById("alertDetail");
 const bannerVideo = document.getElementById("bannerVideo");
-const tickerSubTrain = document.getElementById("tickerSubTrain");
-const tickerTrainCount = document.getElementById("tickerTrainCount");
-const tickerTrainFill = document.getElementById("tickerTrainFill");
-const tickerTrainTimer = document.getElementById("tickerTrainTimer");
+const subTrainStrip = document.getElementById("subTrainStrip");
+const subTrainFill = document.getElementById("subTrainFill");
+const subTrainCount = document.getElementById("subTrainCount");
+const subTrainTimer = document.getElementById("subTrainTimer");
 
 let tickerTrainCountValue = 0;
 let tickerTrainEndsAt = 0;
@@ -847,12 +858,12 @@ function updateTickerSubTrain() {
         tickerTrainCountValue <= 0 ||
         remaining <= 0
     ) {
-        tickerSubTrain.classList.remove("running");
-        tickerSubTrain.classList.remove("warning");
+        subTrainStrip.classList.remove("running");
+        subTrainStrip.classList.remove("warning");
 
-        tickerTrainCount.textContent = "00";
-        tickerTrainFill.style.width = "0%";
-        tickerTrainTimer.textContent = "STANDING BY";
+        subTrainCount.textContent = "00";
+        subTrainFill.style.width = "0%";
+        subTrainTimer.textContent = "STANDING BY";
 
         if (tickerTrainInterval) {
             clearInterval(tickerTrainInterval);
@@ -862,26 +873,26 @@ function updateTickerSubTrain() {
         return;
     }
 
-    tickerSubTrain.classList.add("running");
+    subTrainStrip.classList.add("running");
 
-    tickerTrainCount.textContent =
+    subTrainCount.textContent =
         String(tickerTrainCountValue).padStart(2, "0");
 
     const percent = (remaining / total) * 100;
 
-    tickerTrainFill.style.width =
+    subTrainFill.style.width =
         `${percent}%`;
 
     const mins = Math.floor(remaining / 60000);
     const secs = Math.floor((remaining % 60000) / 1000);
 
-    tickerTrainTimer.textContent =
+    subTrainTimer.textContent =
         `${mins}:${String(secs).padStart(2, "0")} REMAINING`;
 
     if (remaining <= 30000) {
-        tickerSubTrain.classList.add("warning");
+        subTrainStrip.classList.add("warning");
     } else {
-        tickerSubTrain.classList.remove("warning");
+        subTrainStrip.classList.remove("warning");
     }
 }
     
