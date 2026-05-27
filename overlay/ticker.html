@@ -344,7 +344,9 @@ html, body {
 .sub-train-strip {
     position: fixed;
     left: 0;
-    top: 0;
+    bottom: 76px;
+
+    transform: translateY(0);
 
     width: 100vw;
     height: 28px;
@@ -383,6 +385,8 @@ html, body {
     box-shadow: 0 0 18px rgba(184,77,255,0.65);
 
     transition: width 0.4s linear;
+
+    opacity: 0.75;
 }
 
 .sub-train-text {
@@ -900,13 +904,6 @@ function updateTickerSubTrain() {
 socket.on("connect", () => {
     console.log("[TICKER] Connected to socket");
 });
-
-setTimeout(() => {
-    subTrainStrip.classList.add("running");
-    subTrainCount.textContent = "99";
-    subTrainTimer.textContent = "TEST ACTIVE";
-    subTrainFill.style.width = "75%";
-}, 1000);
     
 socket.on("alert", (data) => {
     queueBanner(data);
