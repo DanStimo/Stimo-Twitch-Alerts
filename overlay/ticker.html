@@ -477,53 +477,6 @@ html, body {
     box-shadow:
         0 0 18px rgba(255,170,0,0.75);
 }
-
-.ticker-train-bar::after {
-    content: "";
-
-    position: absolute;
-    inset: 0;
-
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,255,255,0.2),
-        transparent
-    );
-
-    animation: tickerTrainSweep 2s linear infinite;
-}
-
-@keyframes tickerTrainSweep {
-    from {
-        transform: translateX(-100%);
-    }
-
-    to {
-        transform: translateX(100%);
-    }
-}
-
-.ticker-train-timer {
-    margin-top: 4px;
-
-    font-size: 10px;
-    letter-spacing: 2px;
-
-    color: rgba(255,255,255,0.72);
-}
-
-.ticker-sub-train.warning .ticker-train-top {
-    color: #ff8888;
-}
-
-.ticker-sub-train.warning .ticker-train-fill {
-    background: linear-gradient(
-        90deg,
-        #ff4444,
-        #ffffff
-    );
-}
     
 </style>
 </head>
