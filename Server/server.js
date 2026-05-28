@@ -437,7 +437,7 @@ function playNextAlert() {
     setTimeout(() => {
         alertPlaying = false;
         playNextAlert();
-    }, 6000);
+    }, nextAlert.duration || 5000);
 }
 
 async function createSubscription(type, version, condition, sessionId) {
@@ -776,7 +776,7 @@ function connectTwitchEventSub() {
                 io.emit("hype-train-update", {
                     active: true,
                     level: event.level || 1,
-                    total: event.total || 0,
+                    progress: event.progress || event.total || 0,
                     goal: event.goal || 1,
                     expiresAt: event.expires_at || null,
                     topContributions: event.top_contributions || []
@@ -786,11 +786,11 @@ function connectTwitchEventSub() {
             if (subType === "channel.hype_train.end") {
                 io.emit("hype-train-update", {
                     active: false,
-                    level: event.level || 1,
-                    total: event.total || 0,
-                    goal: event.goal || 1,
+                    level: 0,
+                    progress: 0,
+                    goal: 1,
                     expiresAt: null,
-                    topContributions: event.top_contributions || []
+                    topContributions: []
                 });
             }
         }
