@@ -643,6 +643,9 @@ function pulse(type) {
 let serverSubTrainCount = 0;
 let serverSubTrainEndsAt = 0;
 let serverSubTrainInterval = null;
+
+let hypeTrainProgress = 0;
+let hypeTrainGoal = 1;
     
 function updateSubTrainDisplay() {
 
@@ -651,9 +654,6 @@ function updateSubTrainDisplay() {
             0,
             serverSubTrainEndsAt - Date.now()
         );
-
-    const total =
-        5 * 60 * 1000;
 
     if (
         serverSubTrainCount <= 0 ||
@@ -687,7 +687,10 @@ function updateSubTrainDisplay() {
         `LVL ${serverSubTrainCount}`;
 
     const percent =
-        (remaining / total) * 100;
+        Math.min(
+            100,
+            ((hypeTrainProgress || 0) / (hypeTrainGoal || 1)) * 100
+        );
 
     trainFill.style.width =
         `${percent}%`;
@@ -701,9 +704,22 @@ function updateSubTrainDisplay() {
         );
 
     trainTimer.textContent =
-        `HYPE TRAIN ACTIVE • ${mins}:${String(secs).padStart(2, "0")}`;
+        `LEVEL ${serverSubTrainCount} • ${mins}:${String(secs).padStart(2, "0")} REMAINING`;
 
     subTrain.classList.remove("medium", "low", "warning");
+
+    if (remaining <= 30000) {
+
+        subTrain.classList.add("warning");
+    
+    } else if (remaining <= 90000) {
+    
+        subTrain.classList.add("low");
+    
+    } else if (remaining <= 180000) {
+    
+        subTrain.classList.add("medium");
+    }
 
 }
     
@@ -864,12 +880,31 @@ function processAlert(data) {
 }
 
 socket.on("hype-train-update", (data) => {
+    if (!data.active) {
+
+        serverSubTrainCount = 0;
+        hypeTrainProgress = 0;
+        hypeTrainGoal = 1;
+        serverSubTrainEndsAt = 0;
+        
+        updateSubTrainDisplay();
+        
+        return;
+        }
 
     serverSubTrainCount =
         data.level || 0;
     
+    hypeTrainProgress =
+        data.progress || 0;
+    
+    hypeTrainGoal =
+        data.goal || 1;
+    
     serverSubTrainEndsAt =
-        data.expiresAt ? new Date(data.expiresAt).getTime() : 0;
+        data.expiresAt
+            ? new Date(data.expiresAt).getTime()
+            : 0;
 
     updateSubTrainDisplay();
 
