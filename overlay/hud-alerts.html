@@ -542,7 +542,7 @@ html, body {
 
     <div class="sub-train" id="subTrain">
         <div class="train-top">
-            <span>SUB TRAIN</span>
+            <span>HYPE TRAIN</span>
             <span id="trainCount">00</span>
         </div>
     
@@ -684,8 +684,7 @@ function updateSubTrainDisplay() {
     subTrain.classList.add("running");
 
     trainCount.textContent =
-        String(serverSubTrainCount)
-            .padStart(2, "0");
+        `LVL ${serverSubTrainCount}`;
 
     const percent =
         (remaining / total) * 100;
@@ -702,7 +701,7 @@ function updateSubTrainDisplay() {
         );
 
     trainTimer.textContent =
-        `SUB TRAIN ACTIVE • ${mins}:${String(secs).padStart(2, "0")}`;
+        `HYPE TRAIN ACTIVE • ${mins}:${String(secs).padStart(2, "0")}`;
 
     subTrain.classList.remove("medium", "low", "warning");
 
@@ -864,13 +863,13 @@ function processAlert(data) {
     pulse(data.type);
 }
 
-socket.on("sub-train-update", (data) => {
+socket.on("hype-train-update", (data) => {
 
     serverSubTrainCount =
-        data.count || 0;
-
+        data.level || 0;
+    
     serverSubTrainEndsAt =
-        data.endsAt || 0;
+        data.expiresAt ? new Date(data.expiresAt).getTime() : 0;
 
     updateSubTrainDisplay();
 
