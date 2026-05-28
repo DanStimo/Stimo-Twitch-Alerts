@@ -537,7 +537,7 @@ html, body {
     <div class="sub-train-fill" id="subTrainFill"></div>
 
     <div class="sub-train-text">
-        <span>SUB TRAIN</span>
+        <span>HYPE TRAIN</span>
         <span id="subTrainCount">00</span>
         <span id="subTrainTimer">STANDING BY</span>
     </div>
@@ -885,9 +885,9 @@ function playNextBanner() {
     }, bannerDuration);
 }
 
-socket.on("sub-train-update", (data) => {
-    tickerTrainCountValue = data.count || 0;
-    tickerTrainEndsAt = data.endsAt || 0;
+socket.on("hype-train-update", (data) => {
+    tickerTrainCountValue = data.level || 0;
+    tickerTrainEndsAt = data.expiresAt ? new Date(data.expiresAt).getTime() : 0;
 
     updateTickerSubTrain();
 
@@ -932,7 +932,7 @@ function updateTickerSubTrain() {
     subTrainStrip.classList.add("running");
 
     subTrainCount.textContent =
-        String(tickerTrainCountValue).padStart(2, "0");
+        `LVL ${tickerTrainCountValue}`;
 
     const percent = (remaining / total) * 100;
 
