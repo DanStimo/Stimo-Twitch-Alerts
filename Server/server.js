@@ -12,34 +12,6 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-let subTrainCount = 0;
-let subTrainEndsAt = 0;
-let subTrainTimer = null;
-
-function emitSubTrainState() {
-    io.emit("sub-train-update", {
-        count: subTrainCount,
-        endsAt: subTrainEndsAt
-    });
-}
-
-function startOrExtendSubTrain(amount = 1) {
-    subTrainCount += amount;
-    subTrainEndsAt = Date.now() + 5 * 60 * 1000;
-
-    emitSubTrainState();
-
-    if (subTrainTimer) {
-        clearTimeout(subTrainTimer);
-    }
-
-    subTrainTimer = setTimeout(() => {
-        subTrainCount = 0;
-        subTrainEndsAt = 0;
-        emitSubTrainState();
-    }, 5 * 60 * 1000);
-}
-
 const twitchClient = new tmi.Client({
     options: { debug: true },
 
@@ -274,10 +246,6 @@ server.listen(3000, () => {
 io.on("connection", (socket) => {
     console.log("Overlay connected");
 
-    socket.emit("sub-train-update", {
-        count: subTrainCount,
-        endsAt: subTrainEndsAt
-    });
 });
 
 app.get("/api/alert-history", (req, res) => {
@@ -443,24 +411,7 @@ const alertDurations = {
 };
 
 function queueAlert(type, user, extra = "", reward = "", history = null) {
-    if (
-        type === "sub" ||
-        type === "primesub" ||
-        type === "giftsub"
-    ) {
-        let amount = 1;
     
-        if (type === "giftsub") {
-            const match =
-                String(user || extra || "")
-                    .match(/x?(\d+)/i);
-    
-            amount = match ? parseInt(match[1], 10) : 1;
-        }
-    
-        startOrExtendSubTrain(amount);
-    }
-
     alertQueue.push({
         type,
         user,
