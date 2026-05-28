@@ -403,7 +403,7 @@ html, body {
 
     box-shadow: 0 0 18px rgba(184,77,255,0.65);
 
-    transition: width 0.4s linear;
+    transition: width 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 
     opacity: 0.75;
 }
@@ -577,6 +577,9 @@ const subTrainTimer = document.getElementById("subTrainTimer");
 let tickerTrainCountValue = 0;
 let tickerTrainEndsAt = 0;
 let tickerTrainInterval = null;
+
+let tickerTrainProgress = 0;
+let tickerTrainGoal = 1;
 
 const alertSounds = {
     follow: new Audio("assets/sounds/New Follower.mp3"),
@@ -886,7 +889,20 @@ function playNextBanner() {
 }
 
 socket.on("hype-train-update", (data) => {
+    if (!data.active) {
+
+        tickerTrainCountValue = 0;
+        tickerTrainProgress = 0;
+        tickerTrainGoal = 1;
+        tickerTrainEndsAt = 0;
+    
+        updateTickerSubTrain();
+    
+        return;
+    }
     tickerTrainCountValue = data.level || 0;
+    tickerTrainProgress = data.progress || 0;
+    tickerTrainGoal = data.goal || 1;
     tickerTrainEndsAt = data.expiresAt ? new Date(data.expiresAt).getTime() : 0;
 
     updateTickerSubTrain();
@@ -907,8 +923,6 @@ socket.on("hype-train-update", (data) => {
 function updateTickerSubTrain() {
     const remaining =
         Math.max(0, tickerTrainEndsAt - Date.now());
-
-    const total = 5 * 60 * 1000;
 
     if (
         tickerTrainCountValue <= 0 ||
@@ -934,7 +948,11 @@ function updateTickerSubTrain() {
     subTrainCount.textContent =
         `LVL ${tickerTrainCountValue}`;
 
-    const percent = (remaining / total) * 100;
+    const percent =
+        Math.min(
+            100,
+            ((tickerTrainProgress || 0) / (tickerTrainGoal || 1)) * 100
+        );
 
     subTrainFill.style.width =
         `${percent}%`;
@@ -943,7 +961,7 @@ function updateTickerSubTrain() {
     const secs = Math.floor((remaining % 60000) / 1000);
 
     subTrainTimer.textContent =
-        `${mins}:${String(secs).padStart(2, "0")} REMAINING`;
+        `LEVEL ${tickerTrainCountValue} • ${mins}:${String(secs).padStart(2, "0")} REMAINING`;
 
     subTrainStrip.classList.remove(
         "medium",
