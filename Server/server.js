@@ -623,6 +623,33 @@ function connectTwitchEventSub() {
                 },
                 sessionId
             );
+
+            await createSubscription(
+                "channel.hype_train.begin",
+                "2",
+                {
+                    broadcaster_user_id: BROADCASTER_ID
+                },
+                sessionId
+            );
+            
+            await createSubscription(
+                "channel.hype_train.progress",
+                "2",
+                {
+                    broadcaster_user_id: BROADCASTER_ID
+                },
+                sessionId
+            );
+            
+            await createSubscription(
+                "channel.hype_train.end",
+                "2",
+                {
+                    broadcaster_user_id: BROADCASTER_ID
+                },
+                sessionId
+            );
         }
 
         if (messageType === "notification") {
@@ -789,6 +816,31 @@ function connectTwitchEventSub() {
                 );
 
                 announceChat(`@${event.user_name} redeemed ${event.reward.title}!`);
+            }
+
+            if (
+                subType === "channel.hype_train.begin" ||
+                subType === "channel.hype_train.progress"
+            ) {
+                io.emit("hype-train-update", {
+                    active: true,
+                    level: event.level || 1,
+                    total: event.total || 0,
+                    goal: event.goal || 1,
+                    expiresAt: event.expires_at || null,
+                    topContributions: event.top_contributions || []
+                });
+            }
+            
+            if (subType === "channel.hype_train.end") {
+                io.emit("hype-train-update", {
+                    active: false,
+                    level: event.level || 1,
+                    total: event.total || 0,
+                    goal: event.goal || 1,
+                    expiresAt: null,
+                    topContributions: event.top_contributions || []
+                });
             }
         }
 
