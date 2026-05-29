@@ -781,8 +781,20 @@ function connectTwitchEventSub() {
                     expiresAt: event.expires_at || null,
                     topContributions: event.top_contributions || []
                 });
-            }
             
+                if (subType === "channel.hype_train.begin") {
+                    announceChat(
+                        `🚂 Hype Train has started! Level ${event.level || 1} is now active!`
+                    );
+                }
+            
+                if (subType === "channel.hype_train.progress") {
+                    announceChat(
+                        `🚂 Hype Train Level ${event.level || 1}: ${event.progress || event.total || 0}/${event.goal || 1} points!`
+                    );
+                }
+            }
+                           
             if (subType === "channel.hype_train.end") {
                 io.emit("hype-train-update", {
                     active: false,
@@ -792,6 +804,10 @@ function connectTwitchEventSub() {
                     expiresAt: null,
                     topContributions: []
                 });
+            
+                announceChat(
+                    `🚂 Hype Train ended at Level ${event.level || 1}! Thank you for the support!`
+                );
             }
         }
 
