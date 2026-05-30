@@ -231,9 +231,71 @@ console.log("[TWITCH CHAT MSG]", tags["display-name"], message);
     if (self) return;
 
     const username = tags["display-name"] || tags.username;
-    const login = tags.username;
+    const login = String(tags.username || "").toLowerCase();
+    const text = message.trim();
+    const parts = text.split(/\s+/);
+    const command = parts[0].toLowerCase();
     
-    if (message.trim().toLowerCase() === "!openpack") {
+    const isBroadcaster =
+        tags.badges &&
+        tags.badges.broadcaster === "1";
+    
+    // !givepack username
+    if (command === "!givepack") {
+        if (!isBroadcaster) {
+            twitchClient.say(channel, `@${username} only the broadcaster can use !givepack.`);
+            return;
+        }
+    
+        const targetRaw = parts[1];
+    
+        if (!targetRaw) {
+            twitchClient.say(channel, `@${username} usage: !givepack username`);
+            return;
+        }
+    
+        const target = targetRaw.replace("@", "").toLowerCase();
+    
+        givePack(target);
+    
+        twitchClient.say(channel, `@${target} has been given 1 pack! Use !openpack to open it.`);
+        return;
+    }
+    
+    // !packs
+    if (command === "!packs") {
+        const collections = loadCollections();
+        const packs = collections[login]?.packs || 0;
+    
+        twitchClient.say(channel, `@${username} you have ${packs} pack${packs === 1 ? "" : "s"}.`);
+        return;
+    }
+    
+    // !collection
+    if (command === "!collection") {
+        const collections = loadCollections();
+        const userCollection = collections[login];
+    
+        if (!userCollection || !userCollection.cards || Object.keys(userCollection.cards).length === 0) {
+            twitchClient.say(channel, `@${username} your collection is empty.`);
+            return;
+        }
+    
+        const totalCards = Object.values(userCollection.cards)
+            .reduce((sum, count) => sum + count, 0);
+    
+        const uniqueCards = Object.keys(userCollection.cards).length;
+    
+        twitchClient.say(
+            channel,
+            `@${username} collection: ${totalCards} cards, ${uniqueCards} unique.`
+        );
+    
+        return;
+    }
+    
+    // !openpack
+    if (command === "!openpack") {
         const collections = loadCollections();
     
         if (!collections[login] || collections[login].packs <= 0) {
@@ -693,7 +755,7 @@ function connectTwitchEventSub() {
                     history
                 );
 
-                givePack(gifter);
+                givePack(event.user_login || gifter);
                 announceChat(`@${gifter} gifted ${total} sub${total === 1 ? "" : "s"}! The gifter gets 1 pack to redeem with !openpack`);
             }
 
@@ -722,7 +784,7 @@ function connectTwitchEventSub() {
                     history
                 );
             
-                givePack(event.user_name);
+                givePack(event.user_login);
             
                 announceChat(
                     `@${event.user_name} subscribed with Prime for ${months} month${months === 1 ? "" : "s"}! Redeem your pack with !openpack`
@@ -746,7 +808,7 @@ function connectTwitchEventSub() {
                     history
                 );
 
-                givePack(event.user_name);
+                givePack(event.user_login);
                 announceChat(`@${event.user_name} subscribed with ${event.tier} for ${months} months! Redeem your pack with !openpack`);
             }
 
