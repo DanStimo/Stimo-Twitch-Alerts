@@ -230,6 +230,30 @@ console.log("[TWITCH CHAT MSG]", tags["display-name"], message);
 
     if (self) return;
 
+    const rawMessage = message.trim();
+
+    const ignoredUsers = [
+        "stimobot",
+        "nightbot",
+        "streamelements",
+        "moobot",
+        "soundalerts",
+        "sery_bot",
+        "fossabot"
+    ];
+    
+    const chatLogin =
+        String(tags.username || "").toLowerCase();
+    
+    if (ignoredUsers.includes(chatLogin)) {
+        return;
+    }
+    
+    if (rawMessage.startsWith("!")) {
+        // Let your command code below handle known commands.
+        // Unknown commands will be blocked from the overlay later.
+    }
+
     const username = tags["display-name"] || tags.username;
     const login = String(tags.username || "").toLowerCase();
     const text = message.trim();
@@ -352,6 +376,10 @@ console.log("[TWITCH CHAT MSG]", tags["display-name"], message);
             `@${username} opened a pack and pulled ${card.name} (${card.rarity})! Packs left: ${collections[login].packs}`
         );
     
+        return;
+    }
+
+    if (rawMessage.startsWith("!")) {
         return;
     }
 
