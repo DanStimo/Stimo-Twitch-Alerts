@@ -188,6 +188,64 @@ html, body {
     backdrop-filter: blur(10px);
 }
 
+.latest-message {
+    position: absolute;
+
+    left: 18px;
+    right: 18px;
+
+    top: 52px;
+    height: 140px;
+}
+
+.latest-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+
+    color: rgba(0,217,255,0.7);
+
+    margin-bottom: 12px;
+}
+
+.latest-user {
+    font-size: 28px;
+    font-weight: 900;
+
+    color: #ff66ff;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 12px;
+}
+
+.latest-text {
+    font-size: 18px;
+
+    color: rgba(255,255,255,0.9);
+
+    line-height: 1.5;
+}
+
+.recent-comms {
+    position: absolute;
+
+    left: 18px;
+    right: 18px;
+
+    bottom: 12px;
+
+    height: 70px;
+}
+
+.recent-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+
+    color: rgba(0,217,255,0.7);
+
+    margin-bottom: 8px;
+}
+
 .chat-title {
     position: relative;
     overflow: hidden;
@@ -302,93 +360,33 @@ html, body {
     }
 }
 
-.chat-messages {
-    position: absolute;
-
-    top: 42px;
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-
-    overflow: hidden;
-}
-
-.chat-messages::before,
-.chat-messages::after {
-    content: "";
-
-    position: absolute;
-    top: 0;
-    bottom: 0;
-
-    width: 24px;
-
-    z-index: 5;
-    pointer-events: none;
-}
-
-.chat-messages::before {
-    left: 0;
-
-    background: linear-gradient(
-        90deg,
-        rgba(0,0,0,0.38),
-        transparent
-    );
-}
-
-.chat-messages::after {
-    right: 0;
-
-    background: linear-gradient(
-        270deg,
-        rgba(0,0,0,0.38),
-        transparent
-    );
-}
-
 .chat-track {
-    height: 100%;
-
     display: flex;
     flex-direction: row;
-    align-items: flex-end;
 
     gap: 14px;
+
+    white-space: nowrap;
 
     transition: transform 0.45s ease;
 }
 
 .chat-message {
-    min-width: 220px;
-    max-width: 420px;
-
     flex-shrink: 0;
 
-    padding: 6px 12px;
+    font-size: 11px;
 
-    font-size: 12px;
-    line-height: 1.4;
+    color: rgba(255,255,255,0.75);
 
-    color: white;
+    padding-right: 14px;
 
-    border-left: 1px solid rgba(0,217,255,0.4);
+    border-right: 1px solid rgba(0,217,255,0.15);
 
-    background: transparent;
+    min-width: auto;
+    max-width: none;
 
+    background: none;
     box-shadow: none;
-
-    opacity: 0;
-
-    transform: translateX(20px);
-
-    animation: chatIn 0.35s ease forwards;
-}
-
-.chat-message {
-    transition:
-        opacity 0.35s ease,
-        filter 0.35s ease;
 }
 
 .chat-message:not(:last-child) {
@@ -560,8 +558,30 @@ playLoreLoop();
     </span>
 </div>
 
-    <div class="chat-messages">
+    <div class="latest-message">
+
+    <div class="latest-label">
+        LATEST TRANSMISSION
+    </div>
+
+    <div id="latestUser" class="latest-user">
+        AWAITING SIGNAL...
+    </div>
+
+    <div id="latestText" class="latest-text">
+        No active transmissions.
+    </div>
+
+</div>
+
+<div class="recent-comms">
+
+    <div class="recent-label">
+        RECENT COMMS
+    </div>
+
     <div id="chatTrack" class="chat-track"></div>
+
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -571,6 +591,12 @@ const socket = io();
 
 const chatTrack =
     document.getElementById("chatTrack");
+
+const latestUser =
+    document.getElementById("latestUser");
+
+const latestText =
+    document.getElementById("latestText");
 
 const followerCount =
     document.getElementById("followerCount");
@@ -653,6 +679,12 @@ function escapeHtml(text) {
 }
 
 socket.on("chat-message", (data) => {
+
+    latestUser.textContent =
+        data.user.toUpperCase();
+    
+    latestText.textContent =
+        data.message;
 
     const row = document.createElement("div");
     row.className = "chat-message new-message";
