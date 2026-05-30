@@ -318,6 +318,10 @@ html, body {
         0 0 8px rgba(0,255,153,0.75);
 }
 
+.latest-text .chat-emote {
+    height: 34px;
+}
+
 .chat-stats {
     display: flex;
     align-items: center;
@@ -683,8 +687,8 @@ socket.on("chat-message", (data) => {
     latestUser.textContent =
         data.user.toUpperCase();
     
-    latestText.textContent =
-        data.message;
+    latestText.innerHTML =
+        renderTwitchMessage(data.message, data.emotes);
 
     const row = document.createElement("div");
     row.className = "chat-message new-message";
