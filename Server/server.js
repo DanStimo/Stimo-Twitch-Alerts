@@ -405,6 +405,16 @@ app.get("/api/alert-history", (req, res) => {
     res.json(loadHistory());
 });
 
+app.get("/api/channel-stats", async (req, res) => {
+    const followers = await getFollowerCount();
+    const subscribers = await getSubscriberCount();
+
+    res.json({
+        followers,
+        subscribers
+    });
+});
+
 app.get("/webhook/kofi", (req, res) => {
     res.send("Ko-fi webhook is online. Waiting for POST requests.");
 });
@@ -656,6 +666,32 @@ function announceChat(message) {
         .catch(err => {
             console.log("Failed to announce:", err.message);
         });
+}
+
+async function getSubscriberCount() {
+    try {
+        const res = await fetch(
+            `https://api.twitch.tv/helix/subscriptions?broadcaster_id=${BROADCASTER_ID}`,
+            {
+                headers: {
+                    "Client-ID": CLIENT_ID,
+                    "Authorization": `Bearer ${ACCESS_TOKEN}`
+                }
+            }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.log("Subscriber count failed:", data);
+            return null;
+        }
+
+        return data.total;
+    } catch (err) {
+        console.log("Subscriber count error:", err.message);
+        return null;
+    }
 }
 
 function connectTwitchEventSub() {
