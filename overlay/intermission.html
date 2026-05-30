@@ -260,6 +260,21 @@ html, body {
         0 0 8px rgba(0,255,153,0.75);
 }
 
+.chat-stats {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    font-size: 11px;
+    letter-spacing: 3px;
+    font-weight: 900;
+
+    color: rgba(255,255,255,0.78);
+
+    text-shadow:
+        0 0 8px rgba(0,217,255,0.55);
+}
+
 .online-blip {
     width: 7px;
     height: 7px;
@@ -547,6 +562,11 @@ playLoreLoop();
     <div class="chat-title">
     <span>LIVE COMMS</span>
 
+    <span class="chat-stats">
+        <span id="followerCount">FOLLOWERS --</span>
+        <span id="subscriberCount">SUBS --</span>
+    </span>
+
     <span class="chat-online">
         <span class="online-blip"></span>
         ONLINE
@@ -564,6 +584,31 @@ const socket = io();
 
 const chatTrack =
     document.getElementById("chatTrack");
+
+const followerCount =
+    document.getElementById("followerCount");
+
+const subscriberCount =
+    document.getElementById("subscriberCount");
+
+async function loadChannelStats() {
+    try {
+        const res = await fetch("/api/channel-stats");
+        const data = await res.json();
+
+        followerCount.textContent =
+            `FOLLOWERS ${data.followers ?? "--"}`;
+
+        subscriberCount.textContent =
+            `SUBS ${data.subscribers ?? "--"}`;
+    } catch (err) {
+        console.log("Channel stats failed:", err);
+    }
+}
+
+loadChannelStats();
+
+setInterval(loadChannelStats, 60000);
 
 function renderTwitchMessage(message, emotes) {
 
