@@ -272,7 +272,7 @@ console.log("[TWITCH CHAT MSG]", tags["display-name"], message);
     }
     
     // !collection
-    if (command === "!collection") {
+    if (command === "!collection" || command === "!collections") {
         const collections = loadCollections();
         const userCollection = collections[login];
     
@@ -281,14 +281,40 @@ console.log("[TWITCH CHAT MSG]", tags["display-name"], message);
             return;
         }
     
-        const totalCards = Object.values(userCollection.cards)
-            .reduce((sum, count) => sum + count, 0);
+        const cards = userCollection.cards;
     
-        const uniqueCards = Object.keys(userCollection.cards).length;
+        let totalCards = 0;
+        let uniqueCards = 0;
+        let duplicateCards = 0;
+    
+        const rarityCounts = {
+            common: 0,
+            uncommon: 0,
+            rare: 0,
+            epic: 0,
+            legendary: 0
+        };
+    
+        const allCards = loadCards();
+    
+        for (const [cardName, count] of Object.entries(cards)) {
+            totalCards += count;
+            uniqueCards++;
+    
+            if (count > 1) {
+                duplicateCards += count - 1;
+            }
+    
+            const cardInfo = allCards.find(c => c.name === cardName);
+            const rarity = cardInfo?.rarity || "common";
+    
+            rarityCounts[rarity] =
+                (rarityCounts[rarity] || 0) + 1;
+        }
     
         twitchClient.say(
             channel,
-            `@${username} collection: ${totalCards} cards, ${uniqueCards} unique.`
+            `@${username} collection: ${totalCards} cards | ${uniqueCards} unique | ${duplicateCards} duplicate${duplicateCards === 1 ? "" : "s"} | Common ${rarityCounts.common} | Uncommon ${rarityCounts.uncommon} | Rare ${rarityCounts.rare} | Epic ${rarityCounts.epic} | Legendary ${rarityCounts.legendary}`
         );
     
         return;
