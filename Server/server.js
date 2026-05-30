@@ -314,7 +314,7 @@ console.log("[TWITCH CHAT MSG]", tags["display-name"], message);
     
         twitchClient.say(
             channel,
-            `@${username} collection: ${totalCards} cards | ${uniqueCards} unique | ${duplicateCards} duplicate${duplicateCards === 1 ? "" : "s"} | Common ${rarityCounts.common} | Uncommon ${rarityCounts.uncommon} | Rare ${rarityCounts.rare} | Epic ${rarityCounts.epic} | Legendary ${rarityCounts.legendary}`
+            `@${username}'s collection: ${totalCards} cards | ${uniqueCards} unique | ${duplicateCards} duplicate${duplicateCards === 1 ? "" : "s"} | Common ${rarityCounts.common} | Uncommon ${rarityCounts.uncommon} | Rare ${rarityCounts.rare} | Epic ${rarityCounts.epic} | Legendary ${rarityCounts.legendary}`
         );
     
         return;
