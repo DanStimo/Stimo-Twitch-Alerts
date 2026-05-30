@@ -360,42 +360,29 @@ html, body {
 }
 
 .chat-message {
-    min-width: 140px;
-    max-width: 320px;
-    width: fit-content;
-    
+    min-width: 220px;
+    max-width: 420px;
+
     flex-shrink: 0;
 
-    align-self: stretch;
-    
+    padding: 6px 12px;
+
     font-size: 12px;
-    line-height: 1.45;
+    line-height: 1.4;
 
     color: white;
 
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    border-left: 1px solid rgba(0,217,255,0.4);
 
-    animation: chatIn 0.35s ease forwards;
+    background: transparent;
+
+    box-shadow: none;
 
     opacity: 0;
+
     transform: translateX(20px);
 
-    text-shadow:
-        0 0 10px rgba(0,217,255,0.18);
-
-    background: linear-gradient(
-        90deg,
-        rgba(0,217,255,0.08),
-        transparent
-    );
-
-    padding: 10px 12px;
-
-    border-left: 2px solid rgba(0,217,255,0.65);
-
-    box-shadow:
-        inset 0 0 12px rgba(0,217,255,0.04);
+    animation: chatIn 0.35s ease forwards;
 }
 
 .chat-message {
@@ -419,10 +406,11 @@ html, body {
 
 .chat-user {
     font-weight: 900;
+    letter-spacing: 1px;
 }
 
 .chat-text {
-    color: rgba(255,255,255,0.8);
+    color: rgba(255,255,255,0.82);
 }
 
 @keyframes chatIn {
@@ -463,16 +451,15 @@ html, body {
 
 .chat-meta {
     display: flex;
-    justify-content: space-between;
-    gap: 8px;
+    align-items: center;
+    gap: 10px;
 
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 
 .chat-time {
     font-size: 10px;
     color: rgba(255,255,255,0.35);
-    letter-spacing: 1px;
 }
 
 </style>
@@ -672,19 +659,21 @@ socket.on("chat-message", (data) => {
 
     row.innerHTML = `
         <div class="chat-meta">
-            <span class="chat-user" style="color:${data.color || "#00d9ff"}">
-                ${data.user}
+            <span style="color:#00ff99">◉</span>
+    
+            <span class="chat-user" style="color:${data.color || "#ff66ff"}">
+                ${data.user.toUpperCase()}
             </span>
-
+    
             <span class="chat-time">
                 ${new Date().toLocaleTimeString("en-GB", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: false
-                            })}
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false
+                })}
             </span>
         </div>
-
+    
         <div class="chat-text">
             ${renderTwitchMessage(data.message, data.emotes)}
         </div>
