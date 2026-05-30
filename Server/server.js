@@ -230,6 +230,43 @@ console.log("[TWITCH CHAT MSG]", tags["display-name"], message);
 
     if (self) return;
 
+    const username = tags["display-name"] || tags.username;
+    const login = tags.username;
+    
+    if (message.trim().toLowerCase() === "!openpack") {
+        const collections = loadCollections();
+    
+        if (!collections[login] || collections[login].packs <= 0) {
+            twitchClient.say(channel, `@${username} you don't have any packs to open yet.`);
+            return;
+        }
+    
+        const card = rollCard();
+    
+        collections[login].packs--;
+    
+        if (!collections[login].cards) {
+            collections[login].cards = {};
+        }
+    
+        collections[login].cards[card.name] =
+            (collections[login].cards[card.name] || 0) + 1;
+    
+        saveCollections(collections);
+    
+        io.emit("card_pull", {
+            user: username,
+            card
+        });
+    
+        twitchClient.say(
+            channel,
+            `@${username} opened a pack and pulled ${card.name} (${card.rarity})! Packs left: ${collections[login].packs}`
+        );
+    
+        return;
+    }
+
     io.emit("chat-message", {
         user: tags["display-name"] || tags.username,
         message: message,
@@ -842,6 +879,7 @@ function loadCards() {
 }
 
 function givePack(username) {
+    username = String(username || "").toLowerCase();
 
     const collections = loadCollections();
 
