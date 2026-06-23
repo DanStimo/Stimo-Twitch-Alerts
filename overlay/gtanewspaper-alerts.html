@@ -521,7 +521,7 @@ function addAlert(data) {
 
 socket.on("alert", addAlert);
 
-fetch("/api/alert-history")
+fetch("/api/alert-session")
     .then(res => res.json())
     .then(history => {
         const all = [
