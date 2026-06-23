@@ -1,0 +1,6 @@
+collections.json
+alert-history.json
+alert-session.json
+followers.json
+.env
+node_modules/
