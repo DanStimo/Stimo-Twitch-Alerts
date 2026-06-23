@@ -852,6 +852,8 @@ async function checkStreamStatus() {
         const stream = data.data?.[0];
 
         if (stream) {
+            global.lastKnownLiveState = true;
+        
             if (!global.lastKnownStreamStart || global.lastKnownStreamStart !== stream.started_at) {
                 global.lastKnownStreamStart = stream.started_at;
                 resetSessionHistory();
@@ -863,6 +865,13 @@ async function checkStreamStatus() {
                 startedAt: stream.started_at
             });
         } else {
+            if (global.lastKnownLiveState !== false) {
+                resetSessionHistory();
+                console.log("Stream offline — alert-session.json reset.");
+            }
+        
+            global.lastKnownLiveState = false;
+        
             io.emit("stream-status", {
                 live: false,
                 startedAt: null
