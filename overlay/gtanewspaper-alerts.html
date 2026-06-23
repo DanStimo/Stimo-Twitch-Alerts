@@ -146,6 +146,34 @@ html, body {
     margin-top: 25px;
 }
 
+.stats-box {
+    margin-top: 10px;
+    margin-bottom: 8px;
+
+    border-top: 2px solid rgba(0,0,0,0.65);
+    border-bottom: 2px solid rgba(0,0,0,0.65);
+
+    padding: 6px 0;
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+    line-height: 1.4;
+
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stats-title {
+    font-weight: 900;
+    margin-bottom: 4px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 12px;
+}
+
 .footer-line {
     position: relative;
     z-index: 2;
@@ -182,6 +210,8 @@ html, body {
     <div class="paper-section">Final Edition</div>
     <div id="stories"></div>
 
+    <div id="statsBox" class="stats-box"></div>
+
     <div class="footer-line">
         <span>Stay Alert</span>
         <span>Stay Safe</span>
@@ -198,13 +228,20 @@ const paperDate = document.getElementById("paperDate");
 
 let sessionAlerts = [];
 
-paperDate.textContent =
-    "End of Broadcast • " +
-    new Date().toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric"
-    });
+function updateEditionInfo() {
+
+    const edition =
+        String(sessionAlerts.length)
+        .padStart(3, "0");
+
+    paperDate.textContent =
+        `VOL. ${edition} • ` +
+        new Date().toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        });
+}
 
 function cleanName(value) {
     return String(value || "Unknown Viewer").trim();
@@ -390,6 +427,7 @@ function buildSessionSummary() {
 
 function renderPaper() {
     storiesEl.innerHTML = "";
+    updateEditionInfo();
 
     if (!sessionAlerts.length) {
         storiesEl.innerHTML =
@@ -398,6 +436,26 @@ function renderPaper() {
     }
 
     const s = buildSessionSummary();
+
+    const statsBox =
+        document.getElementById("statsBox");
+    
+    statsBox.innerHTML = `
+        <div class="stats-title">
+            Tonight's Record
+        </div>
+    
+        <div class="stats-grid">
+            <div>${s.follow} Followers</div>
+            <div>${s.sub + s.primesub} Subs</div>
+    
+            <div>${s.giftedSubs} Gifted Subs</div>
+            <div>${s.totalRaidViewers} Raid Viewers</div>
+    
+            <div>${s.totalBits} Bits</div>
+            <div>${s.tip} Tips</div>
+        </div>
+    `;
 
     const stories = [];
 
@@ -410,7 +468,7 @@ function renderPaper() {
 
     if (s.follow > 0) {
         stories.push({
-            headline: "NEW WITNESSES ENTER LOS SANTOS",
+            headline: "NEW RESIDENTS ARRIVE IN THE CITY",
             copy: `${s.follow} new follower${s.follow === 1 ? "" : "s"} joined the story before the final report was filed.`
         });
     }
@@ -424,7 +482,7 @@ function renderPaper() {
 
     if (s.giftsub > 0) {
         stories.push({
-            headline: "COMMUNITY ACCESS EXPANDED",
+            headline: "PRESS PASSES DISTRIBUTED CITYWIDE",
             copy: `${s.giftedSubs} gifted subscription${s.giftedSubs === 1 ? "" : "s"} opened the door for more viewers across the city.`
         });
     }
