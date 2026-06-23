@@ -1,71 +1,55 @@
 [
-  {
-    "id": "aurora_mr",
-    "name": "Aurora MR",
-    "rarity": "common",
-    "image": "assets/cards/common/aurora_mr.png"
-  },
+  { "id": "100i", "name": "100i", "rarity": "common", "image": "assets/cards/common/100i.png" },
+  { "id": "125a", "name": "125a", "rarity": "common", "image": "assets/cards/common/125a.png" },
+  { "id": "135c", "name": "135c", "rarity": "common", "image": "assets/cards/common/135c.png" },
+  { "id": "aurora_mk_i_cl", "name": "Aurora Mk I CL", "rarity": "common", "image": "assets/cards/common/aurora_mk_i_cl.png" },
+  { "id": "aurora_mk_i_es", "name": "Aurora Mk I ES", "rarity": "common", "image": "assets/cards/common/aurora_mk_i_es.png" },
+  { "id": "aurora_mk_i_ln", "name": "Aurora Mk I LN", "rarity": "common", "image": "assets/cards/common/aurora_mk_i_ln.png" },
+  { "id": "aurora_mk_i_lx", "name": "Aurora Mk I LX", "rarity": "common", "image": "assets/cards/common/aurora_mk_i_lx.png" },
+  { "id": "aurora_mk_i_mr", "name": "Aurora Mk I MR", "rarity": "common", "image": "assets/cards/common/aurora_mk_i_mr.png" },
+  { "id": "aurora_mk_i_se", "name": "Aurora Mk I SE", "rarity": "common", "image": "assets/cards/common/aurora_mk_i_se.png" },
+  { "id": "aurora_mr", "name": "Aurora MR", "rarity": "common", "image": "assets/cards/common/aurora_mr.png" },
+  { "id": "avenger_stalker", "name": "Avenger Stalker", "rarity": "common", "image": "assets/cards/common/avenger_stalker.png" },
+  { "id": "avenger_titan", "name": "Avenger Titan", "rarity": "common", "image": "assets/cards/common/avenger_titan.png" },
+  { "id": "c8_pisces", "name": "C8 Pisces", "rarity": "common", "image": "assets/cards/common/c8_pisces.png" },
+  { "id": "c8r_pisces", "name": "C8R Pisces", "rarity": "common", "image": "assets/cards/common/c8r_pisces.png" },
+  { "id": "c8x_pisces_expedition", "name": "C8X Pisces Expedition", "rarity": "common", "image": "assets/cards/common/c8x_pisces_expedition.png" },
+  { "id": "cutter", "name": "Cutter", "rarity": "common", "image": "assets/cards/common/cutter.png" },
+  { "id": "cutter_rambler", "name": "Cutter Rambler", "rarity": "common", "image": "assets/cards/common/cutter_rambler.png" },
+  { "id": "cutter_scout", "name": "Cutter Scout", "rarity": "common", "image": "assets/cards/common/cutter_scout.png" },
+  { "id": "hull_a", "name": "Hull A", "rarity": "common", "image": "assets/cards/common/hull_a.png" },
+  { "id": "mpuv_cargo", "name": "MPUV Cargo", "rarity": "common", "image": "assets/cards/common/mpuv_cargo.png" },
+  { "id": "mpuv_personnel", "name": "MPUV Personnel", "rarity": "common", "image": "assets/cards/common/mpuv_personnel.png" },
+  { "id": "mpuv_tractor", "name": "MPUV Tractor", "rarity": "common", "image": "assets/cards/common/mpuv_tractor.png" },
+  { "id": "mustang_alpha", "name": "Mustang Alpha", "rarity": "common", "image": "assets/cards/common/mustang_alpha.png" },
+  { "id": "mustang_beta", "name": "Mustang Beta", "rarity": "common", "image": "assets/cards/common/mustang_beta.png" },
+  { "id": "mustang_delta", "name": "Mustang Delta", "rarity": "common", "image": "assets/cards/common/mustang_delta.png" },
+  { "id": "mustang_gamma", "name": "Mustang Gamma", "rarity": "common", "image": "assets/cards/common/mustang_gamma.png" },
+  { "id": "mustang_omega", "name": "Mustang Omega", "rarity": "common", "image": "assets/cards/common/mustang_omega.png" },
+  { "id": "nomad", "name": "Nomad", "rarity": "common", "image": "assets/cards/common/nomad.png" },
+  { "id": "reliant_kore", "name": "Reliant Kore", "rarity": "common", "image": "assets/cards/common/reliant_kore.png" },
+  { "id": "reliant_mako", "name": "Reliant Mako", "rarity": "common", "image": "assets/cards/common/reliant_mako.png" },
+  { "id": "reliant_sen", "name": "Reliant Sen", "rarity": "common", "image": "assets/cards/common/reliant_sen.png" },
+  { "id": "reliant_tana", "name": "Reliant Tana", "rarity": "common", "image": "assets/cards/common/reliant_tana.png" },
+  { "id": "syulen", "name": "Syulen", "rarity": "common", "image": "assets/cards/common/syulen.png" },
 
-  {
-    "id": "hull_a",
-    "name": "Hull A",
-    "rarity": "common",
-    "image": "assets/cards/common/hull_a.png"
-  },
+  { "id": "arrow", "name": "Arrow", "rarity": "uncommon", "image": "assets/cards/uncommon/arrow.png" },
+  { "id": "buccaneer", "name": "Buccaneer", "rarity": "uncommon", "image": "assets/cards/uncommon/buccaneer.png" },
+  { "id": "cutlass_black", "name": "Cutlass Black", "rarity": "uncommon", "image": "assets/cards/uncommon/cutlass_black.png" },
+  { "id": "cutlass_blue", "name": "Cutlass Blue", "rarity": "uncommon", "image": "assets/cards/uncommon/cutlass_blue.png" },
+  { "id": "cutlass_red", "name": "Cutlass Red", "rarity": "uncommon", "image": "assets/cards/uncommon/cutlass_red.png" },
+  { "id": "cutlass_steel", "name": "Cutlass Steel", "rarity": "uncommon", "image": "assets/cards/uncommon/cutlass_steel.png" },
+  { "id": "gladius", "name": "Gladius", "rarity": "uncommon", "image": "assets/cards/uncommon/gladius.png" },
+  { "id": "hawk", "name": "Hawk", "rarity": "uncommon", "image": "assets/cards/uncommon/hawk.png" },
+  { "id": "sabre", "name": "Sabre", "rarity": "uncommon", "image": "assets/cards/uncommon/sabre.png" },
+  { "id": "sabre_comet", "name": "Sabre Comet", "rarity": "uncommon", "image": "assets/cards/uncommon/sabre_comet.png" },
+  { "id": "sabre_firebird", "name": "Sabre Firebird", "rarity": "uncommon", "image": "assets/cards/uncommon/sabre_firebird.png" },
+  { "id": "sabre_peregrine", "name": "Sabre Peregrine", "rarity": "uncommon", "image": "assets/cards/uncommon/sabre_peregrine.png" },
 
-  {
-    "id": "cutter",
-    "name": "Cutter",
-    "rarity": "common",
-    "image": "assets/cards/common/cutter.png"
-  },
+  { "id": "constellation_andromeda", "name": "Constellation Andromeda", "rarity": "rare", "image": "assets/cards/rare/constellation_andromeda.png" },
 
-  {
-    "id": "avenger_titan",
-    "name": "Avenger Titan",
-    "rarity": "common",
-    "image": "assets/cards/common/avenger_titan.png"
-  },
+  { "id": "orion", "name": "Orion", "rarity": "epic", "image": "assets/cards/epic/orion.png" },
 
-  {
-    "id": "gladius",
-    "name": "Gladius",
-    "rarity": "uncommon",
-    "image": "assets/cards/uncommon/gladius.png"
-  },
-
-  {
-    "id": "buccaneer",
-    "name": "Buccaneer",
-    "rarity": "uncommon",
-    "image": "assets/cards/uncommon/buccaneer.png"
-  },
-
-  {
-    "id": "hawk",
-    "name": "Hawk",
-    "rarity": "uncommon",
-    "image": "assets/cards/uncommon/hawk.png"
-  },
-
-  {
-    "id": "constellation_andromeda",
-    "name": "Constellation Andromeda",
-    "rarity": "rare",
-    "image": "assets/cards/rare/constellation_andromeda.png"
-  },
-
-  {
-    "id": "orion",
-    "name": "Orion",
-    "rarity": "epic",
-    "image": "assets/cards/epic/orion.png"
-  },
-  
-  {
-    "id": "javelin",
-    "name": "Javelin",
-    "rarity": "legendary",
-    "image": "assets/cards/legendary/javelin.png"
-  }
+  { "id": "javelin", "name": "Javelin", "rarity": "legendary", "image": "assets/cards/legendary/javelin.png" },
+  { "id": "legendary", "name": "Legendary", "rarity": "legendary", "image": "assets/cards/legendary/legendary.png" }
 ]
