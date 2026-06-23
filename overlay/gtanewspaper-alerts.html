@@ -15,7 +15,7 @@ html, body {
     right: 70px;
     bottom: 125px;
     width: 470px;
-    max-height: 635px;
+    max-height: 700px;
     padding: 26px 28px;
     box-sizing: border-box;
 
@@ -98,7 +98,7 @@ html, body {
 
 .story {
     border-bottom: 1px solid rgba(0,0,0,0.36);
-    padding: 8px 0;
+    padding: 6px 0;
 }
 
 .story:first-child {
@@ -126,8 +126,8 @@ html, body {
 .copy {
     margin-top: 4px;
     font-family: Arial, sans-serif;
-    font-size: 10.5px;
-    line-height: 1.35;
+    font-size: 10px;
+    line-height: 1.25;
 }
 
 .meta {
@@ -359,7 +359,7 @@ function renderPaper() {
 
     const recent = sessionAlerts
         .filter(a => a && a.user)
-        .slice(-8)
+        .slice(-5)
         .reverse();
 
     if (!recent.length) {
