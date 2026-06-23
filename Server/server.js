@@ -68,6 +68,7 @@ const ACCESS_TOKEN = process.env.TWITCH_ACCESS_TOKEN;
 const BROADCASTER_ID = process.env.TWITCH_BROADCASTER_ID;
 const MODERATOR_ID = process.env.TWITCH_MODERATOR_ID;
 const HISTORY_FILE = path.join(__dirname, "alert-history.json");
+const SESSION_FILE = path.join(__dirname, "alert-session.json");
 const PACK_SETTINGS_FILE = path.join(__dirname, "pack-settings.json");
 
 const EMOTES = {
@@ -145,12 +146,39 @@ function getDefaultHistory() {
     };
 }
 
+function ensureHistoryFile(filePath) {
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(
+            filePath,
+            JSON.stringify(getDefaultHistory(), null, 2)
+        );
+    }
+}
+
+function loadSessionHistory() {
+    try {
+        ensureHistoryFile(SESSION_FILE);
+        return JSON.parse(fs.readFileSync(SESSION_FILE, "utf8"));
+    } catch (err) {
+        console.log("Could not load alert-session.json:", err.message);
+        return getDefaultHistory();
+    }
+}
+
+function saveSessionHistory(session) {
+    fs.writeFileSync(
+        SESSION_FILE,
+        JSON.stringify(session, null, 2)
+    );
+}
+
+function resetSessionHistory() {
+    saveSessionHistory(getDefaultHistory());
+}
+
 function loadHistory() {
     try {
-        if (!fs.existsSync(HISTORY_FILE)) {
-            fs.writeFileSync(HISTORY_FILE, JSON.stringify(getDefaultHistory(), null, 2));
-        }
-
+        ensureHistoryFile(HISTORY_FILE);
         return JSON.parse(fs.readFileSync(HISTORY_FILE, "utf8"));
     } catch (err) {
         console.log("Could not load alert-history.json:", err.message);
@@ -162,9 +190,7 @@ function saveHistory(history) {
     fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2));
 }
 
-function recordAlert(type, user, extra = "", reward = "") {
-    const history = loadHistory();
-
+function addAlertToHistory(history, type, user, extra = "", reward = "") {
     history.follows ||= [];
     history.subs ||= [];
     history.primesubs ||= [];
@@ -194,31 +220,26 @@ function recordAlert(type, user, extra = "", reward = "") {
 
     if (type === "follow") {
         history.follows.unshift(entry);
-        history.follows = history.follows.slice(0, 5);
         history.totals.follows++;
     }
 
     if (type === "giftsub") {
         history.giftsubs.unshift(entry);
-        history.giftsubs = history.giftsubs.slice(0, 5);
         history.totals.giftsubs++;
     }
 
     if (type === "sub") {
         history.subs.unshift(entry);
-        history.subs = history.subs.slice(0, 5);
         history.totals.subs++;
     }
 
     if (type === "primesub") {
         history.primesubs.unshift(entry);
-        history.primesubs = history.primesubs.slice(0, 5);
         history.totals.primesubs++;
     }
 
     if (type === "bits") {
         history.bits.unshift(entry);
-        history.bits = history.bits.slice(0, 5);
         history.totals.bits++;
 
         const bitAmount = parseInt(extra, 10) || 0;
@@ -227,7 +248,6 @@ function recordAlert(type, user, extra = "", reward = "") {
 
     if (type === "raid") {
         history.raids.unshift(entry);
-        history.raids = history.raids.slice(0, 5);
         history.totals.raids++;
 
         const viewers = parseInt(extra, 10) || 0;
@@ -236,17 +256,37 @@ function recordAlert(type, user, extra = "", reward = "") {
 
     if (type === "redemption") {
         history.redemptions.unshift(entry);
-        history.redemptions = history.redemptions.slice(0, 5);
         history.totals.redemptions++;
     }
 
     if (type === "tip") {
         history.tips.unshift(entry);
-        history.tips = history.tips.slice(0, 5);
     }
 
-    saveHistory(history);
     return history;
+}
+
+function recordAlert(type, user, extra = "", reward = "") {
+    const history = addAlertToHistory(
+        loadHistory(),
+        type,
+        user,
+        extra,
+        reward
+    );
+
+    const session = addAlertToHistory(
+        loadSessionHistory(),
+        type,
+        user,
+        extra,
+        reward
+    );
+
+    saveHistory(history);
+    saveSessionHistory(session);
+
+    return session;
 }
 
 app.use((req, res, next) => {
@@ -497,6 +537,10 @@ app.get("/api/alert-history", (req, res) => {
     res.json(loadHistory());
 });
 
+app.get("/api/alert-session", (req, res) => {
+    res.json(loadSessionHistory());
+});
+
 app.get("/api/channel-stats", async (req, res) => {
     const followers = await getFollowerCount();
     const subscribers = await getSubscriberCount();
@@ -672,7 +716,7 @@ function queueAlert(type, user, extra = "", reward = "", history = null) {
         user,
         extra,
         reward,
-        history: history || loadHistory(),
+        history: history || loadSessionHistory(),
         duration: alertDurations[type] || 5000
     });
 
@@ -808,6 +852,12 @@ async function checkStreamStatus() {
         const stream = data.data?.[0];
 
         if (stream) {
+            if (!global.lastKnownStreamStart || global.lastKnownStreamStart !== stream.started_at) {
+                global.lastKnownStreamStart = stream.started_at;
+                resetSessionHistory();
+                console.log("New stream detected — alert-session.json reset.");
+            }
+        
             io.emit("stream-status", {
                 live: true,
                 startedAt: stream.started_at
