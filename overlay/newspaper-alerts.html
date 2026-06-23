@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+}
+
+.newspaper {
+    position: absolute;
+    right: 70px;
+    bottom: 130px;
+    width: 470px;
+    max-height: 620px;
+    padding: 28px;
+    box-sizing: border-box;
+
+    background: rgba(224, 213, 185, 0.92);
+    color: #111;
+    font-family: Georgia, "Times New Roman", serif;
+
+    border: 2px solid rgba(20,20,20,0.8);
+    box-shadow: 0 25px 70px rgba(0,0,0,0.65);
+}
+
+.paper-title {
+    text-align: center;
+    font-size: 34px;
+    font-weight: 900;
+    border-bottom: 3px double #111;
+    padding-bottom: 10px;
+}
+
+.paper-date {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin: 8px 0 16px;
+    text-transform: uppercase;
+}
+
+.paper-section {
+    background: #111;
+    color: #eee;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    padding: 5px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+}
+
+.story {
+    border-bottom: 1px solid rgba(0,0,0,0.35);
+    padding: 9px 0;
+}
+
+.headline {
+    font-size: 16px;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.05;
+}
+
+.copy {
+    margin-top: 4px;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.empty {
+    text-align: center;
+    font-size: 15px;
+    margin-top: 25px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="newspaper">
+    <div class="paper-title">Los Santos Gazette</div>
+    <div class="paper-date" id="paperDate"></div>
+    <div class="paper-section">Tonight's Headlines</div>
+    <div id="stories"></div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+const storiesEl = document.getElementById("stories");
+const paperDate = document.getElementById("paperDate");
+
+let sessionAlerts = [];
+
+paperDate.textContent = new Date().toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+});
+
+function cleanName(value) {
+    return String(value || "Unknown Viewer").toUpperCase();
+}
+
+function headlineFor(alert) {
+    const user = cleanName(alert.user);
+
+    if (alert.type === "follow") {
+        return {
+            headline: `${user} ENTERS LOS SANTOS`,
+            copy: "A new witness has arrived as the night's story continues to unfold."
+        };
+    }
+
+    if (alert.type === "sub" || alert.type === "primesub") {
+        return {
+            headline: `${user} BACKS LOCAL COVERAGE`,
+            copy: alert.extra || "The newsroom confirms another supporter has helped keep the cameras rolling."
+        };
+    }
+
+    if (alert.type === "giftsub") {
+        return {
+            headline: `${user} FUNDS COMMUNITY ACCESS`,
+            copy: alert.extra || alert.reward || "Gifted support was reported across the city tonight."
+        };
+    }
+
+    if (alert.type === "raid") {
+        return {
+            headline: `${user} BRINGS CROWD DOWNTOWN`,
+            copy: alert.extra || "A sudden wave of witnesses arrived on scene."
+        };
+    }
+
+    if (alert.type === "bits") {
+        return {
+            headline: `${user} DONATES TO THE NEWS DESK`,
+            copy: alert.extra || "A contribution was received during tonight's live coverage."
+        };
+    }
+
+    if (alert.type === "tip") {
+        return {
+            headline: `${user} SUPPORTS FIELD REPORTING`,
+            copy: alert.extra || "A tip was logged by the newsroom."
+        };
+    }
+
+    if (alert.type === "redemption") {
+        return {
+            headline: `${user} FILES A PUBLIC REQUEST`,
+            copy: alert.reward || "A viewer request was added to tonight's city record."
+        };
+    }
+
+    return {
+        headline: `${user} MAKES THE HEADLINES`,
+        copy: "Another name was added to tonight's edition."
+    };
+}
+
+function renderPaper() {
+    storiesEl.innerHTML = "";
+
+    const recent = sessionAlerts.slice(-8).reverse();
+
+    if (!recent.length) {
+        storiesEl.innerHTML = `<div class="empty">Waiting for tonight's first headline...</div>`;
+        return;
+    }
+
+    recent.forEach(alert => {
+        const story = headlineFor(alert);
+
+        const div = document.createElement("div");
+        div.className = "story";
+
+        div.innerHTML = `
+            <div class="headline">${story.headline}</div>
+            <div class="copy">${story.copy}</div>
+        `;
+
+        storiesEl.appendChild(div);
+    });
+}
+
+socket.on("alert", (data) => {
+    sessionAlerts.push(data);
+    renderPaper();
+});
+
+socket.on("new-alert", (data) => {
+    sessionAlerts.push(data);
+    renderPaper();
+});
+
+renderPaper();
+</script>
+
+</body>
+</html>
