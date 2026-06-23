@@ -1,1 +1,21 @@
-
+{
+  "follows": [],
+  "subs": [],
+  "primesubs": [],
+  "bits": [],
+  "raids": [],
+  "redemptions": [],
+  "giftsubs": [],
+  "tips": [],
+  "totals": {
+    "follows": 0,
+    "subs": 0,
+    "primesubs": 0,
+    "bits": 0,
+    "raids": 0,
+    "redemptions": 0,
+    "giftsubs": 0,
+    "totalBits": 0,
+    "totalRaidViewers": 0
+  }
+}
