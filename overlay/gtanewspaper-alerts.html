@@ -354,30 +354,102 @@ function headlineFor(alert) {
     };
 }
 
+function buildSessionSummary() {
+    const counts = {
+        follow: 0,
+        sub: 0,
+        primesub: 0,
+        giftsub: 0,
+        bits: 0,
+        raid: 0,
+        tip: 0,
+        totalBits: 0,
+        totalRaidViewers: 0,
+        giftedSubs: 0
+    };
+
+    sessionAlerts.forEach(alert => {
+        counts[alert.type] = (counts[alert.type] || 0) + 1;
+
+        if (alert.type === "bits") {
+            counts.totalBits += parseInt(alert.extra, 10) || 0;
+        }
+
+        if (alert.type === "raid") {
+            counts.totalRaidViewers += parseInt(alert.extra, 10) || 0;
+        }
+
+        if (alert.type === "giftsub") {
+            const match = String(alert.extra || alert.user || "").match(/(\d+)/);
+            counts.giftedSubs += match ? parseInt(match[1], 10) : 1;
+        }
+    });
+
+    return counts;
+}
+
 function renderPaper() {
     storiesEl.innerHTML = "";
 
-    const recent = sessionAlerts
-        .filter(a => a && a.user)
-        .slice(-5)
-        .reverse();
-
-    if (!recent.length) {
+    if (!sessionAlerts.length) {
         storiesEl.innerHTML =
             `<div class="empty">Waiting for tonight's first headline...</div>`;
         return;
     }
 
-    recent.forEach(alert => {
-        const story = headlineFor(alert);
+    const s = buildSessionSummary();
 
+    const stories = [];
+
+    if (s.raid > 0) {
+        stories.push({
+            headline: "CROWDS ARRIVE DURING LIVE COVERAGE",
+            copy: `${s.raid} raid${s.raid === 1 ? "" : "s"} brought ${s.totalRaidViewers} viewer${s.totalRaidViewers === 1 ? "" : "s"} into the city tonight.`
+        });
+    }
+
+    if (s.follow > 0) {
+        stories.push({
+            headline: "NEW WITNESSES ENTER LOS SANTOS",
+            copy: `${s.follow} new follower${s.follow === 1 ? "" : "s"} joined the story before the final report was filed.`
+        });
+    }
+
+    if (s.sub + s.primesub > 0) {
+        stories.push({
+            headline: "LOCAL SUPPORTERS BACK THE PRESS",
+            copy: `${s.sub + s.primesub} subscription${s.sub + s.primesub === 1 ? "" : "s"} helped keep tonight's coverage on air.`
+        });
+    }
+
+    if (s.giftsub > 0) {
+        stories.push({
+            headline: "COMMUNITY ACCESS EXPANDED",
+            copy: `${s.giftedSubs} gifted subscription${s.giftedSubs === 1 ? "" : "s"} opened the door for more viewers across the city.`
+        });
+    }
+
+    if (s.bits > 0) {
+        stories.push({
+            headline: "NEWS DESK RECEIVES FIELD SUPPORT",
+            copy: `${s.totalBits} bit${s.totalBits === 1 ? "" : "s"} were contributed during tonight's broadcast.`
+        });
+    }
+
+    if (s.tip > 0) {
+        stories.push({
+            headline: "TIPS FILED WITH THE NEWSROOM",
+            copy: `${s.tip} tip${s.tip === 1 ? "" : "s"} were logged in support of field reporting.`
+        });
+    }
+
+    stories.slice(0, 6).forEach(story => {
         const div = document.createElement("div");
         div.className = "story";
 
         div.innerHTML = `
             <div class="headline">${story.headline}</div>
             <div class="copy">${story.copy}</div>
-            <div class="meta">${story.meta}</div>
         `;
 
         storiesEl.appendChild(div);
@@ -386,16 +458,10 @@ function renderPaper() {
 
 function addAlert(data) {
     sessionAlerts.push(data);
-
-    if (sessionAlerts.length > 40) {
-        sessionAlerts = sessionAlerts.slice(-40);
-    }
-
     renderPaper();
 }
 
 socket.on("alert", addAlert);
-socket.on("new-alert", addAlert);
 
 fetch("/api/alert-history")
     .then(res => res.json())
@@ -407,20 +473,16 @@ fetch("/api/alert-history")
             ...(history.giftsubs || []).map(a => ({ ...a, type: "giftsub" })),
             ...(history.bits || []).map(a => ({ ...a, type: "bits" })),
             ...(history.raids || []).map(a => ({ ...a, type: "raid" })),
-            ...(history.redemptions || []).map(a => ({ ...a, type: "redemption" })),
             ...(history.tips || []).map(a => ({ ...a, type: "tip" }))
         ];
 
         sessionAlerts = all
             .filter(a => a && a.user)
-            .sort((a, b) => new Date(a.time) - new Date(b.time))
-            .slice(-40);
+            .sort((a, b) => new Date(a.time) - new Date(b.time));
 
         renderPaper();
     })
-    .catch(() => {
-        renderPaper();
-    });
+    .catch(() => renderPaper());
 
 renderPaper();
 </script>
