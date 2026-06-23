@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stimo Alerts</title>
+    <style>
+
+:root {
+    --primary: #ffffff;
+    --secondary: #7a7a7a;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background: transparent;
+    font-family: "Consolas", monospace;
+}
+
+#alert {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 160px;
+
+    transform: translateY(-100%);
+    opacity: 0;
+
+    transition:
+        transform 0.45s ease,
+        opacity 0.45s ease;
+
+    color: white;
+}
+
+#alert.show {
+    transform: translateY(0%);
+    opacity: 1;
+}
+
+.hud-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(circle at center,
+            rgba(255,255,255,0.04),
+            rgba(0,0,0,0.96) 65%),
+
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,0.98),
+            rgba(18,18,18,0.95),
+            rgba(0,0,0,0.98)
+        );
+
+    border-top: 2px solid var(--primary);
+    border-bottom: 2px solid var(--primary);
+}
+
+.hud-frame::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.035) 0px,
+            rgba(255,255,255,0.035) 1px,
+            transparent 3px,
+            transparent 6px
+        );
+
+    opacity: 0.4;
+
+    animation: scanlines 2s linear infinite;
+}
+
+.hud-frame::after {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: -15%;
+
+    width: 12%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.10),
+        rgba(180,180,180,0.08),
+        transparent
+    );
+
+    animation: sweep 2.8s ease-in-out infinite;
+}
+
+@keyframes scanlines {
+    from { transform: translateY(0); }
+    to { transform: translateY(12px); }
+}
+
+@keyframes sweep {
+    0% { left: -15%; }
+    45% { left: 105%; }
+    100% { left: 105%; }
+}
+
+.top-label,
+.system-log,
+.main-name,
+.event-line,
+.ship-data,
+.corner-left,
+.corner-right,
+.bar {
+    position: relative;
+    z-index: 5;
+}
+.top-label {
+    position: absolute;
+
+    top: 12px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    font-size: 15px;
+    letter-spacing: 10px;
+
+    color: var(--primary);
+
+    text-shadow:
+        0 0 10px var(--primary);
+}
+
+.alert-video {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center center;
+
+    opacity: 0;
+    z-index: 1;
+
+    transition: opacity 0.4s ease;
+}
+
+.alert-video.show {
+    opacity: 0.15;
+}
+
+.main-name {
+    position: absolute;
+
+    top: 38px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    font-size: 58px;
+    font-weight: 700;
+    letter-spacing: 3px;
+
+    color: #ffffff;
+
+    text-shadow:
+        0 0 8px rgba(255,255,255,0.9),
+        0 0 18px rgba(180,180,180,0.45);
+
+    white-space: nowrap;
+
+    animation: glitch 3.5s infinite;
+
+    text-transform: uppercase;
+}
+
+.event-line {
+    position: absolute;
+
+    top: 102px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    font-size: 20px;
+    letter-spacing: 8px;
+    font-weight: 500;
+
+    color: #ffffff;
+
+    text-shadow:
+        0 0 8px rgba(255,255,255,0.35);
+
+    white-space: nowrap;
+
+    text-transform: uppercase;
+}
+
+.system-log,
+.ship-data {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 360px;
+    height: 78px;
+
+    font-size: 12px;
+    line-height: 1.45;
+    letter-spacing: 0.5px;
+
+    white-space: pre-line;
+    opacity: 0.95;
+}
+
+.system-log {
+    position: absolute;
+    top: 50%;
+    left: 92px;
+    transform: translateY(-50%);
+
+    width: 430px;
+    height: auto;
+
+    font-size: 12px;
+    line-height: 1.45;
+    letter-spacing: 0.5px;
+
+    color: var(--primary);
+    text-shadow: 0 0 5px rgba(0,170,255,0.5);
+
+    white-space: pre-line;
+    text-align: left;
+    opacity: 0.95;
+}
+
+.ship-data {
+    position: absolute;
+    top: 50%;
+    right: 92px;
+    transform: translateY(-50%);
+
+    width: 430px;
+    height: auto;
+
+    font-size: 12px;
+    line-height: 1.45;
+    letter-spacing: 0.5px;
+
+    color: var(--primary);
+    text-shadow: 0 0 5px var(--primary);
+
+    white-space: pre-line;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+
+    text-align: right;
+
+    opacity: 0.95;
+}
+
+.panel-header {
+    color: #ffffff;
+    font-weight: 700;
+
+    text-shadow:
+        0 0 8px rgba(255,255,255,0.35);
+}
+
+.bar {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 760px;
+    height: 4px;
+
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.015);
+
+    overflow: hidden;
+}
+
+.bar-fill {
+    width: 0%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        var(--primary),
+        var(--secondary)
+    );
+}
+
+.corner-left {
+    position: absolute;
+    top: 42px;
+    left: 36px;
+
+    width: 18px;
+    height: 75px;
+
+    border-left: 2px solid var(--primary);
+    border-top: 2px solid var(--primary);
+    border-bottom: 2px solid var(--primary);
+}
+
+.corner-right {
+    position: absolute;
+    top: 42px;
+    right: 36px;
+
+    width: 18px;
+    height: 75px;
+
+    border-right: 2px solid var(--primary);
+    border-top: 2px solid var(--primary);
+    border-bottom: 2px solid var(--primary);
+}
+
+.gift-particle {
+    position: absolute;
+    top: -30px;
+    font-size: 24px;
+    pointer-events: none;
+    animation: giftFall 2.6s ease-in forwards;
+    z-index: 10;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+}
+
+@keyframes giftFall {
+    0% {
+        transform: translateY(-40px) rotate(0deg) scale(0.8);
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(210px) rotate(360deg) scale(1.2);
+        opacity: 0;
+    }
+}
+
+@keyframes glitch {
+    0%, 90%, 100% {
+        transform: translateX(-50%);
+    }
+
+    92% {
+        transform: translateX(calc(-50% - 2px));
+    }
+
+    94% {
+        transform: translateX(calc(-50% + 2px));
+    }
+
+    96% {
+        transform: translateX(-50%);
+    }
+}
+
+        .particle-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    overflow: hidden;
+    z-index: 20;
+}
+
+.particle-layer.active {
+    opacity: 1;
+}
+
+.particle-layer::before,
+.particle-layer::after {
+    content: "";
+    position: absolute;
+    inset: -160px 0 0 0;
+    background-repeat: repeat;
+    background-size: 420px 420px;
+    animation: particlesFall 8s linear infinite;
+    will-change: background-position;
+}
+
+.particle-layer::after {
+    animation-duration: 10s;
+    opacity: 0.65;
+    transform: translateX(80px);
+}
+
+.particle-layer.gifts::before,
+.particle-layer.gifts::after {
+    background-image:
+        radial-gradient(circle, #ffffff 0 3px, transparent 4px),
+        radial-gradient(circle, #ff4fd8 0 5px, transparent 6px),
+        radial-gradient(circle, #ffd166 0 4px, transparent 5px);
+}
+
+.particle-layer.bits::before,
+.particle-layer.bits::after {
+    background-image:
+        radial-gradient(circle, #00ff99 0 4px, transparent 5px),
+        radial-gradient(circle, #ffffff 0 3px, transparent 4px),
+        radial-gradient(circle, #00d9ff 0 5px, transparent 6px);
+}
+
+@keyframes particlesFall {
+    from {
+        background-position:
+            0px -800px,
+            120px -600px,
+            240px -1000px;
+    }
+
+    to {
+        background-position:
+            0px 1200px,
+            120px 1400px,
+            240px 1000px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="alert">
+    <div class="hud-frame">
+    <video class="alert-video" id="alertVideo" muted playsinline loop></video>
+
+    <div class="corner-left"></div>
+    <div class="corner-right"></div>
+
+        <div class="top-label" id="topLabel">ALERT SYSTEM LOG</div>
+
+        <div class="system-log" id="systemLog"></div>
+
+        <div class="main-name" id="mainName"></div>
+
+        <div class="event-line" id="eventLine"></div>
+
+        <div class="ship-data" id="shipData"></div>
+
+        <div class="particle-layer" id="particleLayer"></div>
+
+        <div class="bar">
+            <div class="bar-fill"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+const alertQueue = [];
+let alertPlaying = false;
+
+const alertThemes = {
+    follow: {
+        primary: "#ffffff",
+        secondary: "#bfbfbf"
+    },
+
+    sub: {
+        primary: "#a855ff",
+        secondary: "#7b2fff"
+    },
+
+    primesub: {
+        primary: "#00d9ff",
+        secondary: "#009dff"
+    },
+
+    giftsub: {
+        primary: "#ff4fd8",
+        secondary: "#ff2fae"
+    },
+
+    raid: {
+        primary: "#ff5533",
+        secondary: "#ff9900"
+    },
+
+    bits: {
+        primary: "#00ff99",
+        secondary: "#00cc66"
+    },
+
+    redemption: {
+        primary: "#ffffff",
+        secondary: "#bfbfbf"
+    },
+
+    tip: {
+        primary: "#ffdd66",
+        secondary: "#ff8c00"
+    }
+};
+
+const alertBox = document.getElementById("alert");
+const systemLog = document.getElementById("systemLog");
+const mainName = document.getElementById("mainName");
+const eventLine = document.getElementById("eventLine");
+const barFill = document.querySelector(".bar-fill");
+const shipData = document.getElementById("shipData");
+const particleLayer = document.getElementById("particleLayer");
+const alertVideo = document.getElementById("alertVideo");
+
+const alertSounds = {
+    follow: new Audio("assets/sounds/New Follower.mp3"),
+    sub: new Audio("assets/sounds/New Subscriber.mp3"),
+    primesub: new Audio("assets/sounds/New Subscriber.mp3"),
+    giftsub: new Audio("assets/sounds/New Subscriber.mp3"),
+    raid: new Audio("assets/sounds/New Raid.mp3"),
+    bits: new Audio("assets/sounds/New Bits.mp3"),
+    redemption: new Audio("assets/sounds/New Redemption.mp3"),
+    tip: new Audio("assets/sounds/New Donation.mp3")
+};
+
+const minimumAlertDurations = {
+    follow: 5000,
+    sub: 6500,
+    giftsub: 7000,
+    raid: 7000,
+    bits: 5500,
+    redemption: 5500,
+    tip: 28000
+};
+
+function playAlertSound(type) {
+    const sound = alertSounds[type];
+
+    if (!sound) {
+        return Promise.resolve(6500);
+    }
+
+    sound.pause();
+    sound.currentTime = 0;
+
+    return new Promise((resolve) => {
+        sound.onloadedmetadata = () => {
+            resolve(Math.ceil(sound.duration * 1000));
+        };
+
+        sound.onerror = () => {
+            resolve(6500);
+        };
+
+        sound.play().catch(() => {
+            resolve(6500);
+        });
+
+        if (sound.readyState >= 1) {
+            resolve(Math.ceil(sound.duration * 1000));
+        }
+    });
+}
+
+function typeText(element, html, speed = 35) {
+    element.innerHTML = "";
+
+    const temp = document.createElement("div");
+    temp.innerHTML = html;
+
+    const text = temp.textContent || temp.innerText || "";
+    let i = 0;
+
+    const timer = setInterval(() => {
+        element.innerHTML = html.substring(0, i);
+        i++;
+
+        if (i > html.length) {
+            clearInterval(timer);
+            element.innerHTML = html;
+        }
+    }, speed);
+}
+
+function getEventText(data) {
+    if (data.type === "follow") return "NEW RECRUIT DETECTED";
+    if (data.type === "sub") return `SUBSCRIPTION CONFIRMED • ${data.extra}`;
+    if (data.type === "primesub") return "PRIME SUBSCRIPTION CONFIRMED";
+    if (data.type === "raid") return "INCOMING RAID: " + data.extra;
+    if (data.type === "bits") return "BITS TRANSMISSION: " + data.extra;
+    if (data.type === "redemption") return "REWARD REDEEMED: " + data.reward;
+    if (data.type === "giftsub") return "GIFT SUB TRANSFER CONFIRMED";
+    if (data.type === "tip") return "TIP RECEIVED: " + data.extra;
+    return "SYSTEM EVENT RECEIVED";
+}
+
+function getRankText(data, username) {
+    if (data.type === "follow") {
+        return "WELCOME ABOARD, RECRUIT " + username.toUpperCase();
+    }
+
+    if (data.type === "sub") {
+        return "WELCOME BACK, COMMANDER " + username.toUpperCase();
+    }
+
+    if (data.type === "primesub") {
+        return "PRIME LINK ESTABLISHED WITH " + username.toUpperCase();
+    }
+
+    if (data.type === "bits") {
+        return "RESOURCE DONATION RECEIVED FROM " + username.toUpperCase();
+    }
+
+    if (data.type === "raid") {
+        return "REINFORCEMENTS HAVE ARRIVED FROM " + username.toUpperCase();
+    }
+
+    if (data.type === "redemption") {
+        return "COMMAND OVERRIDE FROM " + username.toUpperCase();
+    }
+
+    if (data.type === "giftsub") {
+        if (data.reward) {
+            return data.extra + " HAS COMMENDED " + data.reward;
+        }
+
+        return data.user;
+    }
+
+    if (data.type === "tip") {
+        return "CREDITS RECEIVED FROM " + username.toUpperCase();
+    }
+
+    return "WELCOME ABOARD, CAPTAIN " + username.toUpperCase();
+}
+
+function formatRightPanel(data) {
+    const history = data.history || {};
+
+    function header(title) {
+        return `<span class="panel-header">${title}</span>`;
+    }
+
+    function buildList(title, items) {
+        return (
+            header(title) +
+            "<span style='display:block;margin-top:-2px'>" +
+            (items || "> NO DATA") +
+            "</span>"
+        );
+    }
+
+    if (data.type === "follow") {
+        const followers = (history.follows || []).slice(0, 5)
+            .map(item => `${item.user.toUpperCase()} <`)
+            .join("\n");
+
+        return buildList("RECENT FOLLOWERS", followers);
+    }
+
+    if (data.type === "giftsub") {
+        const gifts = (history.giftsubs || []).slice(0, 5)
+            .map(item => `${item.user.toUpperCase()} <`)
+            .join("\n");
+
+        return buildList("RECENT GIFT SUBS", gifts);
+    }
+
+    if (data.type === "sub") {
+        const subs = (history.subs || []).slice(0, 5)
+            .map(item => `${item.user.toUpperCase()} - ${item.extra} <`)
+            .join("\n");
+
+        return buildList("RECENT SUBSCRIBERS", subs);
+    }
+
+    if (data.type === "primesub") {
+        const primes = (history.primesubs || []).slice(0, 5)
+            .map(item => `${item.user.toUpperCase()} - PRIME <`)
+            .join("\n");
+    
+        return buildList("RECENT PRIME SUBS", primes);
+    }
+
+    if (data.type === "bits") {
+        const bits = (history.bits || []).slice(0, 5)
+            .map(item => `${item.user.toUpperCase()} - ${item.extra} <`)
+            .join("\n");
+
+        return buildList("RECENT BITS", bits);
+    }
+
+    if (data.type === "raid") {
+        const raids = (history.raids || []).slice(0, 5)
+            .map(item => `${item.user.toUpperCase()} - ${item.extra} <`)
+            .join("\n");
+
+        return buildList("RECENT RAIDS", raids);
+    }
+
+    if (data.type === "redemption") {
+        const redemptions = (history.redemptions || []).slice(0, 5)
+            .map(item => `${item.user.toUpperCase()} - ${item.reward.toUpperCase()} <`)
+            .join("\n");
+
+        return buildList("RECENT REDEMPTIONS", redemptions);
+    }
+
+    if (data.type === "tip") {
+        const tips = (history.tips || []).slice(0, 5)
+            .map(item => `${item.user.toUpperCase()} - ${item.extra} <`)
+            .join("\n");
+    
+        return buildList("RECENT TIPS", tips);
+    }
+
+    return buildList("SYSTEM LOG", "");
+}
+
+function giftBurst(duration = 8000) {
+    const frame = document.querySelector(".hud-frame");
+
+    const interval = setInterval(() => {
+        const gift = document.createElement("div");
+
+        gift.className = "gift-particle";
+        gift.textContent = "🎁";
+
+        gift.style.left = Math.random() * 100 + "%";
+        gift.style.fontSize = "22px";
+        gift.style.animationDuration = "8s";
+
+        frame.appendChild(gift);
+
+        setTimeout(() => {
+            gift.remove();
+        }, 8500);
+
+    }, 900);
+
+    setTimeout(() => {
+        clearInterval(interval);
+    }, duration);
+}
+
+function bitsBurst(duration = 8000) {
+    const frame = document.querySelector(".hud-frame");
+
+    const bitIcons = ["💎", "✨", "⚡"];
+
+    const interval = setInterval(() => {
+        const bit = document.createElement("div");
+
+        bit.className = "gift-particle";
+        bit.textContent =
+            bitIcons[Math.floor(Math.random() * bitIcons.length)];
+
+        bit.style.left = Math.random() * 100 + "%";
+        bit.style.fontSize = "22px";
+        bit.style.animationDuration = "8s";
+
+        frame.appendChild(bit);
+
+        setTimeout(() => {
+            bit.remove();
+        }, 8500);
+
+    }, 900);
+
+    setTimeout(() => {
+        clearInterval(interval);
+    }, duration);
+}
+
+socket.on("alert", (data) => {
+    alertQueue.push(data);
+    playNextAlert();
+});
+
+async function playNextAlert() {
+    if (alertPlaying) return;
+    if (alertQueue.length === 0) return;
+
+    alertPlaying = true;
+
+    const data = alertQueue.shift();
+    const theme = alertThemes[data.type];
+
+    if (theme) {
+        document.documentElement.style.setProperty("--primary", theme.primary);
+        document.documentElement.style.setProperty("--secondary", theme.secondary);
+    }
+    const username = data.user || "UNKNOWN USER";
+    const message = getEventText(data);
+    await playAlertSound(data.type);
+
+    const alertDuration = data.duration || 5000;
+
+    barFill.style.transition = "none";
+    barFill.style.width = "0%";
+    void barFill.offsetWidth;
+
+    barFill.style.transition = `width ${alertDuration}ms linear`;
+    barFill.style.width = "100%";
+
+    systemLog.innerHTML = "";
+    mainName.innerHTML = "";
+    eventLine.innerHTML = "";
+    shipData.innerHTML = "";
+
+    alertBox.classList.add("show");
+    particleLayer.className = "particle-layer";
+    alertVideo.classList.remove("show");
+
+    const alertVideos = {
+        follow: "assets/videos/Follow.webm",
+        sub: "assets/videos/Sub.webm",
+        primesub: "assets/videos/Sub.webm",
+        giftsub: "assets/videos/Sub.webm",
+        raid: "assets/videos/Raid.webm",
+        bits: "assets/videos/Bits.webm",
+        redemption: "assets/videos/Redemption.webm",
+        tip: "assets/videos/Donation.webm"
+    };
+    
+    const videoPath = alertVideos[data.type];
+    const videoPositions = {
+        follow: "center 45%",
+        sub: "center 30%",
+        primesub: "center 30%",
+        giftsub: "center 30%",
+        raid: "center 40%",
+        bits: "center center",
+        redemption: "center center",
+        tip: "center 55%"
+    };
+
+alertVideo.style.objectPosition =
+    videoPositions[data.type] || "center center";
+    
+    if (videoPath) {
+        alertVideo.src = videoPath;
+    
+        alertVideo.currentTime = 0;
+    
+        alertVideo.play().catch(() => {});
+    
+        alertVideo.classList.add("show");
+    }
+
+    if (data.type === "giftsub") {
+        particleLayer.classList.add("active", "gifts");
+    }
+    
+    if (data.type === "bits") {
+        particleLayer.classList.add("active", "bits");
+    }
+
+ //   if (data.type === "giftsub") {
+ //      giftBurst(alertDuration);
+ //   }
+
+ //   if (data.type === "bits") {
+ //       bitsBurst(alertDuration);
+ //   }
+
+    typeText(systemLog,
+        "> INITIATING SYSTEM CHECK...\n" +
+        "> CONNECTION ESTABLISHED\n" +
+        "> USER SIGNAL DETECTED\n" +
+        "> VALIDATING IDENTITY...\n" +
+        "> ENTRY LOGGED\n" +
+        "> " + getRankText(data, username),
+        18
+    );
+
+    typeText(
+        shipData,
+        formatRightPanel(data),
+        14
+    );
+
+    setTimeout(() => {
+        if (
+            data.type === "giftsub" &&
+            !data.reward
+        ) {
+            typeText(mainName, data.user.toUpperCase(), 45);
+
+        } else {
+
+            typeText(mainName, username.toUpperCase(), 45);
+        }
+    }, 600);
+
+    setTimeout(() => {
+        typeText(eventLine, ">>> " + message + " <<<", 35);
+    }, 1500);
+
+    setTimeout(() => {
+
+        alertBox.classList.remove("show");
+    
+        setTimeout(() => {
+    
+            particleLayer.className = "particle-layer";
+    
+            alertVideo.classList.remove("show");
+            alertVideo.pause();
+    
+            alertPlaying = false;
+            playNextAlert();
+    
+        }, 450);
+    
+    }, alertDuration);
+}
+</script>
+
+</body>
+</html>

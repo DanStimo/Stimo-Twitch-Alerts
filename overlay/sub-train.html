@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Sub Train</title>
+
+<style>
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: Consolas, monospace;
+}
+
+.sub-train {
+    position: absolute;
+    left: 50%;
+    bottom: 95px;
+    transform: translateX(-50%) translateY(14px);
+
+    width: 420px;
+    padding: 8px 12px;
+
+    background: rgba(0,0,0,0.48);
+
+    border-left: 2px solid #b84dff;
+    border-top: 1px solid rgba(184,77,255,0.55);
+    border-bottom: 1px solid rgba(184,77,255,0.35);
+
+    box-shadow:
+        0 0 24px rgba(184,77,255,0.24),
+        inset 0 0 18px rgba(255,255,255,0.04);
+
+    color: white;
+    text-transform: uppercase;
+
+    opacity: 0;
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
+}
+
+.sub-train.running {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.train-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: 10px;
+    letter-spacing: 3px;
+    font-weight: 900;
+
+    color: #b84dff;
+    text-shadow: 0 0 10px rgba(184,77,255,0.8);
+}
+
+.train-count {
+    color: white;
+    text-shadow: 0 0 10px white;
+}
+
+.train-bar {
+    margin-top: 6px;
+
+    width: 100%;
+    height: 4px;
+
+    background: rgba(255,255,255,0.12);
+
+    overflow: hidden;
+    position: relative;
+}
+
+.train-fill {
+    width: 0%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        #b84dff,
+        #ffffff
+    );
+
+    transition: width 0.4s linear;
+}
+
+.train-bar::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.22),
+        transparent
+    );
+
+    animation: sweep 2s linear infinite;
+}
+
+@keyframes sweep {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(100%);
+    }
+}
+
+.train-timer {
+    margin-top: 5px;
+
+    font-size: 10px;
+    letter-spacing: 2px;
+
+    color: rgba(255,255,255,0.72);
+}
+
+.sub-train.warning {
+    border-left-color: #ff4444;
+    border-top-color: rgba(255,68,68,0.8);
+
+    box-shadow:
+        0 0 28px rgba(255,68,68,0.28),
+        inset 0 0 18px rgba(255,255,255,0.04);
+}
+
+.sub-train.warning .train-top {
+    color: #ff8888;
+}
+
+.sub-train.warning .train-fill {
+    background: linear-gradient(
+        90deg,
+        #ff4444,
+        #ffffff
+    );
+}
+</style>
+</head>
+
+<body>
+
+<div class="sub-train" id="subTrain">
+    <div class="train-top">
+        <span>SUB TRAIN ACTIVE</span>
+        <span class="train-count" id="trainCount">00</span>
+    </div>
+
+    <div class="train-bar">
+        <div class="train-fill" id="trainFill"></div>
+    </div>
+
+    <div class="train-timer" id="trainTimer">
+        STANDING BY
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+const subTrain = document.getElementById("subTrain");
+const trainCount = document.getElementById("trainCount");
+const trainFill = document.getElementById("trainFill");
+const trainTimer = document.getElementById("trainTimer");
+
+let currentCount = 0;
+let currentEndsAt = 0;
+let timer = null;
+
+socket.on("sub-train-update", (data) => {
+    currentCount = data.count || 0;
+    currentEndsAt = data.endsAt || 0;
+
+    updateTrain();
+
+    if (timer) {
+        clearInterval(timer);
+    }
+
+    if (currentCount > 0 && currentEndsAt > Date.now()) {
+        timer = setInterval(updateTrain, 500);
+    }
+});
+
+function updateTrain() {
+    const remaining = Math.max(0, currentEndsAt - Date.now());
+    const total = 5 * 60 * 1000;
+
+    if (currentCount <= 0 || remaining <= 0) {
+        subTrain.classList.remove("running");
+        subTrain.classList.remove("warning");
+
+        trainCount.textContent = "00";
+        trainFill.style.width = "0%";
+        trainTimer.textContent = "STANDING BY";
+
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+
+        return;
+    }
+
+    subTrain.classList.add("running");
+
+    trainCount.textContent =
+        String(currentCount).padStart(2, "0");
+
+    const percent = (remaining / total) * 100;
+    trainFill.style.width = `${percent}%`;
+
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+
+    trainTimer.textContent =
+        `TIME REMAINING • ${mins}:${String(secs).padStart(2, "0")}`;
+
+    if (remaining <= 30000) {
+        subTrain.classList.add("warning");
+    } else {
+        subTrain.classList.remove("warning");
+    }
+}
+</script>
+
+</body>
+</html>

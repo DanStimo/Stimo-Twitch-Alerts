@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>GTA Intermission</title>
+
+<style>
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+    font-family: Arial, sans-serif;
+}
+
+.video-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: slowPush 40s ease-in-out infinite alternate;
+}
+
+@keyframes slowPush {
+    from { transform: scale(1); }
+    to { transform: scale(1.04); }
+}
+
+.grade {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, rgba(0,0,0,0.72), transparent 48%, rgba(0,0,0,0.78)),
+        linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.9));
+}
+
+.grade::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 105px;
+
+    height: 120px;
+
+    background: linear-gradient(
+        0deg,
+        transparent,
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0.75)
+    );
+
+    pointer-events: none;
+}
+
+.grade::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 105px;
+
+    height: 120px;
+
+    background: linear-gradient(
+        180deg,
+        transparent,
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0.75)
+    );
+
+    pointer-events: none;
+}
+
+.film-grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.12;
+    pointer-events: none;
+    background-image: radial-gradient(rgba(255,255,255,0.25) 1px, transparent 1px);
+    background-size: 4px 4px;
+    animation: grainMove 0.35s steps(2) infinite;
+}
+
+@keyframes grainMove {
+    from { transform: translate(0, 0); }
+    to { transform: translate(-4px, 3px); }
+}
+
+.letterbox-top,
+.letterbox-bottom {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 105px;
+    background: rgba(0,0,0,0.88);
+    z-index: 5;
+}
+
+.letterbox-top { top: 0; }
+.letterbox-bottom { bottom: 0; }
+
+.left-copy {
+    position: absolute;
+    left: 90px;
+    bottom: 170px;
+    width: 680px;
+    color: white;
+    z-index: 10;
+}
+
+.kicker {
+    font-size: 13px;
+    letter-spacing: 5px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.68);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+}
+
+.title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 62px;
+    line-height: 0.95;
+    font-weight: 700;
+    letter-spacing: -2px;
+    text-transform: uppercase;
+    text-shadow: 0 8px 28px rgba(0,0,0,0.8);
+}
+
+.divider {
+    width: 180px;
+    height: 2px;
+    margin: 26px 0;
+    background: rgba(255,255,255,0.85);
+}
+
+.status {
+    margin-top: 22px;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.78);
+    max-width: 620px;
+
+    min-height: 92px;
+    max-height: 92px;
+    overflow: hidden;
+
+    transition: opacity 0.45s ease;
+}
+
+.chat-panel {
+    position: absolute;
+
+    right: 70px;
+    top: 150px;
+    bottom: 150px;
+
+    width: 520px;
+
+    background: rgba(10,10,10,0.62);
+    border-left: 2px solid rgba(255,255,255,0.65);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+
+    padding: 34px 36px;
+    box-sizing: border-box;
+}
+
+.paper-label {
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 18px;
+}
+
+.paper-title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 42px;
+    line-height: 0.95;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    margin-bottom: 28px;
+}
+
+.featured-comment {
+    min-height: 180px;
+    max-height: 300px;
+    border-top: 1px solid rgba(255,255,255,0.25);
+    border-bottom: 1px solid rgba(255,255,255,0.18);
+    padding: 24px 0;
+    margin-bottom: 26px;
+    overflow: hidden;
+}
+
+.featured-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.48);
+    margin-bottom: 18px;
+}
+
+.featured-text {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 30px;
+    line-height: 1.18;
+    color: rgba(255,255,255,0.94);
+    margin-bottom: 22px;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 7;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.featured-user {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.62);
+}
+
+.recent-title {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.48);
+    margin-bottom: 18px;
+}
+
+.recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.chat-message {
+    opacity: 0;
+    animation: chatIn 0.35s ease forwards;
+}
+
+.chat-user {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.58);
+    margin-bottom: 3px;
+}
+
+.chat-text {
+    font-size: 14px;
+    line-height: 1.35;
+    color: rgba(255,255,255,0.84);
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.chat-time {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    margin-left: 8px;
+}
+
+.chat-emote {
+    height: 24px;
+    vertical-align: middle;
+    margin: 0 2px;
+}
+
+.featured-text .chat-emote {
+    height: 34px;
+}
+
+@keyframes chatIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<video class="video-bg" autoplay muted loop playsinline>
+    <source src="assets/videos/GTAIntermission.webm" type="video/webm">
+</video>
+
+<div class="grade"></div>
+<div class="film-grain"></div>
+<div class="letterbox-top"></div>
+<div class="letterbox-bottom"></div>
+
+<div class="left-copy">
+    <div class="kicker">Take a Break</div>
+    <div class="title">
+        COVERAGE<br>
+        RESUMES SHORTLY
+    </div>
+    <div class="divider"></div>
+    <div class="status lore"></div>
+</div>
+
+<div class="chat-panel">
+    <div class="paper-label">Los Santos Gazette</div>
+    <div class="paper-title">Voices of<br>the City</div>
+
+    <div class="featured-comment">
+        <div class="featured-label">Featured Comment</div>
+        <div id="featuredText" class="featured-text">No public comment has been received.</div>
+        <div id="featuredUser" class="featured-user">News desk standing by</div>
+    </div>
+
+    <div class="recent-title">Public Reaction</div>
+    <div id="recentList" class="recent-list"></div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+const featuredText = document.getElementById("featuredText");
+const featuredUser = document.getElementById("featuredUser");
+const recentList = document.getElementById("recentList");
+
+function escapeHtml(text) {
+    return String(text || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+}
+
+function renderTwitchMessage(message, emotes) {
+    if (!emotes || Object.keys(emotes).length === 0) {
+        return escapeHtml(message);
+    }
+
+    let result = escapeHtml(message);
+    const replacements = [];
+
+    for (const emoteId in emotes) {
+        emotes[emoteId].forEach(position => {
+            const [start, end] = position.split("-").map(Number);
+
+            replacements.push({
+                start,
+                end,
+                id: emoteId
+            });
+        });
+    }
+
+    replacements.sort((a, b) => b.start - a.start);
+
+    replacements.forEach(emote => {
+        const img = `<img class="chat-emote" src="https://static-cdn.jtvnw.net/emoticons/v2/${emote.id}/default/dark/2.0">`;
+
+        result =
+            result.substring(0, emote.start) +
+            img +
+            result.substring(emote.end + 1);
+    });
+
+    return result;
+}
+
+const loreLines = [
+    "The camera may be off for a moment, but the city keeps creating stories.",
+
+    "Somewhere, somebody is chasing a headline. Somewhere else, somebody is searching for their next meal.",
+
+    "The streets never stop talking. We're just taking a moment to listen.",
+
+    "Every city has its storytellers. Every city has the people nobody asks about.",
+
+    "The next big story could be unfolding right now. We'll catch up with it shortly.",
+
+    "Some people spend their nights documenting Los Santos. Others spend them trying to survive it.",
+
+    "The city doesn't pause when the broadcast does.",
+
+    "Behind every headline is a witness. Behind every witness is a story.",
+
+    "The lights stay on long after most people go home.",
+
+    "Every sidewalk, alleyway and storefront has a story waiting to be told.",
+
+    "Some people watch the city through a camera lens. Others watch from a park bench.",
+    
+    "The city keeps moving. We'll be back to follow it shortly.",
+
+    "For some, tonight is another assignment. For others, it's another night outdoors.",
+
+    "The broadcast is taking a short break. The city isn't.",
+
+    "Somewhere a siren is sounding. Somewhere a witness is reaching for a phone.",
+
+    "Every night creates new stories. Every morning leaves new questions.",
+
+    "We'll return shortly. Until then, the city writes its own headlines.",
+
+    "Coverage will resume soon. Life in Los Santos continues in the meantime."
+];
+
+let loreIndex = 0;
+const loreEl = document.querySelector(".lore");
+
+function typeLore(text, callback) {
+    let i = 0;
+    loreEl.textContent = "";
+    loreEl.style.opacity = "1";
+
+    const timer = setInterval(() => {
+        loreEl.textContent = text.substring(0, i);
+        i++;
+
+        if (i > text.length) {
+            clearInterval(timer);
+            setTimeout(callback, 6000);
+        }
+    }, 28);
+}
+
+function eraseLore(callback) {
+    loreEl.style.opacity = "0";
+
+    setTimeout(() => {
+        callback();
+    }, 500);
+}
+
+function playLoreLoop() {
+    typeLore(loreLines[loreIndex], () => {
+        eraseLore(() => {
+            loreIndex = (loreIndex + 1) % loreLines.length;
+            playLoreLoop();
+        });
+    });
+}
+
+playLoreLoop();
+
+socket.on("chat-message", (data) => {
+    const renderedMessage =
+        renderTwitchMessage(data.message, data.emotes);
+
+    const shortMessage =
+        data.message.length > 220
+            ? data.message.substring(0, 220) + "..."
+            : data.message;
+    
+    featuredText.innerHTML =
+        `“${renderTwitchMessage(shortMessage, data.emotes)}”`;
+
+    featuredUser.textContent =
+        `— ${data.user}`;
+
+    const row = document.createElement("div");
+    row.className = "chat-message";
+
+    row.innerHTML = `
+        <div class="chat-user">
+            ${escapeHtml(data.user)}
+            
+        </div>
+
+        <div class="chat-text">
+            ${renderedMessage}
+        </div>
+    `;
+
+    recentList.prepend(row);
+
+    while (recentList.children.length > 3) {
+        recentList.lastChild.remove();
+    }
+});
+</script>
+
+</body>
+</html>

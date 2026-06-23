@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>GTA Alerts</title>
+
+<style>
+:root {
+    --primary: #ffffff;
+    --secondary: #999999;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: Arial, sans-serif;
+}
+
+#alert {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 210px;
+
+    transform: translateY(-100%);
+    opacity: 0;
+
+    transition: transform 0.45s ease, opacity 0.45s ease;
+    color: white;
+}
+
+#alert.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.hud-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    background:
+        linear-gradient(90deg, rgba(0,24,58,0.82), rgba(0,0,0,0.72), rgba(70,0,0,0.82)),
+        linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.92));
+
+    border-top: 2px solid var(--primary);
+    border-bottom: 2px solid var(--primary);
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,0.75),
+        inset 0 0 55px rgba(255,255,255,0.04);
+}
+
+.hud-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.035) 0px,
+            rgba(255,255,255,0.035) 1px,
+            transparent 3px,
+            transparent 7px
+        );
+
+    opacity: 0.38;
+    z-index: 5;
+}
+
+.alert-video {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center center;
+
+    opacity: 0;
+    z-index: 1;
+
+    transition: opacity 0.4s ease;
+}
+
+.alert-video.show {
+    opacity: 0.16;
+}
+
+.alert-banner {
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 38px;
+
+    z-index: 60;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--primary);
+    color: black;
+
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 7px;
+
+    text-transform: uppercase;
+
+    animation: bannerFlash 0.75s infinite alternate;
+}
+
+@keyframes bannerFlash {
+    from { opacity: 0.72; }
+    to { opacity: 1; }
+}
+
+.main-name {
+    position: absolute;
+    top: 58px;
+    left: 0;
+    width: 100%;
+
+    z-index: 50;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 66px;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: -1px;
+
+    color: white;
+    text-align: center;
+
+    text-shadow:
+        0 8px 24px rgba(0,0,0,0.9),
+        0 0 12px rgba(255,255,255,0.25);
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    text-transform: uppercase;
+}
+
+.gift-name {
+    position: absolute;
+    top: 58px;
+    left: 0;
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    column-gap: 28px;
+
+    z-index: 50;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 64px;
+    line-height: 1;
+    font-weight: 700;
+    color: white;
+
+    text-shadow:
+        0 8px 24px rgba(0,0,0,0.9),
+        0 0 12px rgba(255,255,255,0.25);
+
+    text-transform: uppercase;
+}
+
+#giftGiver {
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#giftReceiver {
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.diamond {
+    font-size: 42px;
+    text-align: center;
+}
+
+.event-line {
+    position: absolute;
+    top: 126px;
+    left: 0;
+    width: 100%;
+
+    z-index: 55;
+
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 6px;
+
+    color: rgba(255,255,255,0.9);
+
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.news-ticker {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 18px;
+
+    z-index: 65;
+
+    overflow: hidden;
+
+    background:
+        repeating-linear-gradient(
+            -45deg,
+            #f5c400 0px,
+            #f5c400 16px,
+            #111 16px,
+            #111 32px
+        );
+
+    border-top: 2px solid rgba(0,0,0,0.65);
+}
+
+.news-ticker span {
+    display: none;
+}
+
+@keyframes tickerMove {
+    from { transform: translateX(100%); }
+    to { transform: translateX(-100%); }
+}
+
+.bar {
+    position: absolute;
+    bottom: 34px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    z-index: 55;
+
+    width: 760px;
+    height: 4px;
+
+    background: rgba(255,255,255,0.10);
+    overflow: hidden;
+}
+
+.bar-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--primary);
+}
+
+.particle-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    overflow: hidden;
+    z-index: 45;
+}
+
+.particle-layer.active {
+    opacity: 1;
+}
+
+.particle-layer::before,
+.particle-layer::after {
+    content: "";
+    position: absolute;
+    inset: -160px 0 0 0;
+    background-repeat: repeat;
+    background-size: 420px 420px;
+    animation: particlesFall 8s linear infinite;
+}
+
+.particle-layer::after {
+    animation-duration: 10s;
+    opacity: 0.65;
+    transform: translateX(80px);
+}
+
+.particle-layer.gifts::before,
+.particle-layer.gifts::after {
+    background-image:
+        radial-gradient(circle, #ffffff 0 3px, transparent 4px),
+        radial-gradient(circle, #ff4fd8 0 5px, transparent 6px),
+        radial-gradient(circle, #ffd166 0 4px, transparent 5px);
+}
+
+.particle-layer.bits::before,
+.particle-layer.bits::after {
+    background-image:
+        radial-gradient(circle, #00ff99 0 4px, transparent 5px),
+        radial-gradient(circle, #ffffff 0 3px, transparent 4px),
+        radial-gradient(circle, #00d9ff 0 5px, transparent 6px);
+}
+
+@keyframes particlesFall {
+    from {
+        background-position:
+            0px -800px,
+            120px -600px,
+            240px -1000px;
+    }
+
+    to {
+        background-position:
+            0px 1200px,
+            120px 1400px,
+            240px 1000px;
+    }
+}
+
+.siren-lights {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 0;
+    z-index: 35;
+}
+
+.siren-lights.active {
+    opacity: 1;
+}
+
+.siren-lights::before,
+.siren-lights::after {
+    content: "";
+    position: absolute;
+    top: 0;
+
+    width: 50%;
+    height: 100%;
+
+    opacity: 0;
+    mix-blend-mode: screen;
+}
+
+.siren-lights::before {
+    left: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255,0,0,0.75),
+            rgba(255,0,0,0.35),
+            transparent
+        );
+
+    animation: leftRedTriple 1.4s steps(1) infinite;
+}
+
+.siren-lights::after {
+    right: 0;
+
+    background:
+        linear-gradient(
+            270deg,
+            rgba(0,120,255,0.75),
+            rgba(0,120,255,0.35),
+            transparent
+        );
+
+    animation: rightBlueTriple 1.4s steps(1) infinite;
+}
+
+@keyframes leftRedTriple {
+    0% { opacity: 0.85; }
+    6% { opacity: 0; }
+
+    10% { opacity: 0.85; }
+    16% { opacity: 0; }
+
+    20% { opacity: 0.85; }
+    26% { opacity: 0; }
+
+    27%, 100% { opacity: 0; }
+}
+
+@keyframes rightBlueTriple {
+    0%, 49% { opacity: 0; }
+
+    50% { opacity: 0.85; }
+    56% { opacity: 0; }
+
+    60% { opacity: 0.85; }
+    66% { opacity: 0; }
+
+    70% { opacity: 0.85; }
+    76% { opacity: 0; }
+
+    77%, 100% { opacity: 0; }
+}
+    
+.system-log,
+.ship-data,
+.corner-left,
+.corner-right,
+.top-label {
+    display: none;
+}
+
+@media (max-width: 800px) {
+    #alert {
+        width: 100vw;
+        height: 150px;
+    }
+
+    .main-name {
+        top: 50px;
+        font-size: 34px;
+        max-width: 94vw;
+        left: 3vw;
+        width: 94vw;
+    }
+
+    .gift-name {
+        position: absolute;
+        top: 58px;
+        left: 50%;
+    
+        width: min(95vw, 1400px);
+    
+        transform: translateX(-50%);
+    
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    
+        align-items: center;
+        column-gap: 20px;
+    
+        z-index: 50;
+    
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 64px;
+        line-height: 1;
+        font-weight: 700;
+        color: white;
+    
+        text-shadow:
+            0 8px 24px rgba(0,0,0,0.9),
+            0 0 12px rgba(255,255,255,0.25);
+    
+        text-transform: uppercase;
+    }
+
+    #giftGiver,
+    #giftReceiver {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    #giftGiver {
+        text-align: right;
+    }
+    
+    #giftReceiver {
+        text-align: left;
+    }
+
+    .diamond {
+        font-size: 24px;
+    }
+
+    .event-line {
+        top: 100px;
+        font-size: 11px;
+        letter-spacing: 3px;
+        padding: 0 12px;
+        box-sizing: border-box;
+    }
+
+    .alert-banner {
+        height: 26px;
+        font-size: 10px;
+        letter-spacing: 5px;
+    }
+
+    .bar {
+        bottom: 26px;
+        width: 70vw;
+    }
+
+    .news-ticker {
+        height: 14px;
+    }
+}
+
+@media (max-aspect-ratio: 9/16) {
+
+    .gift-name {
+        width: 92vw;
+        font-size: 36px;
+        column-gap: 12px;
+    }
+
+    .diamond {
+        font-size: 28px;
+    }
+
+    .main-name {
+        font-size: 42px;
+    }
+
+    .event-line {
+        font-size: 14px;
+        letter-spacing: 3px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="alert">
+    <div class="hud-frame">
+        <video class="alert-video" id="alertVideo" muted playsinline loop></video>
+
+        <div class="alert-banner" id="alertBanner">BREAKING NEWS</div>
+        <div class="siren-lights" id="sirenLights"></div>
+
+        <div class="main-name" id="mainName"></div>
+
+        <div class="gift-name" id="giftName" style="display:none;">
+            <span id="giftGiver"></span>
+            <span class="diamond">◆</span>
+            <span id="giftReceiver"></span>
+        </div>
+
+        <div class="event-line" id="eventLine"></div>
+
+        <div class="particle-layer" id="particleLayer"></div>
+
+        <div class="bar">
+            <div class="bar-fill"></div>
+        </div>
+
+        <div class="news-ticker">
+            <span>
+            POLICE LINE DO NOT CROSS • ACTIVE INVESTIGATION • POLICE LINE DO NOT CROSS • ACTIVE INVESTIGATION • POLICE LINE DO NOT CROSS • ACTIVE INVESTIGATION •
+            </span>
+        </div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+const alertQueue = [];
+let alertPlaying = false;
+
+const alertThemes = {
+    follow: {
+        primary: "#ffffff",
+        secondary: "#bfbfbf"
+    },
+
+    sub: {
+        primary: "#a855ff",
+        secondary: "#7b2fff"
+    },
+
+    primesub: {
+        primary: "#00d9ff",
+        secondary: "#009dff"
+    },
+
+    giftsub: {
+        primary: "#ff4fd8",
+        secondary: "#ff2fae"
+    },
+
+    raid: {
+        primary: "#ff5533",
+        secondary: "#ff9900"
+    },
+
+    bits: {
+        primary: "#00ff99",
+        secondary: "#00cc66"
+    },
+
+    redemption: {
+        primary: "#ffffff",
+        secondary: "#bfbfbf"
+    },
+
+    tip: {
+        primary: "#ffdd66",
+        secondary: "#ff8c00"
+    }
+};
+
+const alertBox = document.getElementById("alert");
+const mainName = document.getElementById("mainName");
+const giftName = document.getElementById("giftName");
+const giftGiver = document.getElementById("giftGiver");
+const giftReceiver = document.getElementById("giftReceiver");
+const eventLine = document.getElementById("eventLine");
+const barFill = document.querySelector(".bar-fill");
+const particleLayer = document.getElementById("particleLayer");
+const alertVideo = document.getElementById("alertVideo");
+const alertBanner = document.getElementById("alertBanner");
+const sirenLights = document.getElementById("sirenLights");
+
+const alertSounds = {
+    follow: new Audio("assets/sounds/New Follower.mp3"),
+    sub: new Audio("assets/sounds/New Subscriber.mp3"),
+    primesub: new Audio("assets/sounds/New Subscriber.mp3"),
+    giftsub: new Audio("assets/sounds/New Subscriber.mp3"),
+    raid: new Audio("assets/sounds/New Raid.mp3"),
+    bits: new Audio("assets/sounds/New Bits.mp3"),
+    redemption: new Audio("assets/sounds/New Redemption.mp3"),
+    tip: new Audio("assets/sounds/New Donation.mp3")
+};
+
+function playAlertSound(type) {
+    const sound = alertSounds[type];
+
+    if (!sound) {
+        return Promise.resolve(6500);
+    }
+
+    sound.pause();
+    sound.currentTime = 0;
+
+    return new Promise((resolve) => {
+        sound.onloadedmetadata = () => {
+            resolve(Math.ceil(sound.duration * 1000));
+        };
+
+        sound.onerror = () => {
+            resolve(6500);
+        };
+
+        sound.play().catch(() => {
+            resolve(6500);
+        });
+
+        if (sound.readyState >= 1) {
+            resolve(Math.ceil(sound.duration * 1000));
+        }
+    });
+}
+
+function getEventText(data) {
+    if (data.type === "follow") return "JOINED THE STORY";
+    if (data.type === "sub") return `PRESS PASS ACTIVE • ${data.extra}`;
+    if (data.type === "primesub") return `PRIME PRESS ACCESS • ${data.extra}`;
+    if (data.type === "raid") return `${data.extra} ENTERING THE CITY`;
+    if (data.type === "bits") return `PUBLIC CONTRIBUTION • ${data.extra}`;
+    if (data.type === "redemption") return `VIEWER REQUEST • ${data.reward}`;
+    if (data.type === "giftsub") return "PRESS PASS TRANSFER CONFIRMED";
+    if (data.type === "tip") return `COMMUNITY DONATION • ${data.extra}`;
+
+    return "CITY INCIDENT UPDATED";
+}
+
+function getBannerText(data) {
+    if (data.type === "follow") return "NEW FOLLOWER";
+    if (data.type === "sub") return "PRESS PASS ISSUED";
+    if (data.type === "primesub") return "PRIME PRESS ACCESS";
+    if (data.type === "raid") return "A CROWD IS GATHERING";
+    if (data.type === "bits") return "PUBLIC CONTRIBUTION";
+    if (data.type === "redemption") return "VIEWER REQUEST";
+    if (data.type === "giftsub") return "PRESS PASS TRANSFER";
+    if (data.type === "tip") return "COMMUNITY DONATION";
+
+    return "BREAKING NEWS";
+}
+
+socket.on("alert", (data) => {
+    alertQueue.push(data);
+    playNextAlert();
+});
+
+async function playNextAlert() {
+    if (alertPlaying) return;
+    if (alertQueue.length === 0) return;
+
+    alertPlaying = true;
+
+    const data = alertQueue.shift();
+    const theme = alertThemes[data.type];
+
+    if (theme) {
+        document.documentElement.style.setProperty("--primary", theme.primary);
+        document.documentElement.style.setProperty("--secondary", theme.secondary);
+    }
+
+    const username = data.user || "UNKNOWN USER";
+    const message = getEventText(data);
+
+    alertBanner.textContent = getBannerText(data);
+
+    await playAlertSound(data.type);
+
+    const alertDuration = data.duration || 5000;
+
+    barFill.style.transition = "none";
+    barFill.style.width = "0%";
+    void barFill.offsetWidth;
+
+    barFill.style.transition = `width ${alertDuration}ms linear`;
+    barFill.style.width = "100%";
+
+    mainName.innerHTML = "";
+    eventLine.innerHTML = "";
+
+    giftName.style.display = "none";
+    mainName.style.display = "block";
+
+    particleLayer.className = "particle-layer";
+    sirenLights.classList.remove("active");
+    alertVideo.classList.remove("show");
+
+    sirenLights.classList.add("active");
+
+    const alertVideos = {
+        follow: "assets/videos/GTAEnding.webm",
+        sub: "assets/videos/GTAEnding.webm",
+        primesub: "assets/videos/GTAEnding.webm",
+        giftsub: "assets/videos/GTAEnding.webm",
+        raid: "assets/videos/GTAEnding.webm",
+        bits: "assets/videos/GTAEnding.webm",
+        redemption: "assets/videos/GTAEnding.webm",
+        tip: "assets/videos/GTAEnding.webm"
+    };
+
+    sirenLights.classList.add("active");
+    alertBanner.style.animationDuration = "0.35s";
+
+    const videoPositions = {
+        follow: "center 55%",
+        sub: "center 55%",
+        primesub: "center 55%",
+        giftsub: "center 55%",
+        raid: "center 55%",
+        bits: "center 55%",
+        redemption: "center 55%",
+        tip: "center 55%"
+    };
+
+    const videoPath = alertVideos[data.type];
+
+    alertVideo.style.objectPosition =
+        videoPositions[data.type] || "center center";
+
+    if (videoPath) {
+        alertVideo.src = videoPath;
+        alertVideo.currentTime = 0;
+        alertVideo.play().catch(() => {});
+        alertVideo.classList.add("show");
+    }
+
+    if (data.type === "giftsub") {
+        particleLayer.classList.add("active", "gifts");
+    }
+
+    if (data.type === "bits") {
+        particleLayer.classList.add("active", "bits");
+    }
+
+    if (data.type === "giftsub" && data.reward) {
+        mainName.style.display = "none";
+        giftName.style.display = "grid";
+
+        giftGiver.textContent = data.extra.toUpperCase();
+        giftReceiver.textContent = data.reward.toUpperCase();
+    } else {
+        giftName.style.display = "none";
+        mainName.style.display = "block";
+        mainName.textContent = username.toUpperCase();
+    }
+
+    eventLine.textContent = message;
+
+    alertBox.classList.add("show");
+
+    setTimeout(() => {
+        alertBox.classList.remove("show");
+
+        setTimeout(() => {
+            particleLayer.className = "particle-layer";
+
+            sirenLights.classList.remove("active");
+            
+            alertBanner.style.animationDuration = "";
+            
+            alertVideo.classList.remove("show");
+            alertVideo.pause();
+
+            giftName.style.display = "none";
+            mainName.style.display = "block";
+
+            alertPlaying = false;
+            playNextAlert();
+        }, 450);
+
+    }, alertDuration);
+}
+</script>
+
+</body>
+</html>

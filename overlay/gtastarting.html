@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Los Santos Documentary</title>
+
+<style>
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.video-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: slowPush 38s ease-in-out infinite alternate;
+}
+
+.grade::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 105px;
+
+    height: 120px;
+
+    background: linear-gradient(
+        0deg,
+        transparent,
+        rgba(0,0,0,0.65),
+        rgba(0,0,0,0.95)
+    );
+
+    pointer-events: none;
+}
+
+.grade::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 105px;
+
+    height: 120px;
+
+    background: linear-gradient(
+        180deg,
+        transparent,
+        rgba(0,0,0,0.65),
+        rgba(0,0,0,0.95)
+    );
+
+    pointer-events: none;
+}
+
+@keyframes slowPush {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+}
+
+.grade {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, rgba(0,0,0,0.72), transparent 45%, rgba(0,0,0,0.45)),
+        linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.85));
+}
+
+.film-grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.16;
+    pointer-events: none;
+    background-image:
+        radial-gradient(rgba(255,255,255,0.25) 1px, transparent 1px);
+    background-size: 4px 4px;
+    animation: grainMove 0.35s steps(2) infinite;
+}
+
+@keyframes grainMove {
+    from { transform: translate(0, 0); }
+    to { transform: translate(-4px, 3px); }
+}
+
+.letterbox-top,
+.letterbox-bottom {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 105px;
+    background: rgba(0,0,0,0.88);
+    z-index: 5;
+}
+
+.letterbox-top { top: 0; }
+.letterbox-bottom { bottom: 0; }
+
+.content {
+    position: absolute;
+    left: 90px;
+    bottom: 170px;
+    width: 780px;
+    color: white;
+    z-index: 10;
+}
+
+.kicker {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 5px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.68);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+}
+
+.title {
+    font-size: 62px;
+    line-height: 0.95;
+    font-weight: 700;
+    letter-spacing: -2px;
+    text-transform: uppercase;
+    text-shadow: 0 8px 28px rgba(0,0,0,0.8);
+}
+
+.subtitle {
+    margin-top: 22px;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.78);
+    max-width: 620px;
+
+    min-height: 92px;
+    max-height: 92px;
+    overflow: hidden;
+}
+
+.divider {
+    width: 180px;
+    height: 2px;
+    margin: 26px 0;
+    background: rgba(255,255,255,0.85);
+}
+
+.lore {
+    transition: opacity 0.45s ease;
+}
+</style>
+</head>
+
+<body>
+
+<video class="video-bg" autoplay muted loop playsinline>
+    <source src="assets/videos/GTAStarting.webm" type="video/webm">
+</video>
+
+<div class="grade"></div>
+<div class="film-grain"></div>
+<div class="letterbox-top"></div>
+<div class="letterbox-bottom"></div>
+
+<div class="content">
+    <div class="kicker">A Los Santos Story</div>
+
+    <div class="title">
+        THE CITY<br>
+        NEVER WAITS
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="subtitle lore"></div>
+    
+</div>
+
+<script>
+const loreLines = [
+    "Every headline starts somewhere. Sometimes in a city hall office. Sometimes on a sidewalk nobody notices.",
+
+    "The cameras capture the truth. The streets decide what survives long enough to be recorded.",
+
+    "Some people spend their lives chasing the next big story. Others spend theirs trying not to become one.",
+
+    "Every siren tells one story. Every witness tells another. The truth usually lives somewhere in between.",
+
+    "The city moves fast. Fast enough to forget yesterday's victims before tomorrow's headlines arrive.",
+
+    "For every breaking news report, there are a hundred stories nobody stayed around long enough to hear.",
+
+    "The streets remember names long after the newspapers stop printing them.",
+
+    "A stringer watches the city through a camera lens. A homeless man watches it from a park bench.",
+
+    "Somewhere tonight, a story is unfolding. Somewhere else, somebody is trying to survive it.",
+
+    "The lights of downtown shine brightest for the people furthest away from them.",
+
+    "The city never sleeps. It simply changes who is awake.",
+
+    "The next story is already happening. The question is who will be there to witness it."
+];
+
+let loreIndex = 0;
+const loreEl = document.querySelector(".lore");
+
+function typeLore(text, callback) {
+    let i = 0;
+    loreEl.textContent = "";
+    loreEl.style.opacity = "1";
+
+    const timer = setInterval(() => {
+        loreEl.textContent = text.substring(0, i);
+        i++;
+
+        if (i > text.length) {
+            clearInterval(timer);
+            setTimeout(callback, 7000);
+        }
+    }, 28);
+}
+
+function eraseLore(callback) {
+    loreEl.style.opacity = "0";
+
+    setTimeout(() => {
+        callback();
+    }, 650);
+}
+
+function playLoreLoop() {
+    typeLore(loreLines[loreIndex], () => {
+        eraseLore(() => {
+            loreIndex = (loreIndex + 1) % loreLines.length;
+            playLoreLoop();
+        });
+    });
+}
+
+playLoreLoop();
+</script>
+
+</body>
+</html>

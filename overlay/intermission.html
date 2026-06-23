@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Stream Starting</title>
+
+<style>
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+    font-family:
+    Consolas,
+        "Segoe UI Emoji",
+        "Apple Color Emoji",
+        "Noto Color Emoji",
+        monospace;
+}
+
+.video-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    animation: slowZoom 35s ease-in-out infinite alternate;
+}
+
+@keyframes slowZoom {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.06);
+    }
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at center, transparent 35%, rgba(0,0,0,0.75)),
+        linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.85));
+    box-shadow: inset 0 0 220px rgba(0,0,0,0.8);
+}
+
+.scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.04) 0px,
+        rgba(255,255,255,0.04) 1px,
+        transparent 3px,
+        transparent 7px
+    );
+    animation: scan 2s linear infinite;
+    pointer-events: none;
+}
+
+.dust {
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);
+
+    background-size: 180px 180px;
+
+    opacity: 0.22;
+
+    animation: dustMove 60s linear infinite;
+
+    pointer-events: none;
+}
+
+@keyframes dustMove {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-180px);
+    }
+}
+
+.content {
+    position: absolute;
+    left: 90px;
+    bottom: 190px;
+    width: 900px;
+    color: white;
+    text-transform: uppercase;
+}
+
+.status {
+    display: inline-block;
+    padding: 6px 14px;
+    margin-bottom: 18px;
+
+    font-size: 13px;
+    letter-spacing: 5px;
+
+    color: #00d9ff;
+    border: 1px solid rgba(0,217,255,0.7);
+    background: rgba(0,217,255,0.08);
+
+    text-shadow: 0 0 10px #00d9ff;
+}
+
+.title {
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: 10px;
+    line-height: 1.2;
+
+    color: rgba(255,255,255,0.95);
+
+    text-shadow:
+        0 0 12px rgba(255,255,255,0.8),
+        0 0 35px rgba(0,217,255,0.35);
+}
+
+.title::after {
+    content: "";
+    display: block;
+
+    margin-top: 18px;
+
+    width: 620px;
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        #00d9ff,
+        rgba(255,255,255,0.7),
+        transparent
+    );
+}
+
+.lore {
+    margin-top: 20px;
+
+    width: 760px;
+    padding: 18px 22px;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+
+    font-size: 15px;
+    line-height: 1.7;
+    letter-spacing: 2px;
+
+    color: rgba(255,255,255,0.72);
+
+    background: rgba(0,0,0,0.32);
+    border-left: 2px solid #00d9ff;
+
+    text-shadow: 0 0 8px rgba(0,217,255,0.45);
+
+    transition: opacity 0.4s ease;
+}
+
+.chat-panel {
+    position: absolute;
+
+    right: 70px;
+    bottom: 165px;
+
+    width: 760px;
+    height: 275px;
+
+    background: rgba(0,0,0,0.42);
+
+    border-left: 2px solid rgba(0,217,255,0.9);
+    border-right: 1px solid rgba(255,255,255,0.08);
+    border-top: 1px solid rgba(0,217,255,0.35);
+    border-bottom: 1px solid rgba(0,217,255,0.25);
+
+    box-shadow:
+        0 0 28px rgba(0,217,255,0.18),
+        inset 0 0 22px rgba(255,255,255,0.04);
+
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.latest-message {
+    position: absolute;
+
+    left: 18px;
+    right: 18px;
+
+    top: 52px;
+    height: 140px;
+}
+
+.latest-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+
+    color: rgba(0,217,255,0.7);
+
+    margin-bottom: 12px;
+}
+
+.latest-user {
+    font-size: 28px;
+    font-weight: 900;
+
+    color: #ff66ff;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 12px;
+}
+
+.latest-text {
+    font-size: 18px;
+
+    color: rgba(255,255,255,0.9);
+
+    line-height: 1.5;
+}
+
+.recent-comms {
+    position: absolute;
+
+    left: 18px;
+    right: 18px;
+
+    bottom: 12px;
+
+    height: 70px;
+}
+
+.recent-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+
+    color: rgba(0,217,255,0.7);
+
+    margin-bottom: 8px;
+}
+
+.chat-title {
+    position: relative;
+    overflow: hidden;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 14px 0 16px;
+
+    font-size: 11px;
+    letter-spacing: 4px;
+    font-weight: 900;
+
+    color: #00d9ff;
+    text-transform: uppercase;
+
+    border-bottom: 1px solid rgba(0,217,255,0.25);
+
+    text-shadow: 0 0 10px #00d9ff;
+}
+
+.chat-title::after {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: -30%;
+
+    width: 20%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0,217,255,0.28),
+        transparent
+    );
+
+    animation: chatHeaderSweep 5s ease-in-out infinite;
+}
+
+@keyframes chatHeaderSweep {
+    0% {
+        left: -30%;
+    }
+
+    45% {
+        left: 110%;
+    }
+
+    100% {
+        left: 110%;
+    }
+}
+
+.chat-online {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    font-size: 11px;
+    letter-spacing: 4px;
+    font-weight: 900;
+
+    color: #00ff99;
+
+    text-shadow:
+        0 0 8px rgba(0,255,153,0.75);
+}
+
+.latest-text .chat-emote {
+    height: 34px;
+}
+
+.chat-stats {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    font-size: 11px;
+    letter-spacing: 3px;
+    font-weight: 900;
+
+    color: rgba(255,255,255,0.78);
+
+    text-shadow:
+        0 0 8px rgba(0,217,255,0.55);
+}
+
+.online-blip {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #00ff99;
+
+    box-shadow:
+        0 0 8px #00ff99,
+        0 0 18px rgba(0,255,153,0.75);
+
+    animation: blipPulse 1.1s ease-in-out infinite;
+}
+
+@keyframes blipPulse {
+    0%, 100% {
+        opacity: 0.35;
+        transform: scale(0.85);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+.chat-track {
+    display: flex;
+    flex-direction: row;
+
+    gap: 14px;
+
+    white-space: nowrap;
+
+    transition: transform 0.45s ease;
+}
+
+.chat-message {
+    flex-shrink: 0;
+
+    font-size: 11px;
+
+    color: rgba(255,255,255,0.75);
+
+    padding-right: 14px;
+
+    border-right: 1px solid rgba(0,217,255,0.15);
+
+    min-width: auto;
+    max-width: none;
+
+    background: none;
+    box-shadow: none;
+}
+
+.chat-message:not(:last-child) {
+    opacity: 0.72;
+    filter: saturate(0.75);
+}
+
+.chat-track .chat-message:last-child {
+    box-shadow:
+        0 0 18px rgba(0,217,255,0.22),
+        inset 0 0 14px rgba(0,217,255,0.08);
+
+    border-left-color: #00d9ff;
+}
+
+.chat-user {
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.chat-text {
+    color: rgba(255,255,255,0.82);
+}
+
+@keyframes chatIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.chat-emote {
+    height: 28px;
+
+    vertical-align: middle;
+
+    margin: 0 2px;
+}
+
+.chat-message.new-message {
+    animation:
+        chatIn 0.35s ease forwards,
+        messagePulse 1.2s ease;
+}
+
+@keyframes messagePulse {
+    0% {
+        text-shadow: 0 0 18px rgba(0,217,255,0.9);
+    }
+
+    100% {
+        text-shadow: 0 0 10px rgba(0,217,255,0.18);
+    }
+}
+
+.chat-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 4px;
+}
+
+.chat-time {
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+}
+
+</style>
+</head>
+
+<body>
+
+<video class="video-bg" autoplay muted loop playsinline>
+    <source src="assets/videos/Intermission.webm" type="video/webm">
+</video>
+
+<div class="overlay"></div>
+<div class="scanlines"></div>
+<div class="dust"></div>
+
+<div class="content">
+    <div class="status">BROADCAST INTERMISSION</div>
+    <div class="title">TAKE FIVE. REFUEL. RECHARGE. RETURN STRONGER.</div>
+    <div class="lore"></div>
+</div>
+    
+<script>
+const loreLines = [
+    "COMMANDER HAS TEMPORARILY LEFT THE BRIDGE.",
+    "LONG RANGE TRANSMISSION RELAY REMAINS ACTIVE.",
+    "ALL PRIMARY SYSTEMS OPERATING WITHIN SAFE PARAMETERS.",
+    "CREW ACTIVITY DETECTED ACROSS LOCAL STAR SYSTEMS.",
+    "INTERMISSION PROTOCOLS NOW IN EFFECT.",
+    "DEEP SPACE SIGNAL STABILITY: NOMINAL.",
+    "QUANTUM DRIVE SYSTEMS CURRENTLY IDLING.",
+    "BROADCAST NETWORK MAINTAINING ORBITAL LINK.",
+    "AWAITING RETURN TO ACTIVE FLIGHT OPERATIONS.",
+    "NO CRITICAL THREATS DETECTED IN LOCAL SECTOR.",
+    "STANDBY FOR FURTHER TRANSMISSION.",
+    "COMMUNICATION CHANNELS REMAIN OPEN.",
+    "MISSION LOGGING CONTINUES DURING INTERMISSION.",
+    "REMOTE SENSORS REPORT CALM CONDITIONS.",
+    "THE COMMAND DECK WILL REACTIVATE SHORTLY."
+];
+
+let loreIndex = 0;
+const loreEl = document.querySelector(".lore");
+
+function typeLore(text, callback) {
+    let i = 0;
+    loreEl.textContent = "";
+
+    const timer = setInterval(() => {
+        loreEl.textContent = text.substring(0, i);
+        i++;
+
+        if (i > text.length) {
+            clearInterval(timer);
+            setTimeout(callback, 8000);
+        }
+    }, 35);
+}
+
+function eraseLore(callback) {
+    let text = loreEl.textContent;
+    let i = text.length;
+
+    const timer = setInterval(() => {
+        loreEl.textContent = text.substring(0, i);
+        i--;
+
+        if (i < 0) {
+            clearInterval(timer);
+            callback();
+        }
+    }, 18);
+}
+
+function playLoreLoop() {
+    typeLore(loreLines[loreIndex], () => {
+        eraseLore(() => {
+            loreIndex = (loreIndex + 1) % loreLines.length;
+            playLoreLoop();
+        });
+    });
+}
+
+playLoreLoop();
+</script>
+
+<div class="chat-panel">
+    <div class="chat-title">
+    <span>LIVE COMMS</span>
+
+    <span class="chat-stats">
+        <span id="followerCount">FOLLOWERS --</span>
+        <span id="subscriberCount">SUBS --</span>
+    </span>
+
+    <span class="chat-online">
+        <span class="online-blip"></span>
+        ONLINE
+    </span>
+</div>
+
+    <div class="latest-message">
+
+    <div class="latest-label">
+        LATEST TRANSMISSION
+    </div>
+
+    <div id="latestUser" class="latest-user">
+        AWAITING SIGNAL...
+    </div>
+
+    <div id="latestText" class="latest-text">
+        No active transmissions.
+    </div>
+
+</div>
+
+<div class="recent-comms">
+
+    <div class="recent-label">
+        RECENT COMMS
+    </div>
+
+    <div id="chatTrack" class="chat-track"></div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+const chatTrack =
+    document.getElementById("chatTrack");
+
+const latestUser =
+    document.getElementById("latestUser");
+
+const latestText =
+    document.getElementById("latestText");
+
+const followerCount =
+    document.getElementById("followerCount");
+
+const subscriberCount =
+    document.getElementById("subscriberCount");
+
+async function loadChannelStats() {
+    try {
+        const res = await fetch("/api/channel-stats");
+        const data = await res.json();
+
+        followerCount.textContent =
+            `FOLLOWERS ${data.followers ?? "--"}`;
+
+        subscriberCount.textContent =
+            `SUBS ${data.subscribers ?? "--"}`;
+    } catch (err) {
+        console.log("Channel stats failed:", err);
+    }
+}
+
+loadChannelStats();
+
+setInterval(loadChannelStats, 60000);
+
+function renderTwitchMessage(message, emotes) {
+
+    if (!emotes || Object.keys(emotes).length === 0) {
+        return escapeHtml(message);
+    }
+
+    let result = escapeHtml(message);
+
+    const replacements = [];
+
+    for (const emoteId in emotes) {
+
+        emotes[emoteId].forEach(position => {
+
+            const [start, end] =
+                position.split("-").map(Number);
+
+            replacements.push({
+                start,
+                end,
+                id: emoteId,
+                text: message.substring(start, end + 1)
+            });
+
+        });
+
+    }
+
+    replacements.sort((a, b) => b.start - a.start);
+
+    replacements.forEach(emote => {
+
+        const img =
+            `<img
+                class="chat-emote"
+                src="https://static-cdn.jtvnw.net/emoticons/v2/${emote.id}/default/dark/2.0"
+            >`;
+
+        result =
+            result.substring(0, emote.start) +
+            img +
+            result.substring(emote.end + 1);
+
+    });
+
+    return result;
+}
+
+function escapeHtml(text) {
+    return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+}
+
+socket.on("chat-message", (data) => {
+
+    latestUser.textContent =
+        data.user.toUpperCase();
+    
+    latestText.innerHTML =
+        renderTwitchMessage(data.message, data.emotes);
+
+    const row = document.createElement("div");
+    row.className = "chat-message new-message";
+
+    row.innerHTML = `
+        <div class="chat-meta">
+            <span style="color:#00ff99">◉</span>
+    
+            <span class="chat-user" style="color:${data.color || "#ff66ff"}">
+                ${data.user.toUpperCase()}
+            </span>
+    
+            <span class="chat-time">
+                ${new Date().toLocaleTimeString("en-GB", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false
+                })}
+            </span>
+        </div>
+    
+        <div class="chat-text">
+            ${renderTwitchMessage(data.message, data.emotes)}
+        </div>
+    `;
+
+    chatTrack.prepend(row);
+
+    while (chatTrack.children.length > 8) {
+
+        const oldest =
+            chatTrack.lastChild;
+    
+        oldest.style.opacity = "0";
+        oldest.style.transform = "translateY(10px)";
+    
+        setTimeout(() => {
+    
+            if (oldest.parentNode) {
+                oldest.remove();
+    
+                const overflow =
+                    chatTrack.scrollWidth -
+                    chatTrack.parentElement.clientWidth;
+    
+                chatTrack.style.transform =
+                    `translateX(-${Math.max(0, overflow)}px)`;
+            }
+    
+        }, 250);
+    
+    }
+});
+</script>
+    
+</body>
+</html>

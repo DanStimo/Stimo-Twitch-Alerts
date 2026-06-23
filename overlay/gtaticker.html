@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Alert Ticker</title>
+
+<style>
+:root {
+    --primary: #ffffff;
+    --secondary: #7a7a7a;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: Consolas, monospace;
+}
+
+#ticker::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 74px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,0.15) 0%,
+            rgba(0,0,0,0.65) 40%,
+            rgba(0,0,0,0.92) 100%
+        );
+        
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: none;
+    box-shadow:
+        inset 0 24px 40px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+
+    opacity: 0.55;
+
+    pointer-events: none;
+
+    z-index: 0;
+
+    mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        black 4%,
+        black 96%,
+        transparent 100%
+    );
+}
+
+#ticker {
+    position: fixed;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100vw;
+    height: 74px;
+
+    overflow: hidden;
+
+    background: transparent;
+    backdrop-filter: none;
+    border: none;
+    
+    transition:
+        border-color 0.35s ease,
+        box-shadow 0.35s ease,
+        background 0.35s ease;
+
+    color: white;
+
+    z-index: 9999;
+}
+
+#ticker.alerting {
+    border-color: rgba(255,255,255,0.32);
+
+    box-shadow:
+        0 0 10px rgba(255,255,255,0.08),
+        0 0 20px rgba(255,255,255,0.05);
+}
+
+.track {
+    position: absolute;
+    bottom: 12px;
+    height: 76px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    animation: tickerMove 75s linear infinite;
+    opacity: 0.82;
+    transition: opacity 0.35s ease;
+
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+}
+
+#ticker.alerting .track {
+    opacity: 0;
+}
+
+.item {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    height: 76px;
+    opacity: 0.85;
+
+    margin-right: 90px;
+
+    text-transform: uppercase;
+    color: white;
+}
+
+.label {
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 4px;
+
+    margin-bottom: 3px;
+
+    opacity: 0.9;
+}
+
+.ticker-name {
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1;
+}
+
+.alert-banner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 76px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transform: translateX(110%);
+    opacity: 0;
+
+    background:
+        radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 55%),
+        linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+
+    color: white;
+
+    z-index: 5;
+}
+
+.alert-banner.show {
+    animation:
+        bannerIn 0.65s ease forwards,
+        bannerPulse 2.5s ease-in-out 0.65s infinite;
+}
+
+.alert-content {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 10px 40px;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(0,0,0,0.42),
+            rgba(0,0,0,0.12) 70%,
+            transparent
+        );
+}
+
+.alert-type {
+    color: var(--primary);
+
+    font-size: 16px;
+    letter-spacing: 6px;
+    font-weight: 900;
+
+    opacity: 1;
+
+    text-shadow:
+        0 0 8px var(--primary),
+        0 0 18px var(--primary),
+        0 0 28px rgba(0,0,0,0.9);
+}
+
+.alert-main {
+    margin-top: 4px;
+    margin-bottom: 2px;
+    font-size: 28px;
+    letter-spacing: 2px;
+    line-height: 1;
+    font-weight: 900;
+    text-shadow:
+        0 0 12px rgba(255,255,255,0.9),
+        0 0 32px var(--primary);
+}
+
+.gift-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gift-name {
+    min-width: 320px;
+}
+
+.gift-name.left {
+    text-align: right;
+}
+
+.gift-name.right {
+    text-align: left;
+}
+
+.gift-diamond {
+    margin: 0 28px;
+
+    color: var(--primary);
+
+    text-shadow:
+        0 0 12px var(--primary),
+        0 0 22px var(--primary);
+}
+    
+.alert-detail {
+    margin-top: 2px;
+
+    font-size: 15px;
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    color: rgba(255,255,255,0.95);
+
+    text-shadow:
+        0 0 8px rgba(255,255,255,0.8),
+        0 0 18px var(--primary);
+}
+
+.alert-scan {
+    position: absolute;
+    top: 0;
+    left: -22%;
+
+    width: 18%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--primary),
+        transparent
+    );
+
+    opacity: 0.35;
+}
+
+.alert-scan.running {
+    animation: alertSweepPingPong var(--scan-duration, 2.2s) ease-in-out forwards;
+}
+
+.banner-video {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    object-position: center center;
+
+    opacity: 0.35;
+    z-index: -1;
+}
+
+@keyframes tickerMove {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+
+    to {
+        transform: translate3d(-50%, 0, 0);
+    }
+}
+
+@keyframes bannerIn {
+    from {
+        transform: translateX(110%) scale(0.98);
+        opacity: 0;
+        filter: blur(6px);
+    }
+
+    to {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+@keyframes bannerPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.92;
+    }
+}
+
+@keyframes alertSweepPingPong {
+    0% {
+        left: -22%;
+    }
+
+    25% {
+        left: 104%;
+    }
+
+    50% {
+        left: -22%;
+    }
+
+    75% {
+        left: 104%;
+    }
+
+    100% {
+        left: -22%;
+    }
+}
+
+@keyframes bannerOut {
+    from {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+        filter: blur(0);
+    }
+
+    to {
+        transform: translateX(-110%) scale(0.98);
+        opacity: 0;
+        filter: blur(6px);
+    }
+}
+
+.sub-train-strip {
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 28px;
+
+    opacity: 0;
+
+    background: rgba(0,0,0,0.55);
+
+    border-top: 1px solid rgba(184,77,255,0.45);
+    border-bottom: 1px solid rgba(184,77,255,0.35);
+
+    overflow: hidden;
+    transition: opacity 0.35s ease;
+
+    z-index: 999999;
+}
+
+.sub-train-strip.running {
+    opacity: 1;
+}
+
+.sub-train-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    height: 100%;
+    width: 0%;
+
+    background: linear-gradient(
+        90deg,
+        rgba(184,77,255,0.85),
+        rgba(255,255,255,0.85)
+    );
+
+    box-shadow: 0 0 18px rgba(184,77,255,0.65);
+
+    transition: width 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+
+    opacity: 0.75;
+}
+
+.sub-train-text {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 18px;
+
+    font-size: 10px;
+    letter-spacing: 3px;
+    font-weight: 900;
+
+    color: white;
+
+    text-shadow:
+        0 0 8px rgba(255,255,255,0.85),
+        0 0 14px rgba(184,77,255,0.9);
+
+    pointer-events: none;
+}
+
+.sub-train-strip.warning {
+    border-top-color: rgba(255,68,68,0.8);
+    border-bottom-color: rgba(255,68,68,0.45);
+}
+
+.sub-train-strip.warning .sub-train-fill {
+    background: linear-gradient(
+        90deg,
+        rgba(255,68,68,0.9),
+        rgba(255,255,255,0.9)
+    );
+
+    box-shadow: 0 0 18px rgba(255,68,68,0.75);
+}
+
+.sub-train-strip.medium {
+    border-top-color: rgba(255,255,255,0.7);
+    border-bottom-color: rgba(255,255,255,0.45);
+}
+
+.sub-train-strip.medium .sub-train-fill {
+    background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0.9),
+        rgba(255,255,255,0.9)
+    );
+
+    box-shadow:
+        0 0 18px rgba(255,255,255,0.7);
+}
+
+.sub-train-strip.low {
+    border-top-color: rgba(255,170,0,0.8);
+    border-bottom-color: rgba(255,170,0,0.45);
+}
+
+.sub-train-strip.low .sub-train-fill {
+    background: linear-gradient(
+        90deg,
+        rgba(255,170,0,0.9),
+        rgba(255,255,255,0.9)
+    );
+
+    box-shadow:
+        0 0 18px rgba(255,170,0,0.75);
+}
+    
+</style>
+</head>
+
+<body>
+
+<div id="ticker">
+    <div class="track" id="track"></div>
+
+    <div class="sub-train-strip" id="subTrainStrip">
+    <div class="sub-train-fill" id="subTrainFill"></div>
+
+    <div class="sub-train-text">
+        <span>HYPE TRAIN</span>
+        <span id="subTrainCount">00</span>
+        <span id="subTrainTimer">STANDING BY</span>
+    </div>
+</div>
+
+    <div class="alert-banner" id="alertBanner">
+        <video class="banner-video" id="bannerVideo" muted playsinline loop>
+            <source src="assets/videos/Alert.webm" type="video/webm">
+        </video>
+        <div class="alert-scan"></div>
+
+        <div class="alert-content">
+            <div class="alert-type" id="alertType"></div>
+            <div class="alert-main" id="alertMain"></div>
+            <div class="alert-detail" id="alertDetail"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+const ticker = document.getElementById("ticker");
+const track = document.getElementById("track");
+const alertBanner = document.getElementById("alertBanner");
+const alertType = document.getElementById("alertType");
+const alertMain = document.getElementById("alertMain");
+const alertDetail = document.getElementById("alertDetail");
+const bannerVideo = document.getElementById("bannerVideo");
+const subTrainStrip = document.getElementById("subTrainStrip");
+const subTrainFill = document.getElementById("subTrainFill");
+const subTrainCount = document.getElementById("subTrainCount");
+const subTrainTimer = document.getElementById("subTrainTimer");
+
+let tickerTrainCountValue = 0;
+let tickerTrainEndsAt = 0;
+let tickerTrainInterval = null;
+
+let tickerTrainProgress = 0;
+let tickerTrainGoal = 1;
+
+const alertSounds = {
+    follow: new Audio("assets/sounds/New Follower.mp3"),
+    sub: new Audio("assets/sounds/New Subscriber.mp3"),
+    primesub: new Audio("assets/sounds/New Subscriber.mp3"),
+    giftsub: new Audio("assets/sounds/New Subscriber.mp3"),
+    raid: new Audio("assets/sounds/New Raid.mp3"),
+    bits: new Audio("assets/sounds/New Bits.mp3"),
+    redemption: new Audio("assets/sounds/New Redemption.mp3"),
+    tip: new Audio("assets/sounds/New Donation.mp3")
+};
+
+function playTickerSound(type) {
+    const sound = alertSounds[type];
+
+    if (!sound) return;
+
+    sound.pause();
+    sound.currentTime = 0;
+
+    sound.play().catch(err => {
+        console.log("Ticker sound failed:", err.message);
+    });
+}
+    
+const alertThemes = {
+    follow: {
+        primary: "#d9d9d9",
+        secondary: "#9a9a9a"
+    },
+
+    sub: {
+        primary: "#c48cff",
+        secondary: "#9f5cff"
+    },
+
+    primesub: {
+        primary: "#00A8FF",
+        secondary: "#0066CC"
+    },
+
+    giftsub: {
+        primary: "#d79dff",
+        secondary: "#b46cff"
+    },
+
+    raid: {
+        primary: "#ff8a6b",
+        secondary: "#ffb366"
+    },
+
+    bits: {
+        primary: "#7fffc8",
+        secondary: "#4ddba0"
+    },
+
+    redemption: {
+        primary: "#d9d9d9",
+        secondary: "#9a9a9a"
+    },
+
+    tip: {
+        primary: "#ffe7a0",
+        secondary: "#ffcc66"
+    }
+};
+
+const alertVideos = {
+    follow: "assets/videos/GTAEnding.webm",
+    sub: "assets/videos/GTAEnding.webm",
+    primesub: "assets/videos/GTAEnding.webm",
+    giftsub: "assets/videos/GTAEnding.webm",
+    raid: "assets/videos/GTAEnding.webm",
+    bits: "assets/videos/GTAEnding.webm",
+    redemption: "assets/videos/GTAEnding.webm",
+    tip: "assets/videos/GTAEnding.webm"
+};
+
+let items = [];
+const bannerQueue = [];
+let bannerPlaying = false;
+
+function applyTheme(type) {
+    const theme = alertThemes[type] || alertThemes.follow;
+
+    document.documentElement.style.setProperty("--primary", theme.primary);
+    document.documentElement.style.setProperty("--secondary", theme.secondary);
+
+    return theme;
+}
+
+function getTickerLabel(data) {
+    if (data.type === "follow") return "FOLLOW";
+    if (data.type === "sub") return "SUB";
+    if (data.type === "primesub") return "PRIME";
+    if (data.type === "giftsub") return "GIFT SUB";
+    if (data.type === "raid") return "RAID";
+    if (data.type === "bits") return "BITS";
+    if (data.type === "redemption") return "REDEEM";
+    if (data.type === "tip") return "TIP";
+    return "ALERT";
+}
+
+function getTickerText(data) {
+    const user = (data.user || "UNKNOWN").toUpperCase();
+
+    if (data.type === "sub") return `${user} • ${data.extra || ""}`;
+    if (data.type === "primesub") return `${user} • PRIME`;
+    if (data.type === "giftsub") return `${user}`;
+    if (data.type === "raid") return `${user} • ${data.extra || ""}`;
+    if (data.type === "bits") return `${user} • ${data.extra || ""}`;
+    if (data.type === "redemption") return `${user} • ${data.reward || ""}`;
+    if (data.type === "tip") return `${user} • ${data.extra || ""}`;
+
+    return user;
+}
+
+function getBannerText(data) {
+    const user = (data.user || "UNKNOWN").toUpperCase();
+
+    if (data.type === "follow") {
+        return {
+            type: "NEW FOLLOWER",
+            main: user,
+            detail: "JOINED THE STORY"
+        };
+    }
+
+    if (data.type === "sub") {
+        return {
+            type: "PRESS PASS ISSUED",
+            main: user,
+            detail: data.extra || ""
+        };
+    }
+
+    if (data.type === "primesub") {
+        return {
+            type: "PRIME PRESS ACCESS",
+            main: user,
+            detail: data.extra || ""
+        };
+    }
+
+    if (data.type === "giftsub") {
+
+        if (!data.reward) {
+            return {
+                type: "PRESS PASSES ISSUED",
+                main: user,
+                detail: "COMMUNITY SUPPORT"
+            };
+        }
+
+        const parts = user.split("◆");
+
+        const left = (parts[0] || "").trim();
+        const right = (parts[1] || "").trim();
+
+        return {
+            type: "PRESS PASS TRANSFER",
+            main: `
+                <div class="gift-layout">
+                    <span class="gift-name left">${left}</span>
+                    <span class="gift-diamond">◆</span>
+                    <span class="gift-name right">${right}</span>
+                </div>
+            `,
+            detail: "COMMUNITY SUPPORT"
+        };
+    }
+
+    if (data.type === "tip") {
+        return {
+            type: "COMMUNITY DONATION",
+            main: user,
+            detail: data.extra || ""
+        };
+    }
+
+    if (data.type === "raid") {
+        return {
+            type: "A CROWD IS GATHERING",
+            main: user,
+            detail: data.extra || ""
+        };
+    }
+
+    if (data.type === "bits") {
+        return {
+            type: "PUBLIC CONTRIBUTION",
+            main: user,
+            detail: data.extra || ""
+        };
+    }
+
+    if (data.type === "redemption") {
+        return {
+            type: "VIEWER REQUEST FILED",
+            main: user,
+            detail: data.reward || ""
+        };
+    }
+
+    return {
+        type: "ALERT",
+        main: user,
+        detail: ""
+    };
+}
+
+function renderTicker() {
+    track.innerHTML = "";
+
+    if (items.length === 0) {
+        items = [{
+            label: "SYSTEM",
+            text: "WAITING FOR ALERT DATA",
+            primary: "#ffffff"
+        }];
+    }
+
+    const doubled = [...items, ...items];
+
+    doubled.forEach((item) => {
+        const el = document.createElement("div");
+        el.className = "item";
+
+        el.innerHTML = `
+            <span class="label" style="color:${item.primary}">
+                ${item.label}
+            </span>
+            <span class="ticker-name">${item.text}</span>
+        `;
+
+        track.appendChild(el);
+    });
+}
+
+function addTickerItem(data) {
+    const theme = alertThemes[data.type] || alertThemes.follow;
+
+    items.unshift({
+        label: getTickerLabel(data),
+        text: getTickerText(data),
+        primary: theme.primary
+    });
+
+    items = items.slice(0, 10);
+
+    renderTicker();
+}
+
+function queueBanner(data) {
+    bannerQueue.push(data);
+    playNextBanner();
+}
+
+function playNextBanner() {
+    if (bannerPlaying) return;
+    if (bannerQueue.length === 0) return;
+
+    bannerPlaying = true;
+
+    const data = bannerQueue.shift();
+    const text = getBannerText(data);
+
+    applyTheme(data.type);
+    const bannerVideo = document.getElementById("bannerVideo");
+    bannerVideo.currentTime = 0;
+    bannerVideo.play().catch(() => {});
+    playTickerSound(data.type);
+
+    const videoPath = alertVideos[data.type] || alertVideos.follow;
+
+    const videoPositions = {
+        follow: "center 55%",
+        sub: "center 55%",
+        primesub: "center 55%",
+        giftsub: "center 55%",
+        raid: "center 55%",
+        bits: "center 55%",
+        redemption: "center 55%"
+        
+    };
+    
+    bannerVideo.style.objectPosition =
+        videoPositions[data.type] || "center center";
+
+    if (bannerVideo.getAttribute("src") !== videoPath) {
+        bannerVideo.setAttribute("src", videoPath);
+        bannerVideo.load();
+    }
+    
+    bannerVideo.currentTime = 0;
+    bannerVideo.play().catch(() => {});
+
+    alertType.textContent = text.type;
+    alertMain.innerHTML = text.main;
+    alertDetail.textContent = text.detail;
+
+    ticker.classList.add("alerting");
+    
+    const scan = document.querySelector(".alert-scan");
+    scan.classList.remove("running");
+    scan.style.opacity = "0.35";
+    void scan.offsetWidth;
+    
+    alertBanner.classList.remove("show");
+    void alertBanner.offsetWidth;
+    alertBanner.classList.add("show");
+
+    const bannerDuration = (data.duration || 5000) + 750;
+
+    const scanDuration = Math.max(2200, bannerDuration - 900);
+    scan.style.setProperty("--scan-duration", `${scanDuration}ms`);
+    scan.classList.add("running");
+    
+    alertBanner.style.setProperty("--banner-duration", `${bannerDuration}ms`);
+
+    setTimeout(() => {
+        document.querySelector(".alert-scan").style.opacity = "0";
+    }, bannerDuration - 1000);
+    
+    setTimeout(() => {
+        alertBanner.style.animation = "bannerOut 0.65s ease forwards";
+    }, bannerDuration - 650);
+    
+    setTimeout(() => {
+        ticker.classList.remove("alerting");
+        alertBanner.classList.remove("show");
+        alertBanner.style.animation = "";
+    
+        addTickerItem(data);
+    
+        bannerPlaying = false;
+        playNextBanner();
+    }, bannerDuration);
+}
+
+socket.on("hype-train-update", (data) => {
+    if (!data.active) {
+
+        tickerTrainCountValue = 0;
+        tickerTrainProgress = 0;
+        tickerTrainGoal = 1;
+        tickerTrainEndsAt = 0;
+    
+        updateTickerSubTrain();
+    
+        return;
+    }
+    tickerTrainCountValue = data.level || 0;
+    tickerTrainProgress = data.progress || 0;
+    tickerTrainGoal = data.goal || 1;
+    tickerTrainEndsAt = data.expiresAt ? new Date(data.expiresAt).getTime() : 0;
+
+    updateTickerSubTrain();
+
+    if (tickerTrainInterval) {
+        clearInterval(tickerTrainInterval);
+    }
+
+    if (
+        tickerTrainCountValue > 0 &&
+        tickerTrainEndsAt > Date.now()
+    ) {
+        tickerTrainInterval =
+            setInterval(updateTickerSubTrain, 500);
+    }
+});
+
+function updateTickerSubTrain() {
+    const remaining =
+        Math.max(0, tickerTrainEndsAt - Date.now());
+
+    if (
+        tickerTrainCountValue <= 0 ||
+        remaining <= 0
+    ) {
+        subTrainStrip.classList.remove("running");
+        subTrainStrip.classList.remove("warning");
+
+        subTrainCount.textContent = "00";
+        subTrainFill.style.width = "0%";
+        subTrainTimer.textContent = "STANDING BY";
+
+        if (tickerTrainInterval) {
+            clearInterval(tickerTrainInterval);
+            tickerTrainInterval = null;
+        }
+
+        return;
+    }
+
+    subTrainStrip.classList.add("running");
+
+    subTrainCount.textContent =
+        `LVL ${tickerTrainCountValue}`;
+
+    const percent =
+        Math.min(
+            100,
+            ((tickerTrainProgress || 0) / (tickerTrainGoal || 1)) * 100
+        );
+
+    subTrainFill.style.width =
+        `${percent}%`;
+
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+
+    subTrainTimer.textContent =
+        `LEVEL ${tickerTrainCountValue} • ${mins}:${String(secs).padStart(2, "0")} REMAINING`;
+
+    subTrainStrip.classList.remove(
+        "medium",
+        "low",
+        "warning"
+    );
+    
+    if (remaining <= 30000) {
+    
+        subTrainStrip.classList.add("warning");
+    
+    } else if (remaining <= 90000) {
+    
+        subTrainStrip.classList.add("low");
+    
+    } else if (remaining <= 180000) {
+    
+        subTrainStrip.classList.add("medium");
+    }
+}
+
+socket.on("connect", () => {
+    console.log("[TICKER] Connected to socket");
+});
+    
+socket.on("alert", (data) => {
+    queueBanner(data);
+});
+
+fetch("/api/alert-history")
+    .then(res => res.json())
+    .then(history => {
+        const pastAlerts = [];
+
+        (history.follows || []).forEach(item => pastAlerts.push({ type: "follow", user: item.user, time: item.time }));
+        (history.subs || []).forEach(item => pastAlerts.push({ type: "sub", user: item.user, extra: item.extra, time: item.time }));
+        (history.primesubs || []).forEach(item => pastAlerts.push({ type: "primesub", user: item.user, extra: item.extra, time: item.time }));
+        (history.giftsubs || []).forEach(item => pastAlerts.push({ type: "giftsub", user: item.user, extra: item.extra, reward: item.reward, time: item.time }));
+        (history.bits || []).forEach(item => pastAlerts.push({ type: "bits", user: item.user, extra: item.extra, time: item.time }));
+        (history.raids || []).forEach(item => pastAlerts.push({ type: "raid", user: item.user, extra: item.extra, time: item.time }));
+        (history.redemptions || []).forEach(item => pastAlerts.push({ type: "redemption", user: item.user, reward: item.reward, time: item.time }));
+        (history.tips || []).forEach(item => pastAlerts.push({ type: "tip", user: item.user, extra: item.extra, reward: item.reward, time: item.time }));
+
+        items = [];
+
+        pastAlerts
+            .sort((a, b) => new Date(b.time) - new Date(a.time))
+            .slice(0, 10)
+            .reverse()
+            .forEach(addTickerItem);
+
+        renderTicker();
+    });
+</script>
+
+</body>
+</html>

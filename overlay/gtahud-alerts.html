@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HUD Alert Chips</title>
+
+<style>
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: Consolas, monospace;
+}
+
+#hud {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    pointer-events: none;
+}
+
+.chip-row {
+    position: absolute;
+    top: 42px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 14px;
+}
+
+.chip {
+    width: 310px;
+    height: 38px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 0 16px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,0.68),
+            rgba(0,0,0,0.88)
+        );
+
+    border-left: 2px solid var(--chip-color);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+
+    color: white;
+    text-transform: uppercase;
+
+    box-shadow:
+        0 10px 24px rgba(0,0,0,0.55),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+
+    overflow: hidden;
+    position: relative;
+}
+
+.right-chip {
+    flex-direction: row-reverse;
+    border-left: none;
+    border-right: 2px solid var(--chip-color);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,0.68),
+            rgba(0,0,0,0.88)
+        );
+}
+
+.right-chip .chip-text {
+    justify-content: flex-end;
+    text-align: right;
+}
+
+@keyframes chipIdle {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-1px);
+    }
+}
+
+.chip::before {
+    content: "";
+
+    position: absolute;
+    inset: -40%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,0.08),
+            transparent
+        );
+
+    transform: translateX(-120%);
+    animation: chipSweep 8s linear infinite;
+    opacity: 0.4;
+}
+
+@keyframes chipSweep {
+    to {
+        transform: translateX(140%);
+    }
+}
+
+.chip-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--chip-color);
+    font-weight: 900;
+
+    line-height: 1;
+    transform: translateY(1px);
+}
+
+.chip-value {
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    white-space: nowrap;
+
+    line-height: 1;
+
+    text-shadow: 0 0 8px rgba(255,255,255,0.45);
+}
+
+.chip.active {
+    
+    background: linear-gradient(
+        90deg,
+        rgba(0,0,0,0.75),
+        color-mix(in srgb, var(--chip-color) 28%, transparent)
+    );
+
+    box-shadow:
+        0 0 28px var(--chip-color),
+        inset 0 0 22px rgba(255,255,255,0.12);
+}
+
+.chip-text {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.core {
+    width: 72px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 0;
+    border-top: 1px solid rgba(255,255,255,0.10);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,0.72),
+            rgba(0,0,0,0.92)
+        );
+
+    color: white;
+
+    box-shadow:
+        0 10px 24px rgba(0,0,0,0.55),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+
+    overflow: hidden;
+    position: relative;
+}
+
+.uptime-core {
+    flex-direction: column;
+    gap: 2px;
+}
+
+.onair-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.live-dot {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #ff3030;
+
+    box-shadow:
+        0 0 6px #ff3030,
+        0 0 12px rgba(255,48,48,0.8);
+
+    animation: recordPulse 1.2s ease-in-out infinite;
+}
+
+.onair-text {
+    font-size: 7px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,.55);
+}
+
+#uptimeValue {
+    font-size: 12px;
+    font-weight: 900;
+    color: white;
+}
+
+@keyframes recordPulse {
+    0%, 100% {
+        opacity: 0.65;
+        transform: scale(0.9);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+}
+
+.core-logo {
+    width: 70%;
+    height: 70%;
+
+    object-fit: contain;
+
+    filter:
+        drop-shadow(0 0 12px rgba(255,255,255,0.65))
+        drop-shadow(0 0 22px rgba(0,217,255,0.55));
+
+    animation: logoFloat 4s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    50% {
+        transform: scale(1.04) rotate(1deg);
+    }
+}
+
+.sub-train {
+    position: absolute;
+    top: 118px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+
+    width: 240px;
+    padding: 4px 8px;
+
+    background: rgba(0,0,0,0.42);
+    border-top: 1px solid rgba(184,77,255,0.45);
+
+    color: white;
+    text-transform: uppercase;
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+.sub-train.running {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.sub-train.running {
+    opacity: 1;
+}
+
+.train-top {
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 8px;
+    letter-spacing: 2px;
+
+    color: var(--train-color, #b84dff);
+}
+
+.train-bar {
+    width: 100%;
+    height: 3px;
+    position: relative;
+
+    margin-top: 3px;
+    height: 3px;
+
+    background: rgba(255,255,255,0.12);
+    overflow: hidden;
+}
+
+.train-fill {
+    width: 0%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        #b84dff,
+        #ffffff
+    );
+
+    transition: width 0.5s ease-out;
+}
+
+.train-timer {
+    margin-top: 2px;
+
+    font-size: 8px;
+    letter-spacing: 1px;
+
+    color: var(--train-color-soft, rgba(255,255,255,0.65));
+}
+
+@keyframes coreIdle {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 18px rgba(0,217,255,0.35);
+    }
+
+    50% {
+        transform: scale(1.04);
+        box-shadow: 0 0 30px rgba(0,217,255,0.65);
+    }
+}
+
+@keyframes coreHit {
+    0% {
+        transform: scale(1.22) rotate(4deg);
+        box-shadow: 0 0 42px white;
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+        box-shadow: 0 0 22px rgba(0,217,255,0.45);
+    }
+}
+
+.sub-train.active {
+    box-shadow:
+        0 0 18px rgba(184,77,255,0.55),
+        inset 0 0 12px rgba(255,255,255,0.06);
+
+    border-top-color: rgba(184,77,255,0.9);
+}
+
+.sub-train {
+    --train-color: #b84dff;
+    --train-color-soft: rgba(255,255,255,0.65);
+}
+
+.sub-train.medium {
+    border-top-color: rgba(0,217,255,0.85);
+
+    --train-color: #00d9ff;
+    --train-color-soft: #66e7ff;
+}
+
+.sub-train.medium .train-fill {
+    background: linear-gradient(
+        90deg,
+        #00d9ff,
+        #ffffff
+    );
+}
+
+.sub-train.low {
+    border-top-color: rgba(255,170,0,0.9);
+
+    --train-color: #ffaa00;
+    --train-color-soft: #ffd166;
+}
+
+.sub-train.low .train-fill {
+    background: linear-gradient(
+        90deg,
+        #ffaa00,
+        #ffffff
+    );
+}
+    
+.sub-train.warning {
+    border-top-color: rgba(255,68,68,0.95);
+
+    --train-color: #ff4444;
+    --train-color-soft: #ff8888;
+}
+
+.sub-train.warning .train-fill {
+    background: linear-gradient(
+        90deg,
+        #ff4444,
+        #ffffff
+    );
+}
+
+.train-bar::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,0.18),
+            transparent
+        );
+
+    animation: trainSweep 2s linear infinite;
+}
+
+.train-bar {
+    position: relative;
+}
+
+@keyframes trainSweep {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(100%);
+    }
+}
+
+#trainCount.bump {
+    animation: trainBump 0.4s ease;
+}
+
+@keyframes trainBump {
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1.45);
+        text-shadow: 0 0 18px white;
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.sub-train.running {
+    animation: trainIdlePulse 3s ease-in-out infinite;
+}
+
+@keyframes trainIdlePulse {
+    0%, 100% {
+        transform: translateX(-50%) scale(1);
+    }
+
+    50% {
+        transform: translateX(-50%) scale(1.01);
+    }
+}
+
+.hud-glow {
+    display: none;
+}
+
+@keyframes hudGlow {
+    0%, 100% {
+        opacity: 0.45;
+    }
+
+    50% {
+        opacity: 0.85;
+    }
+}
+    
+</style>
+</head>
+
+<body>
+
+<div id="hud">
+    <div class="hud-glow"></div>
+    <div class="chip-row">
+
+    <div class="chip" id="chipFollow" style="--chip-color:#00d9ff">
+        <div class="chip-label">FOLLOW</div>
+
+        <div class="chip-text">
+            <div class="chip-value" id="latestFollow">
+                WAITING
+            </div>
+        </div>
+    </div>
+
+    <div class="chip" id="chipSub" style="--chip-color:#b84dff">
+        <div class="chip-label">SUB</div>
+
+        <div class="chip-text">
+            <div class="chip-value" id="latestSub">
+                WAITING
+            </div>
+        </div>
+    </div>
+
+    <div class="core uptime-core" id="core">
+        <div class="onair-wrap">
+            <span class="live-dot"></span>
+            <span class="onair-text">ON AIR</span>
+        </div>
+    
+        <div id="uptimeValue">00:00:00</div>
+    </div>
+
+    <div class="chip right-chip" id="chipTip" style="--chip-color:#ffdd66">
+        <div class="chip-label">TIP</div>
+
+        <div class="chip-text">
+            <div class="chip-value" id="latestTip">
+                WAITING
+            </div>
+        </div>
+    </div>
+
+    <div class="chip right-chip" id="chipBits" style="--chip-color:#00ff99">
+        <div class="chip-label">BITS</div>
+
+        <div class="chip-text">
+            <div class="chip-value" id="latestBits">
+                WAITING
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <div class="sub-train" id="subTrain">
+        <div class="train-top">
+            <span>HYPE TRAIN</span>
+            <span id="trainCount">00</span>
+        </div>
+    
+        <div class="train-bar">
+            <div class="train-fill" id="trainFill"></div>
+        </div>
+    
+        <div class="train-timer" id="trainTimer">
+            STANDING BY
+        </div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+const alertDurations = {
+    follow: 5000,
+    sub: 6500,
+    giftsub: 7000,
+    raid: 7000,
+    bits: 5500,
+    redemption: 5500,
+    tip: 28000
+};
+
+const alertColors = {
+    follow: "#00d9ff",
+    sub: "#b84dff",
+    primesub: "#b84dff",
+    giftsub: "#b84dff",
+    tip: "#ffdd66",
+    bits: "#00ff99"
+};
+
+const latestFollow = document.getElementById("latestFollow");
+const latestSub = document.getElementById("latestSub");
+const latestTip = document.getElementById("latestTip");
+const latestBits = document.getElementById("latestBits");
+const subTrain = document.getElementById("subTrain");
+const trainCount = document.getElementById("trainCount");
+const trainFill = document.getElementById("trainFill");
+const trainTimer = document.getElementById("trainTimer");
+const core = document.getElementById("core");
+
+const uptimeValue = document.getElementById("uptimeValue");
+
+let streamStartTime = null;
+
+function updateStreamUptime() {
+    if (!streamStartTime) {
+        uptimeValue.textContent = "00:00:00";
+        return;
+    }
+
+    const elapsed = Math.floor((Date.now() - streamStartTime) / 1000);
+
+    const hours = String(Math.floor(elapsed / 3600)).padStart(2, "0");
+    const minutes = String(Math.floor((elapsed % 3600) / 60)).padStart(2, "0");
+    const seconds = String(elapsed % 60).padStart(2, "0");
+
+    uptimeValue.textContent = `${hours}:${minutes}:${seconds}`;
+}
+
+setInterval(updateStreamUptime, 1000);
+updateStreamUptime();
+
+const chips = {
+    follow: document.getElementById("chipFollow"),
+    sub: document.getElementById("chipSub"),
+    primesub: document.getElementById("chipSub"),
+    giftsub: document.getElementById("chipSub"),
+    tip: document.getElementById("chipTip"),
+    bits: document.getElementById("chipBits")
+};
+
+const alertQueue = [];
+let alertPlaying = false;
+    
+let currentAlertDuration = 5000;
+
+function pulse(type) {
+    const chip = chips[type];
+    const duration = currentAlertDuration || alertDurations[type] || 5000;
+    const color = alertColors[type] || "#00d9ff";
+
+    if (chip) {
+        chip.style.setProperty("--chip-color", color);
+        chip.classList.remove("active");
+        void chip.offsetWidth;
+        chip.classList.add("active");
+
+        setTimeout(() => {
+            chip.classList.remove("active");
+        }, duration);
+    }
+
+    core.style.setProperty("--core-alert-color", color);
+
+    core.animate(
+        [
+            { transform: "scale(1)" },
+            { transform: "scale(1.18) rotate(3deg)" },
+            { transform: "scale(1)" }
+        ],
+        {
+            duration: 700,
+            easing: "ease"
+        }
+    );
+
+    setTimeout(() => {
+        core.classList.remove("pulse");
+        core.style.setProperty("--core-alert-color", "#00d9ff");
+    }, duration);
+}
+
+let serverSubTrainCount = 0;
+let serverSubTrainEndsAt = 0;
+let serverSubTrainInterval = null;
+
+let hypeTrainProgress = 0;
+let hypeTrainGoal = 1;
+    
+function updateSubTrainDisplay() {
+
+    const remaining =
+        Math.max(
+            0,
+            serverSubTrainEndsAt - Date.now()
+        );
+
+    if (
+        serverSubTrainCount <= 0 ||
+        remaining <= 0
+    ) {
+
+        subTrain.classList.remove("running");
+
+        trainCount.textContent = "00";
+
+        trainFill.style.width = "0%";
+
+        trainTimer.textContent =
+            "STANDING BY";
+
+        if (serverSubTrainInterval) {
+
+            clearInterval(
+                serverSubTrainInterval
+            );
+
+            serverSubTrainInterval = null;
+        }
+
+        return;
+    }
+
+    subTrain.classList.add("running");
+
+    trainCount.textContent =
+        `LVL ${serverSubTrainCount}`;
+
+    const percent =
+        Math.min(
+            100,
+            ((hypeTrainProgress || 0) / (hypeTrainGoal || 1)) * 100
+        );
+
+    trainFill.style.width =
+        `${percent}%`;
+
+    const mins =
+        Math.floor(remaining / 60000);
+
+    const secs =
+        Math.floor(
+            (remaining % 60000) / 1000
+        );
+
+    trainTimer.textContent =
+        `LEVEL ${serverSubTrainCount} • ${mins}:${String(secs).padStart(2, "0")} REMAINING`;
+
+    subTrain.classList.remove("medium", "low", "warning");
+
+    if (remaining <= 30000) {
+
+        subTrain.classList.add("warning");
+    
+    } else if (remaining <= 90000) {
+    
+        subTrain.classList.add("low");
+    
+    } else if (remaining <= 180000) {
+    
+        subTrain.classList.add("medium");
+    }
+
+}
+    
+function updateCounts(history) {
+ //   const totals = history.totals || {};
+
+ //   const follows = totals.follows || 0;
+ //   const subs = (totals.subs || 0) + (totals.primesubs || 0) + (totals.giftsubs || 0);
+ //   const bits = totals.totalBits || 0;
+ //   const raids = totals.raids || 0;
+
+ //   counts.textContent = `FOLLOWERS ${follows} • SUBS ${subs} • BITS ${bits} • RAIDS ${raids}`;
+}
+
+function formatGiftSubText(user, extra, reward) {
+    const rawUser = String(user || "").trim();
+    const rawExtra = String(extra || "").trim();
+
+    // Multi gift already arrives like: TESTGIFTER GIFTED X6
+    if (/GIFTED\s+X?\d+/i.test(rawUser)) {
+        return rawUser;
+    }
+
+    // Single gift: user = TESTGIFTER ◆ TESTRECEIVER, extra = TESTGIFTER
+    if (reward) {
+        return `${rawExtra || rawUser.split("◆")[0].trim()} GIFTED X1`;
+    }
+
+    const countMatch = rawExtra.match(/(\d+)/) || rawUser.match(/(\d+)/);
+    const count = countMatch ? countMatch[1] : "1";
+
+    const gifter = rawUser.split("◆")[0].split("♦")[0].trim();
+
+    return `${gifter} GIFTED X${count}`;
+}
+    
+function loadFromHistory(history) {
+    if ((history.follows || [])[0]) {
+        latestFollow.textContent = history.follows[0].user;
+    }
+
+    if ((history.subs || [])[0]) {
+        latestSub.textContent = history.subs[0].user + " • " + history.subs[0].extra;
+    }
+
+    if ((history.primesubs || [])[0]) {
+        latestSub.textContent = history.primesubs[0].user + " • PRIME";
+    }
+
+    if ((history.giftsubs || [])[0]) {
+        const gift = history.giftsubs[0];
+    
+        latestSub.textContent = formatGiftSubText(
+            gift.user,
+            gift.extra,
+            gift.reward
+        );
+    }
+
+    if ((history.tips || [])[0]) {
+        latestTip.textContent = history.tips[0].user + " • " + history.tips[0].extra;
+    }
+
+    if ((history.bits || [])[0]) {
+        latestBits.textContent = history.bits[0].user + " • " + history.bits[0].extra;
+    }
+
+    updateCounts(history);
+}
+
+function queueAlert(data) {
+    alertQueue.push(data);
+
+    if (!alertPlaying) {
+        playNextAlert();
+    }
+}
+
+function playNextAlert() {
+
+    if (alertQueue.length === 0) {
+        alertPlaying = false;
+        return;
+    }
+
+    alertPlaying = true;
+
+    const data = alertQueue.shift();
+
+    const duration =
+        data.duration || alertDurations[data.type] || 5000;
+    
+    currentAlertDuration = duration;
+    
+    processAlert(data);
+
+    setTimeout(() => {
+
+        alertPlaying = false;
+    
+        if (alertQueue.length > 0) {
+            playNextAlert();
+        }
+    
+    }, duration);
+}
+
+function processAlert(data) {
+
+    if (data.type === "follow") {
+        latestFollow.textContent = data.user;
+    }
+
+    if (data.type === "sub") {
+        latestSub.textContent =
+            `${data.user} • ${data.extra || ""}`;
+
+    }
+
+    if (data.type === "primesub") {
+        latestSub.textContent =
+            `${data.user} • PRIME`;
+
+    }
+
+    if (data.type === "giftsub") {
+
+        latestSub.textContent = formatGiftSubText(
+            data.user,
+            data.extra,
+            data.reward
+        );
+
+        const giftAmount =
+            parseInt(
+                String(data.user || data.extra || "")
+                    .match(/(\d+)/)?.[0] || "1",
+                10
+            );
+
+    }
+
+    if (data.type === "tip") {
+        latestTip.textContent =
+            `${data.user} • ${data.extra || ""}`;
+    }
+
+    if (data.type === "bits") {
+        latestBits.textContent =
+            `${data.user} • ${data.extra || ""}`;
+    }
+
+    if (data.history) {
+        updateCounts(data.history);
+    }
+
+    pulse(data.type);
+}
+
+socket.on("hype-train-update", (data) => {
+    if (!data.active) {
+
+        serverSubTrainCount = 0;
+        hypeTrainProgress = 0;
+        hypeTrainGoal = 1;
+        serverSubTrainEndsAt = 0;
+        
+        updateSubTrainDisplay();
+        
+        return;
+        }
+
+    serverSubTrainCount =
+        data.level || 0;
+    
+    hypeTrainProgress =
+        data.progress || 0;
+    
+    hypeTrainGoal =
+        data.goal || 1;
+    
+    serverSubTrainEndsAt =
+        data.expiresAt
+            ? new Date(data.expiresAt).getTime()
+            : 0;
+
+    updateSubTrainDisplay();
+
+    if (serverSubTrainInterval) {
+
+        clearInterval(
+            serverSubTrainInterval
+        );
+    }
+
+    if (
+        serverSubTrainCount > 0 &&
+        serverSubTrainEndsAt > Date.now()
+    ) {
+
+        serverSubTrainInterval =
+            setInterval(
+                updateSubTrainDisplay,
+                500
+            );
+    }
+
+});
+
+socket.on("stream-status", (data) => {
+    if (data.live && data.startedAt) {
+        streamStartTime = new Date(data.startedAt).getTime();
+    } else {
+        streamStartTime = null;
+    }
+
+    updateStreamUptime();
+});
+    
+socket.on("alert", (data) => {
+    queueAlert(data);
+});
+
+fetch("/api/alert-history")
+    .then(res => res.json())
+    .then(loadFromHistory);
+</script>
+
+</body>
+</html>
