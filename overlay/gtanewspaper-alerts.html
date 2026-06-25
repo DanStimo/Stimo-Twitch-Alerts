@@ -461,6 +461,7 @@ function buildSessionSummary() {
         bits: 0,
         raid: 0,
         tip: 0,
+        totalTips: 0,
         totalBits: 0,
         totalRaidViewers: 0,
         giftedSubs: 0
@@ -471,6 +472,15 @@ function buildSessionSummary() {
 
         if (alert.type === "bits") {
             counts.totalBits += parseInt(alert.extra, 10) || 0;
+        }
+
+        if (alert.type === "tip") {
+            const amount = parseFloat(
+                String(alert.extra || "")
+                    .replace(/[^\d.]/g, "")
+            ) || 0;
+        
+            counts.totalTips += amount;
         }
 
         if (alert.type === "raid") {
@@ -572,7 +582,7 @@ function renderPaper() {
             <div>${s.totalRaidViewers} Raid Viewers</div>
     
             <div>${s.totalBits} Bits</div>
-            <div>${s.tip} Tips</div>
+            <div>£${s.totalTips.toFixed(2)} Tips</div>
         </div>
     `;
 
@@ -629,7 +639,7 @@ function renderPaper() {
     if (s.tip > 0) {
         stories.push({
             headline: "TIPS FILED WITH THE NEWSROOM",
-            copy: `${s.tip} tip${s.tip === 1 ? "" : "s"} were logged in support of field reporting.`
+            copy: `A total of £${s.totalTips.toFixed(2)} was contributed in support of tonight's field reporting.`
         });
     }
 
