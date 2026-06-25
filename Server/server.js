@@ -706,7 +706,7 @@ const alertDurations = {
     raid: 20500,
     bits: 9000,
     redemption: 9000,
-    tip: 27000
+    tip: 11000
 };
 
 function queueAlert(type, user, extra = "", reward = "", history = null) {
