@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Stimo Broadcast HUD</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="gtahud-v4.css">
+
+</head>
+
+<body>
+
+<div id="hud">
+
+    <!-- Background FX -->
+
+    <div id="bgVideo"></div>
+
+    <div id="grid"></div>
+
+    <div id="noise"></div>
+
+    <div id="scanline"></div>
+
+    <div id="scanner"></div>
+
+    <div id="reflection"></div>
+
+    <div id="glow"></div>
+
+    <!-- Broadcast Frame -->
+
+    <div id="frame">
+
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner bl"></div>
+        <div class="corner br"></div>
+
+        <div id="topLine"></div>
+        <div id="bottomLine"></div>
+
+        <!-- LEFT -->
+
+        <section id="leftPanel">
+
+            <div class="label">
+
+                LIVE
+
+            </div>
+
+            <div id="liveDot"></div>
+
+            <div id="clock">
+
+                00:00:00
+
+            </div>
+
+        </section>
+
+        <!-- MIDDLE -->
+
+        <section id="centrePanel">
+
+            <div id="network">
+
+                STIMO NEWS NETWORK
+
+            </div>
+
+            <div id="subtitle">
+
+                BROADCAST CONTROL
+
+            </div>
+
+        </section>
+
+        <!-- RIGHT -->
+
+        <section id="rightPanel">
+
+            <div class="label">
+
+                LOCATION
+
+            </div>
+
+            <div id="location">
+
+                LOS SANTOS
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- Alert Layer -->
+
+    <div id="alertLayer">
+
+        <div id="alertCategory">
+
+            COMMUNITY EVENT
+
+        </div>
+
+        <div id="alertHeadline">
+
+            TEST FOLLOWER
+
+        </div>
+
+        <div id="alertSubtext">
+
+            HAS JOINED THE STORY
+
+        </div>
+
+        <div id="progressBar">
+
+            <div id="progressFill"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script src="gtahud-v4.js"></script>
+
+</body>
+
+</html>
