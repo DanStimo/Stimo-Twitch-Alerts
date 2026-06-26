@@ -603,3 +603,20 @@ opacity:0;
 pointer-events:none;
 
 }
+
+/* subtle idle movement */
+
+#frame{
+    transition:
+        transform .15s linear;
+}
+
+#glow{
+    transition:
+        box-shadow .15s linear;
+}
+
+#scanner{
+    transition:
+        opacity .15s linear;
+}
