@@ -1,63 +1,62 @@
-const clock = document.getElementById("clock");
-const frame = document.getElementById("frame");
-const glow = document.getElementById("glow");
-const scanner = document.getElementById("scanner");
+function playDemo(){
 
-let start = performance.now();
+const layer=document.getElementById("alertLayer");
 
-function tick(){
+const frame=document.getElementById("alertFrame");
 
-    const now = new Date();
+layer.style.opacity=1;
 
-    clock.textContent =
-        now.toLocaleTimeString("en-GB",{
-            hour12:false
-        });
+frame.style.width="1500px";
 
-    requestAnimationFrame(tick);
+frame.style.height="190px";
+
+frame.style.transform="translateY(0)";
+
+setTimeout(()=>{
+
+breakingLabel.style.opacity=1;
+breakingLabel.style.transform="translateY(0)";
+
+},250);
+
+setTimeout(()=>{
+
+alertHeadline.style.opacity=1;
+alertHeadline.style.transform="scale(1)";
+
+},550);
+
+setTimeout(()=>{
+
+alertUsername.style.opacity=1;
+alertUsername.style.transform="translateY(0)";
+
+},800);
+
+setTimeout(()=>{
+
+alertDescription.style.opacity=1;
+
+},950);
+
+setTimeout(()=>{
+
+layer.style.opacity=0;
+
+frame.style.width="980px";
+frame.style.height="74px";
+
+breakingLabel.style.opacity=0;
+alertHeadline.style.opacity=0;
+alertUsername.style.opacity=0;
+alertDescription.style.opacity=0;
+
+breakingLabel.style.transform="translateY(-12px)";
+alertHeadline.style.transform="scale(.8)";
+alertUsername.style.transform="translateY(25px)";
+
+},6500);
 
 }
 
-tick();
-
-let t = 0;
-
-function animate(){
-
-    t += 0.016;
-
-    //
-    // breathing animation
-    //
-
-    const breathe =
-        Math.sin(t*0.6);
-
-    frame.style.transform =
-        `translateX(-50%) scale(${1+breathe*0.003})`;
-
-    //
-    // glow pulse
-    //
-
-    const glowStrength =
-        35+
-        (Math.sin(t*1.2)+1)*18;
-
-    glow.style.boxShadow = `
-        0 0 ${glowStrength}px rgba(0,217,255,.30),
-        0 0 ${glowStrength*2}px rgba(0,217,255,.10)
-    `;
-
-    //
-    // scanner opacity
-
-    scanner.style.opacity =
-        .75+
-        Math.sin(t*2)*.1;
-
-    requestAnimationFrame(animate);
-
-}
-
-animate();
+window.playDemo=playDemo;
