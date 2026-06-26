@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>GTA HUD Alerts 2</title>
+
+<style>
+:root {
+    --accent: #00d9ff;
+    --accent-soft: rgba(0,217,255,0.28);
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: Consolas, monospace;
+}
+
+#hud {
+    position: absolute;
+    top: 34px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1500px;
+    height: 76px;
+    color: white;
+    pointer-events: none;
+}
+
+.scoreboard {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+
+    background:
+        linear-gradient(90deg, rgba(0,0,0,0.2), var(--accent-soft), rgba(0,0,0,0.2)),
+        linear-gradient(180deg, rgba(8,10,14,0.92), rgba(0,0,0,0.86));
+
+    border-top: 1px solid rgba(255,255,255,0.18);
+    border-bottom: 2px solid var(--accent);
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,0.75),
+        0 0 28px var(--accent-soft),
+        inset 0 0 32px rgba(255,255,255,0.04);
+
+    transition:
+        height 0.55s cubic-bezier(.2,.9,.2,1),
+        transform 0.55s cubic-bezier(.2,.9,.2,1),
+        box-shadow 0.35s ease;
+}
+
+.scoreboard::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255,255,255,0.025) 0px,
+            rgba(255,255,255,0.025) 1px,
+            transparent 1px,
+            transparent 7px
+        );
+    opacity: 0.65;
+}
+
+.scoreboard::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -20%;
+    width: 18%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.32;
+    animation: scanMove 4.5s linear infinite;
+}
+
+@keyframes scanMove {
+    from { left: -22%; }
+    to { left: 110%; }
+}
+
+.idle-view,
+.alert-view {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+}
+
+.idle-view {
+    display: grid;
+    grid-template-columns: 170px 1fr 170px;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.28s ease;
+}
+
+.hud-left,
+.hud-right {
+    padding: 0 22px;
+}
+
+.live-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: #ff3030;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ff3030;
+    animation: livePulse 1.1s infinite ease-in-out;
+}
+
+@keyframes livePulse {
+    0%,100% { transform: scale(.85); opacity: .7; }
+    50% { transform: scale(1.2); opacity: 1; }
+}
+
+.live-text,
+.clock-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.72);
+}
+
+#uptimeValue {
+    margin-top: 4px;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.hud-center {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    height: 100%;
+}
+
+.reading {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 18px;
+    border-left: 1px solid rgba(255,255,255,0.08);
+}
+
+.reading:last-child {
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+.reading-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    font-weight: 900;
+    color: var(--accent);
+}
+
+.reading-value {
+    margin-top: 7px;
+    font-size: 17px;
+    letter-spacing: 1px;
+    font-weight: 900;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.network {
+    text-align: right;
+    font-size: 10px;
+    letter-spacing: 3px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.62);
+}
+
+.network-name {
+    margin-top: 4px;
+    font-size: 16px;
+    color: white;
+    letter-spacing: 2px;
+}
+
+.alert-view {
+    opacity: 0;
+    transform: translateY(-12px);
+    transition:
+        opacity 0.28s ease,
+        transform 0.35s ease;
+}
+
+.alert-topline {
+    position: absolute;
+    top: 12px;
+    left: 28px;
+    right: 28px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    letter-spacing: 4px;
+    font-weight: 900;
+    color: var(--accent);
+}
+
+.alert-main {
+    position: absolute;
+    top: 36px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 42px;
+    line-height: 1;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-shadow:
+        0 0 12px rgba(255,255,255,0.75),
+        0 0 28px var(--accent);
+}
+
+.alert-detail {
+    position: absolute;
+    top: 88px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 4px;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.82);
+}
+
+.progress {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    bottom: 14px;
+    height: 4px;
+    background: rgba(255,255,255,0.12);
+    overflow: hidden;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--accent);
+    box-shadow: 0 0 14px var(--accent);
+}
+
+#hud.alerting .scoreboard {
+    height: 138px;
+    transform: translateY(0) scale(1.015);
+}
+
+#hud.alerting .idle-view {
+    opacity: 0;
+}
+
+#hud.alerting .alert-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#hud.alerting .scoreboard {
+    animation: alertKick 0.55s cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes alertKick {
+    0% { transform: scaleX(.92) scaleY(.8); filter: blur(4px); }
+    55% { transform: scaleX(1.025) scaleY(1.06); filter: blur(0); }
+    100% { transform: scaleX(1.015) scaleY(1); }
+}
+
+.edge-runner {
+    position: absolute;
+    inset: 0;
+    z-index: 7;
+    pointer-events: none;
+    opacity: .9;
+}
+
+.edge-runner::before,
+.edge-runner::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 200%;
+    height: 2px;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            transparent 0px,
+            transparent 18px,
+            var(--accent) 18px,
+            var(--accent) 34px
+        );
+    animation: edgeRun 1.2s linear infinite;
+}
+
+.edge-runner::before { top: 0; }
+.edge-runner::after { bottom: 0; animation-direction: reverse; }
+
+@keyframes edgeRun {
+    from { transform: translateX(0); }
+    to { transform: translateX(-160px); }
+}
+
+.sub-train {
+    position: absolute;
+    top: 86px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    width: 360px;
+    padding: 5px 10px;
+    background: rgba(0,0,0,0.58);
+    border-top: 1px solid rgba(184,77,255,0.8);
+    opacity: 0;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    z-index: 2;
+}
+
+.sub-train.running {
+    opacity: 1;
+    transform: translateX(-50%) translateY(8px);
+}
+
+.train-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    letter-spacing: 2px;
+    font-weight: 900;
+    color: #b84dff;
+}
+
+.train-bar {
+    margin-top: 4px;
+    height: 4px;
+    background: rgba(255,255,255,0.12);
+}
+
+.train-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #b84dff, #ffffff);
+    transition: width 0.5s ease;
+}
+
+.train-timer {
+    margin-top: 3px;
+    font-size: 8px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.68);
+}
+</style>
+</head>
+
+<body>
+
+<div id="hud">
+    <div class="scoreboard">
+
+        <div class="edge-runner"></div>
+
+        <div class="idle-view">
+            <div class="hud-left">
+                <div class="live-row">
+                    <span class="live-dot"></span>
+                    <span class="live-text">ON AIR</span>
+                </div>
+                <div id="uptimeValue">00:00:00</div>
+            </div>
+
+            <div class="hud-center">
+                <div class="reading">
+                    <div class="reading-label">FOLLOW</div>
+                    <div class="reading-value" id="latestFollow">WAITING</div>
+                </div>
+
+                <div class="reading">
+                    <div class="reading-label">SUB</div>
+                    <div class="reading-value" id="latestSub">WAITING</div>
+                </div>
+
+                <div class="reading">
+                    <div class="reading-label">RAID</div>
+                    <div class="reading-value" id="latestRaid">WAITING</div>
+                </div>
+
+                <div class="reading">
+                    <div class="reading-label">TIP</div>
+                    <div class="reading-value" id="latestTip">WAITING</div>
+                </div>
+
+                <div class="reading">
+                    <div class="reading-label">BITS</div>
+                    <div class="reading-value" id="latestBits">WAITING</div>
+                </div>
+            </div>
+
+            <div class="hud-right">
+                <div class="network">BROADCAST</div>
+                <div class="network-name">SNN LIVE</div>
+            </div>
+        </div>
+
+        <div class="alert-view">
+            <div class="alert-topline">
+                <span id="alertType">COMMUNITY EVENT</span>
+                <span id="alertStatus">SIGNAL VERIFIED</span>
+            </div>
+
+            <div class="alert-main" id="alertMain">ALERT</div>
+            <div class="alert-detail" id="alertDetail"></div>
+
+            <div class="progress">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="sub-train" id="subTrain">
+        <div class="train-top">
+            <span>HYPE TRAIN</span>
+            <span id="trainCount">00</span>
+        </div>
+        <div class="train-bar">
+            <div class="train-fill" id="trainFill"></div>
+        </div>
+        <div class="train-timer" id="trainTimer">STANDING BY</div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+const hud = document.getElementById("hud");
+
+const latestFollow = document.getElementById("latestFollow");
+const latestSub = document.getElementById("latestSub");
+const latestRaid = document.getElementById("latestRaid");
+const latestTip = document.getElementById("latestTip");
+const latestBits = document.getElementById("latestBits");
+
+const alertType = document.getElementById("alertType");
+const alertMain = document.getElementById("alertMain");
+const alertDetail = document.getElementById("alertDetail");
+const progressFill = document.getElementById("progressFill");
+
+const subTrain = document.getElementById("subTrain");
+const trainCount = document.getElementById("trainCount");
+const trainFill = document.getElementById("trainFill");
+const trainTimer = document.getElementById("trainTimer");
+
+const uptimeValue = document.getElementById("uptimeValue");
+
+let streamStartTime = null;
+let alertQueue = [];
+let alertPlaying = false;
+
+const alertColors = {
+    follow: "#00d9ff",
+    sub: "#b84dff",
+    primesub: "#00a8ff",
+    giftsub: "#ff4fd8",
+    raid: "#ff5533",
+    tip: "#ffdd66",
+    bits: "#00ff99",
+    redemption: "#ffffff"
+};
+
+function setAccent(type) {
+    const color = alertColors[type] || "#00d9ff";
+    document.documentElement.style.setProperty("--accent", color);
+    document.documentElement.style.setProperty("--accent-soft", color + "44");
+}
+
+function formatGiftSubText(user, extra, reward) {
+    const rawUser = String(user || "").trim();
+    const rawExtra = String(extra || "").trim();
+
+    if (/GIFTED\s+X?\d+/i.test(rawUser)) return rawUser;
+
+    if (reward) {
+        return `${rawExtra || rawUser.split("◆")[0].trim()} GIFTED X1`;
+    }
+
+    const countMatch = rawExtra.match(/(\d+)/) || rawUser.match(/(\d+)/);
+    const count = countMatch ? countMatch[1] : "1";
+    const gifter = rawUser.split("◆")[0].split("♦")[0].trim();
+
+    return `${gifter} GIFTED X${count}`;
+}
+
+function getAlertText(data) {
+    const user = (data.user || "UNKNOWN").toUpperCase();
+
+    if (data.type === "follow") {
+        return {
+            type: "NEW FOLLOWER",
+            main: user,
+            detail: "JOINED THE LIVE BROADCAST"
+        };
+    }
+
+    if (data.type === "sub") {
+        return {
+            type: "PRESS PASS ISSUED",
+            main: user,
+            detail: data.extra || ""
+        };
+    }
+
+    if (data.type === "primesub") {
+        return {
+            type: "PRIME PRESS ACCESS",
+            main: user,
+            detail: data.extra || "PRIME"
+        };
+    }
+
+    if (data.type === "giftsub") {
+        return {
+            type: "COMMUNITY SUPPORT",
+            main: formatGiftSubText(data.user, data.extra, data.reward),
+            detail: "PRESS PASSES DISTRIBUTED"
+        };
+    }
+
+    if (data.type === "raid") {
+        return {
+            type: "INCOMING RAID",
+            main: user,
+            detail: data.extra || ""
+        };
+    }
+
+    if (data.type === "tip") {
+        return {
+            type: "COMMUNITY DONATION",
+            main: user,
+            detail: data.extra || ""
+        };
+    }
+
+    if (data.type === "bits") {
+        return {
+            type: "PUBLIC CONTRIBUTION",
+            main: user,
+            detail: data.extra || ""
+        };
+    }
+
+    return {
+        type: "BROADCAST ALERT",
+        main: user,
+        detail: data.extra || data.reward || ""
+    };
+}
+
+function updateIdleReadings(data) {
+    if (data.type === "follow") latestFollow.textContent = data.user;
+
+    if (data.type === "sub") {
+        latestSub.textContent = `${data.user} • ${data.extra || ""}`;
+    }
+
+    if (data.type === "primesub") {
+        latestSub.textContent = `${data.user} • PRIME`;
+    }
+
+    if (data.type === "giftsub") {
+        latestSub.textContent = formatGiftSubText(data.user, data.extra, data.reward);
+    }
+
+    if (data.type === "raid") {
+        latestRaid.textContent = `${data.user} • ${data.extra || ""}`;
+    }
+
+    if (data.type === "tip") {
+        latestTip.textContent = `${data.user} • ${data.extra || ""}`;
+    }
+
+    if (data.type === "bits") {
+        latestBits.textContent = `${data.user} • ${data.extra || ""}`;
+    }
+}
+
+function queueAlert(data) {
+    alertQueue.push(data);
+    if (!alertPlaying) playNextAlert();
+}
+
+function playNextAlert() {
+    if (!alertQueue.length) {
+        alertPlaying = false;
+        return;
+    }
+
+    alertPlaying = true;
+
+    const data = alertQueue.shift();
+    const duration = data.duration || 6500;
+    const text = getAlertText(data);
+
+    setAccent(data.type);
+    updateIdleReadings(data);
+
+    alertType.textContent = text.type;
+    alertMain.textContent = text.main;
+    alertDetail.textContent = text.detail;
+
+    progressFill.style.transition = "none";
+    progressFill.style.width = "0%";
+    void progressFill.offsetWidth;
+    progressFill.style.transition = `width ${duration}ms linear`;
+    progressFill.style.width = "100%";
+
+    hud.classList.add("alerting");
+
+    setTimeout(() => {
+        hud.classList.remove("alerting");
+
+        setTimeout(() => {
+            setAccent("follow");
+            alertPlaying = false;
+            playNextAlert();
+        }, 650);
+
+    }, duration);
+}
+
+function loadFromHistory(history) {
+    if ((history.follows || [])[0]) latestFollow.textContent = history.follows[0].user;
+
+    if ((history.subs || [])[0]) {
+        latestSub.textContent = history.subs[0].user + " • " + history.subs[0].extra;
+    }
+
+    if ((history.primesubs || [])[0]) {
+        latestSub.textContent = history.primesubs[0].user + " • PRIME";
+    }
+
+    if ((history.giftsubs || [])[0]) {
+        const gift = history.giftsubs[0];
+        latestSub.textContent = formatGiftSubText(gift.user, gift.extra, gift.reward);
+    }
+
+    if ((history.raids || [])[0]) {
+        latestRaid.textContent = history.raids[0].user + " • " + history.raids[0].extra;
+    }
+
+    if ((history.tips || [])[0]) {
+        latestTip.textContent = history.tips[0].user + " • " + history.tips[0].extra;
+    }
+
+    if ((history.bits || [])[0]) {
+        latestBits.textContent = history.bits[0].user + " • " + history.bits[0].extra;
+    }
+}
+
+function updateStreamUptime() {
+    if (!streamStartTime) {
+        uptimeValue.textContent = "00:00:00";
+        return;
+    }
+
+    const elapsed = Math.floor((Date.now() - streamStartTime) / 1000);
+
+    const hours = String(Math.floor(elapsed / 3600)).padStart(2, "0");
+    const minutes = String(Math.floor((elapsed % 3600) / 60)).padStart(2, "0");
+    const seconds = String(elapsed % 60).padStart(2, "0");
+
+    uptimeValue.textContent = `${hours}:${minutes}:${seconds}`;
+}
+
+setInterval(updateStreamUptime, 1000);
+updateStreamUptime();
+
+let serverSubTrainCount = 0;
+let serverSubTrainEndsAt = 0;
+let serverSubTrainInterval = null;
+let hypeTrainProgress = 0;
+let hypeTrainGoal = 1;
+
+function updateSubTrainDisplay() {
+    const remaining = Math.max(0, serverSubTrainEndsAt - Date.now());
+
+    if (serverSubTrainCount <= 0 || remaining <= 0) {
+        subTrain.classList.remove("running");
+        trainCount.textContent = "00";
+        trainFill.style.width = "0%";
+        trainTimer.textContent = "STANDING BY";
+
+        if (serverSubTrainInterval) {
+            clearInterval(serverSubTrainInterval);
+            serverSubTrainInterval = null;
+        }
+
+        return;
+    }
+
+    subTrain.classList.add("running");
+    trainCount.textContent = `LVL ${serverSubTrainCount}`;
+
+    const percent = Math.min(100, ((hypeTrainProgress || 0) / (hypeTrainGoal || 1)) * 100);
+    trainFill.style.width = `${percent}%`;
+
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+
+    trainTimer.textContent =
+        `LEVEL ${serverSubTrainCount} • ${mins}:${String(secs).padStart(2, "0")} REMAINING`;
+}
+
+socket.on("hype-train-update", (data) => {
+    if (!data.active) {
+        serverSubTrainCount = 0;
+        hypeTrainProgress = 0;
+        hypeTrainGoal = 1;
+        serverSubTrainEndsAt = 0;
+        updateSubTrainDisplay();
+        return;
+    }
+
+    serverSubTrainCount = data.level || 0;
+    hypeTrainProgress = data.progress || 0;
+    hypeTrainGoal = data.goal || 1;
+    serverSubTrainEndsAt = data.expiresAt ? new Date(data.expiresAt).getTime() : 0;
+
+    updateSubTrainDisplay();
+
+    if (serverSubTrainInterval) clearInterval(serverSubTrainInterval);
+
+    if (serverSubTrainCount > 0 && serverSubTrainEndsAt > Date.now()) {
+        serverSubTrainInterval = setInterval(updateSubTrainDisplay, 500);
+    }
+});
+
+socket.on("stream-status", (data) => {
+    if (data.live && data.startedAt) {
+        streamStartTime = new Date(data.startedAt).getTime();
+    } else {
+        streamStartTime = null;
+    }
+
+    updateStreamUptime();
+});
+
+socket.on("alert", queueAlert);
+
+fetch("/api/alert-history")
+    .then(res => res.json())
+    .then(loadFromHistory);
+</script>
+
+</body>
+</html>
