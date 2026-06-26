@@ -608,6 +608,50 @@ app.get("/test/openpack", (req, res) => {
     res.send(`Opened test pack: ${card.name}`);
 });
 
+app.get("/test/hypetrain/start", (req, res) => {
+    io.emit("hype-train-update", {
+        active: true,
+        level: 1,
+        progress: 25,
+        goal: 100,
+        expiresAt: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+        topContributions: []
+    });
+
+    res.send("Test hype train started: Level 1, 25/100, 5 minutes remaining.");
+});
+
+app.get("/test/hypetrain/progress", (req, res) => {
+    const level = Number(req.query.level) || 2;
+    const progress = Number(req.query.progress) || 60;
+    const goal = Number(req.query.goal) || 100;
+    const minutes = Number(req.query.minutes) || 3;
+
+    io.emit("hype-train-update", {
+        active: true,
+        level,
+        progress,
+        goal,
+        expiresAt: new Date(Date.now() + minutes * 60 * 1000).toISOString(),
+        topContributions: []
+    });
+
+    res.send(`Test hype train progress: Level ${level}, ${progress}/${goal}, ${minutes} minutes remaining.`);
+});
+
+app.get("/test/hypetrain/end", (req, res) => {
+    io.emit("hype-train-update", {
+        active: false,
+        level: 0,
+        progress: 0,
+        goal: 1,
+        expiresAt: null,
+        topContributions: []
+    });
+
+    res.send("Test hype train ended.");
+});
+
 app.get("/test/:type", (req, res) => {
     const type = req.params.type;
 
