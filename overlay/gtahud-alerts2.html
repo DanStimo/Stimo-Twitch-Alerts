@@ -430,22 +430,20 @@ html, body {
 /* HYPE TRAIN */
 .train-strip {
     position: absolute;
-    left: 165px;
-    right: 165px;
+    left: 118px;
+    right: 118px;
     bottom: 0;
 
     height: 0;
     opacity: 0;
 
     z-index: 11;
-
     overflow: hidden;
 
     background:
-        linear-gradient(90deg, transparent, rgba(184,77,255,0.24), transparent),
-        rgba(0,0,0,0.62);
+        linear-gradient(90deg, rgba(184,77,255,0.18), rgba(0,0,0,0.45), rgba(184,77,255,0.18));
 
-    border-top: 1px solid rgba(184,77,255,0.85);
+    border-top: 1px solid rgba(184,77,255,0.75);
 
     transition:
         height 0.35s ease,
@@ -453,24 +451,26 @@ html, body {
 }
 
 .train-strip.running {
-    height: 18px;
+    height: 24px;
     opacity: 1;
 }
 
 .train-glow {
     position: absolute;
     inset: 0;
+
     background:
-        radial-gradient(circle at center, rgba(184,77,255,0.45), transparent 60%);
-    opacity: 0.5;
+        radial-gradient(circle at center, rgba(184,77,255,0.42), transparent 62%);
+
+    opacity: 0.65;
 }
 
 .train-label {
     position: absolute;
-    left: 12px;
-    top: 4px;
+    left: 16px;
+    top: 7px;
 
-    font-size: 8px;
+    font-size: 9px;
     letter-spacing: 3px;
     font-weight: 900;
 
@@ -480,13 +480,13 @@ html, body {
 
 .train-main {
     position: absolute;
-    right: 12px;
-    top: 4px;
+    right: 16px;
+    top: 7px;
 
     display: flex;
-    gap: 14px;
+    gap: 18px;
 
-    font-size: 8px;
+    font-size: 9px;
     letter-spacing: 2px;
     font-weight: 900;
 
@@ -496,14 +496,16 @@ html, body {
 
 .train-track {
     position: absolute;
-    left: 105px;
-    right: 210px;
-    top: 7px;
+    left: 145px;
+    right: 305px;
+    top: 10px;
 
-    height: 4px;
+    height: 5px;
 
-    background: rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.13);
     overflow: hidden;
+
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
 }
 
 .train-fill {
@@ -513,16 +515,20 @@ html, body {
     background:
         linear-gradient(
             90deg,
-            #b84dff,
+            #6d2bff,
             #ffffff,
             #b84dff
         );
 
     box-shadow:
-        0 0 10px rgba(184,77,255,0.9),
-        0 0 20px rgba(184,77,255,0.55);
+        0 0 12px rgba(184,77,255,0.95),
+        0 0 24px rgba(184,77,255,0.55);
 
     transition: width 0.5s ease;
+}
+
+#hud:has(.train-strip.running) .hud-shell {
+    height: 92px;
 }
     
 </style>
