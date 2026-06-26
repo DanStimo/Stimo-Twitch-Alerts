@@ -1,509 +1,437 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>GTA Side HUD Alerts</title>
 
 <style>
-:root {
-    --accent: #00d9ff;
+
+html,body{
+margin:0;
+overflow:hidden;
+background:transparent;
+font-family:Consolas,monospace;
 }
 
-html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    overflow: hidden;
-    font-family: Consolas, monospace;
+#hud{
+position:absolute;
+inset:0;
+pointer-events:none;
 }
 
-#hud {
-    position: absolute;
-    inset: 0;
-    width: 1920px;
-    height: 1080px;
-    pointer-events: none;
-    color: white;
+/* LEFT */
+
+.left{
+position:absolute;
+left:30px;
+top:180px;
+
+display:flex;
+flex-direction:column;
+gap:18px;
 }
 
-.side {
-    position: absolute;
-    top: 180px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
+/* RIGHT */
+
+.right{
+position:absolute;
+right:30px;
+top:180px;
+
+display:flex;
+flex-direction:column;
+gap:18px;
 }
 
-.left-side {
-    left: 24px;
+.terminal{
+
+position:relative;
+
+width:90px;
+height:72px;
+
+overflow:hidden;
+
+background:#07090d;
+
+border-top:1px solid rgba(255,255,255,.08);
+border-bottom:2px solid var(--c);
+
+transition:
+width .45s cubic-bezier(.2,.9,.2,1),
+transform .45s cubic-bezier(.2,.9,.2,1),
+box-shadow .35s;
+
+box-shadow:
+0 12px 24px rgba(0,0,0,.65);
+
 }
 
-.right-side {
-    right: 24px;
+/* left expands */
+
+.left .terminal.active{
+
+width:620px;
+
+transform:translateX(30px);
+
 }
 
-.hud-chip {
-    width: 260px;
-    height: 58px;
-    position: relative;
-    overflow: hidden;
+/* right expands */
 
-    background:
-        linear-gradient(90deg, rgba(0,0,0,0.88), rgba(8,12,18,0.72));
+.right .terminal.active{
 
-    border: 1px solid rgba(255,255,255,0.08);
-    border-left: 3px solid var(--chip-color);
+width:620px;
 
-    box-shadow:
-        0 12px 34px rgba(0,0,0,0.72),
-        inset 0 0 24px rgba(255,255,255,0.035);
+transform:translateX(-30px);
 
-    transition:
-        width 0.55s cubic-bezier(.2,.9,.2,1),
-        transform 0.55s cubic-bezier(.2,.9,.2,1),
-        box-shadow 0.35s ease;
 }
 
-.right-side .hud-chip {
-    border-left: 1px solid rgba(255,255,255,0.08);
-    border-right: 3px solid var(--chip-color);
+.grid{
+
+position:absolute;
+inset:0;
+
+background:
+
+linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+
+background-size:18px 18px;
+
+opacity:.4;
+
+animation:gridMove 8s linear infinite;
+
 }
 
-.hud-chip::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        repeating-linear-gradient(
-            180deg,
-            rgba(255,255,255,0.035) 0,
-            rgba(255,255,255,0.035) 1px,
-            transparent 2px,
-            transparent 6px
-        );
-    opacity: 0.45;
+@keyframes gridMove{
+
+from{
+
+background-position:0 0;
+
 }
 
-.hud-chip::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -40%;
-    width: 35%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, var(--chip-color), transparent);
-    opacity: 0.18;
-    animation: scan 4s linear infinite;
+to{
+
+background-position:80px 40px;
+
 }
 
-@keyframes scan {
-    from { left: -40%; }
-    to { left: 120%; }
 }
 
-.chip-label {
-    position: absolute;
-    top: 11px;
-    left: 16px;
-    font-size: 10px;
-    letter-spacing: 3px;
-    font-weight: 900;
-    color: var(--chip-color);
-    text-transform: uppercase;
+.scan{
+
+position:absolute;
+
+top:0;
+left:-35%;
+
+width:35%;
+height:100%;
+
+background:
+
+linear-gradient(90deg,
+transparent,
+var(--c),
+transparent);
+
+opacity:.2;
+
+animation:scan 3s linear infinite;
+
 }
 
-.right-side .chip-label {
-    left: auto;
-    right: 16px;
+@keyframes scan{
+
+from{
+
+left:-40%;
+
 }
 
-.chip-value {
-    position: absolute;
-    left: 16px;
-    right: 16px;
-    bottom: 12px;
+to{
 
-    font-size: 15px;
-    letter-spacing: 1px;
-    font-weight: 900;
+left:120%;
 
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-transform: uppercase;
 }
 
-.right-side .chip-value {
-    text-align: right;
 }
 
-.hud-chip.active {
-    width: 620px;
-    box-shadow:
-        0 0 38px var(--chip-color),
-        0 18px 55px rgba(0,0,0,0.85),
-        inset 0 0 34px rgba(255,255,255,0.08);
+.title{
+
+position:absolute;
+
+top:8px;
+
+left:14px;
+
+font-size:10px;
+
+letter-spacing:4px;
+
+font-weight:900;
+
+color:var(--c);
+
 }
 
-.left-side .hud-chip.active {
-    transform: translateX(26px);
+.value{
+
+position:absolute;
+
+left:14px;
+
+bottom:10px;
+
+font-size:18px;
+
+font-weight:900;
+
+opacity:1;
+
+transition:opacity .3s;
+
 }
 
-.right-side .hud-chip.active {
-    transform: translateX(-26px);
+.left .active .value{
+
+opacity:.2;
+
 }
 
-.alert-title {
-    position: absolute;
-    top: 8px;
-    opacity: 0;
-    font-size: 10px;
-    letter-spacing: 4px;
-    font-weight: 900;
-    color: rgba(255,255,255,0.7);
-    transition: opacity 0.25s ease;
+.right .title{
+
+right:14px;
+left:auto;
+
 }
 
-.left-side .alert-title {
-    right: 18px;
+.right .value{
+
+right:14px;
+left:auto;
+
+text-align:right;
+
 }
 
-.right-side .alert-title {
-    left: 18px;
+.large{
+
+position:absolute;
+
+top:18px;
+
+left:130px;
+
+font-family:Georgia;
+
+font-size:34px;
+
+font-weight:900;
+
+opacity:0;
+
+transform:translateY(10px);
+
+transition:
+
+opacity .3s,
+
+transform .3s;
+
 }
 
-.hud-chip.active .alert-title {
-    opacity: 1;
+.active .large{
+
+opacity:1;
+
+transform:none;
+
 }
 
-.alert-detail {
-    position: absolute;
-    top: 28px;
-    opacity: 0;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 26px;
-    font-weight: 900;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    text-shadow:
-        0 0 12px rgba(255,255,255,0.7),
-        0 0 26px var(--chip-color);
-    transition: opacity 0.25s ease;
+.left .large{
+
+text-align:left;
+
 }
 
-.left-side .alert-detail {
-    right: 18px;
-    text-align: right;
+.right .large{
+
+left:auto;
+right:130px;
+
+text-align:right;
+
 }
 
-.right-side .alert-detail {
-    left: 18px;
-    text-align: left;
+.video{
+
+position:absolute;
+
+inset:0;
+
+width:100%;
+height:100%;
+
+object-fit:cover;
+
+opacity:0;
+
+transition:opacity .35s;
+
+filter:brightness(.45);
+
 }
 
-.hud-chip.active .alert-detail {
-    opacity: 1;
+.active .video{
+
+opacity:.3;
+
 }
 
-.hud-chip.active .chip-value {
-    opacity: 0.35;
-}
-
-.progress {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    height: 3px;
-    width: 0%;
-    background: var(--chip-color);
-    box-shadow: 0 0 14px var(--chip-color);
-}
-
-.center-core {
-    position: absolute;
-    top: 42px;
-    left: 50%;
-    transform: translateX(-50%);
-
-    width: 190px;
-    height: 48px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    background: rgba(0,0,0,0.78);
-    border-top: 1px solid rgba(255,255,255,0.12);
-    border-bottom: 2px solid #00d9ff;
-
-    box-shadow:
-        0 14px 35px rgba(0,0,0,0.65),
-        0 0 22px rgba(0,217,255,0.28);
-}
-
-.onair {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 8px;
-    letter-spacing: 3px;
-    font-weight: 900;
-    color: rgba(255,255,255,0.65);
-}
-
-.live-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #ff3030;
-    box-shadow: 0 0 10px #ff3030;
-    animation: pulse 1.1s infinite;
-}
-
-@keyframes pulse {
-    0%,100% { opacity: .65; transform: scale(.85); }
-    50% { opacity: 1; transform: scale(1.2); }
-}
-
-#uptimeValue {
-    margin-top: 5px;
-    font-size: 14px;
-    letter-spacing: 2px;
-    font-weight: 900;
-}
 </style>
+
 </head>
 
 <body>
 
 <div id="hud">
 
-    <div class="center-core">
-        <div class="onair">
-            <span class="live-dot"></span>
-            <span>ON AIR</span>
-        </div>
-        <div id="uptimeValue">00:00:00</div>
-    </div>
+<div class="left">
 
-    <div class="side left-side">
-        <div class="hud-chip" id="chipFollow" style="--chip-color:#00d9ff">
-            <div class="chip-label">FOLLOW</div>
-            <div class="chip-value" id="latestFollow">WAITING</div>
-            <div class="alert-title">NEW FOLLOWER</div>
-            <div class="alert-detail" id="alertFollow">JOINED THE STORY</div>
-            <div class="progress"></div>
-        </div>
+<div class="terminal" id="follow" style="--c:#00d9ff">
 
-        <div class="hud-chip" id="chipSub" style="--chip-color:#b84dff">
-            <div class="chip-label">SUB</div>
-            <div class="chip-value" id="latestSub">WAITING</div>
-            <div class="alert-title">PRESS PASS</div>
-            <div class="alert-detail" id="alertSub">ACCESS ISSUED</div>
-            <div class="progress"></div>
-        </div>
-    </div>
+<video class="video" muted loop playsinline></video>
 
-    <div class="side right-side">
-        <div class="hud-chip" id="chipTip" style="--chip-color:#ffdd66">
-            <div class="chip-label">TIP</div>
-            <div class="chip-value" id="latestTip">WAITING</div>
-            <div class="alert-title">COMMUNITY DONATION</div>
-            <div class="alert-detail" id="alertTip">FIELD SUPPORT</div>
-            <div class="progress"></div>
-        </div>
+<div class="grid"></div>
 
-        <div class="hud-chip" id="chipBits" style="--chip-color:#00ff99">
-            <div class="chip-label">BITS</div>
-            <div class="chip-value" id="latestBits">WAITING</div>
-            <div class="alert-title">PUBLIC CONTRIBUTION</div>
-            <div class="alert-detail" id="alertBits">SUPPORT RECEIVED</div>
-            <div class="progress"></div>
-        </div>
-    </div>
+<div class="scan"></div>
+
+<div class="title">FOLLOW</div>
+
+<div class="value">
+
+TESTFOLLOWER
 
 </div>
 
-<script src="/socket.io/socket.io.js"></script>
+<div class="large">
+
+NEW FOLLOWER
+
+</div>
+
+</div>
+
+<div class="terminal" id="sub" style="--c:#b84dff">
+
+<video class="video" muted loop playsinline></video>
+
+<div class="grid"></div>
+
+<div class="scan"></div>
+
+<div class="title">SUBS</div>
+
+<div class="value">
+
+TESTSUB
+
+</div>
+
+<div class="large">
+
+PRESS PASS ISSUED
+
+</div>
+
+</div>
+
+</div>
+
+<div class="right">
+
+<div class="terminal" id="tip" style="--c:#ffd44d">
+
+<video class="video" muted loop playsinline></video>
+
+<div class="grid"></div>
+
+<div class="scan"></div>
+
+<div class="title">
+
+TIP
+
+</div>
+
+<div class="value">
+
+£5.00
+
+</div>
+
+<div class="large">
+
+COMMUNITY DONATION
+
+</div>
+
+</div>
+
+<div class="terminal" id="bits" style="--c:#00ff99">
+
+<video class="video" muted loop playsinline></video>
+
+<div class="grid"></div>
+
+<div class="scan"></div>
+
+<div class="title">
+
+BITS
+
+</div>
+
+<div class="value">
+
+100
+
+</div>
+
+<div class="large">
+
+PUBLIC SUPPORT
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 <script>
-const socket = io();
 
-const latestFollow = document.getElementById("latestFollow");
-const latestSub = document.getElementById("latestSub");
-const latestTip = document.getElementById("latestTip");
-const latestBits = document.getElementById("latestBits");
-const uptimeValue = document.getElementById("uptimeValue");
+function test(id){
 
-const chips = {
-    follow: document.getElementById("chipFollow"),
-    sub: document.getElementById("chipSub"),
-    primesub: document.getElementById("chipSub"),
-    giftsub: document.getElementById("chipSub"),
-    tip: document.getElementById("chipTip"),
-    bits: document.getElementById("chipBits")
-};
+const t=document.getElementById(id);
 
-let streamStartTime = null;
-let alertQueue = [];
-let alertPlaying = false;
+t.classList.add("active");
 
-function formatGiftSubText(user, extra, reward) {
-    const rawUser = String(user || "").trim();
-    const rawExtra = String(extra || "").trim();
+setTimeout(()=>{
 
-    if (/GIFTED\s+X?\d+/i.test(rawUser)) return rawUser;
+t.classList.remove("active");
 
-    if (reward) {
-        return `${rawExtra || rawUser.split("◆")[0].trim()} GIFTED X1`;
-    }
+},5000);
 
-    const countMatch = rawExtra.match(/(\d+)/) || rawUser.match(/(\d+)/);
-    const count = countMatch ? countMatch[1] : "1";
-    const gifter = rawUser.split("◆")[0].split("♦")[0].trim();
-
-    return `${gifter} GIFTED X${count}`;
 }
 
-function updateReadings(data) {
-    if (data.type === "follow") latestFollow.textContent = data.user;
+window.test=test;
 
-    if (data.type === "sub") latestSub.textContent = `${data.user} • ${data.extra || ""}`;
-
-    if (data.type === "primesub") latestSub.textContent = `${data.user} • PRIME`;
-
-    if (data.type === "giftsub") {
-        latestSub.textContent = formatGiftSubText(data.user, data.extra, data.reward);
-    }
-
-    if (data.type === "tip") latestTip.textContent = `${data.user} • ${data.extra || ""}`;
-
-    if (data.type === "bits") latestBits.textContent = `${data.user} • ${data.extra || ""}`;
-}
-
-function getAlertDetail(data) {
-    if (data.type === "follow") return data.user;
-    if (data.type === "sub") return data.user;
-    if (data.type === "primesub") return `${data.user} PRIME`;
-    if (data.type === "giftsub") return formatGiftSubText(data.user, data.extra, data.reward);
-    if (data.type === "tip") return `${data.user} ${data.extra || ""}`;
-    if (data.type === "bits") return `${data.user} ${data.extra || ""}`;
-    return data.user || "ALERT";
-}
-
-function queueAlert(data) {
-    alertQueue.push(data);
-    if (!alertPlaying) playNextAlert();
-}
-
-function playNextAlert() {
-    if (!alertQueue.length) {
-        alertPlaying = false;
-        return;
-    }
-
-    alertPlaying = true;
-
-    const data = alertQueue.shift();
-    const chip = chips[data.type];
-
-    updateReadings(data);
-
-    if (!chip) {
-        alertPlaying = false;
-        playNextAlert();
-        return;
-    }
-
-    const duration = data.duration || 6500;
-    const detail = chip.querySelector(".alert-detail");
-    const progress = chip.querySelector(".progress");
-
-    detail.textContent = getAlertDetail(data).toUpperCase();
-
-    progress.style.transition = "none";
-    progress.style.width = "0%";
-    void progress.offsetWidth;
-
-    chip.classList.add("active");
-
-    progress.style.transition = `width ${duration}ms linear`;
-    progress.style.width = "100%";
-
-    setTimeout(() => {
-        chip.classList.remove("active");
-
-        setTimeout(() => {
-            progress.style.transition = "none";
-            progress.style.width = "0%";
-
-            alertPlaying = false;
-            playNextAlert();
-        }, 600);
-
-    }, duration);
-}
-
-function loadFromHistory(history) {
-    if ((history.follows || [])[0]) latestFollow.textContent = history.follows[0].user;
-
-    if ((history.subs || [])[0]) {
-        latestSub.textContent = history.subs[0].user + " • " + history.subs[0].extra;
-    }
-
-    if ((history.primesubs || [])[0]) {
-        latestSub.textContent = history.primesubs[0].user + " • PRIME";
-    }
-
-    if ((history.giftsubs || [])[0]) {
-        const gift = history.giftsubs[0];
-        latestSub.textContent = formatGiftSubText(gift.user, gift.extra, gift.reward);
-    }
-
-    if ((history.tips || [])[0]) {
-        latestTip.textContent = history.tips[0].user + " • " + history.tips[0].extra;
-    }
-
-    if ((history.bits || [])[0]) {
-        latestBits.textContent = history.bits[0].user + " • " + history.bits[0].extra;
-    }
-}
-
-function updateStreamUptime() {
-    if (!streamStartTime) {
-        uptimeValue.textContent = "00:00:00";
-        return;
-    }
-
-    const elapsed = Math.floor((Date.now() - streamStartTime) / 1000);
-
-    const hours = String(Math.floor(elapsed / 3600)).padStart(2, "0");
-    const minutes = String(Math.floor((elapsed % 3600) / 60)).padStart(2, "0");
-    const seconds = String(elapsed % 60).padStart(2, "0");
-
-    uptimeValue.textContent = `${hours}:${minutes}:${seconds}`;
-}
-
-setInterval(updateStreamUptime, 1000);
-updateStreamUptime();
-
-socket.on("stream-status", (data) => {
-    if (data.live && data.startedAt) {
-        streamStartTime = new Date(data.startedAt).getTime();
-    } else {
-        streamStartTime = null;
-    }
-
-    updateStreamUptime();
-});
-
-socket.on("alert", queueAlert);
-
-fetch("/api/alert-history")
-    .then(res => res.json())
-    .then(loadFromHistory);
 </script>
 
 </body>
+
 </html>
