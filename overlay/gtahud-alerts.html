@@ -857,6 +857,11 @@ let lastHypeTrainLevel = 0;
 let finalHypeTrainLevel = 0;
     
 function updateSubTrainDisplay() {
+    
+    if (subTrain.classList.contains("ending")) {
+        return;
+    }
+    
     const remaining =
         Math.max(
             0,
@@ -1104,7 +1109,12 @@ socket.on("hype-train-update", (data) => {
     if (!data.active) {
 
         if(finalHypeTrainLevel>0){
-    
+
+            if (serverSubTrainInterval) {
+                clearInterval(serverSubTrainInterval);
+                serverSubTrainInterval = null;
+            }
+        
             trainEndedLevel.textContent =
                 `FINAL LEVEL ${finalHypeTrainLevel}`;
     
