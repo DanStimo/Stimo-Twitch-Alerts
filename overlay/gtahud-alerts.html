@@ -277,7 +277,7 @@ html, body {
     box-sizing: border-box;
 
     background:
-        linear-gradient(135deg, rgba(35, 0, 55, 0.92), rgba(0, 0, 0, 0.86)),
+        linear-gradient(135deg, rgba(60,40,0,.95), rgba(0,0,0,.92) );
         radial-gradient(circle at 50% 0%, rgba(184, 77, 255, 0.28), transparent 65%);
 
     border-top: 1px solid var(--train-color, #b84dff);
@@ -325,8 +325,8 @@ html, body {
         rgba(0,0,0,.92)
     );
 
-    border-top:1px solid #b84dff;
-    border-bottom:2px solid #b84dff;
+    border-top:1px solid #ffd44d;
+    border-bottom:2px solid #ffb300;
 
     opacity:0;
 
@@ -359,7 +359,7 @@ html, body {
 
     letter-spacing:4px;
 
-    color:#b84dff;
+    color:#ffd44d;
 
     font-weight:900;
 
@@ -373,10 +373,12 @@ html, body {
 
     font-weight:900;
 
-    color:white;
+    color:#ffffff;
 
     text-shadow:
-    0 0 16px #b84dff;
+        0 0 12px #ffd44d,
+        0 0 24px #ffb300,
+        0 0 40px rgba(255,212,77,.6);
 
 }
 
@@ -805,9 +807,9 @@ html, body {
 </div>
 
 <div class="train-summary" id="trainSummary">
-    <div class="summary-small">TRANSMISSION COMPLETE</div>
+    <div class="summary-small">HYPE TRAIN COMPLETE</div>
     <div class="summary-level" id="summaryLevel">LEVEL 1</div>
-    <div class="summary-thanks">THANK YOU FOR THE HYPE</div>
+    <div class="summary-thanks">THANK YOU FOR THE SUPPORT</div>
 </div>
 
 <div class="hype-confetti" id="hypeConfetti"></div>
