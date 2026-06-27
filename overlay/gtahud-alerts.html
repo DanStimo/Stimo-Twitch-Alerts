@@ -291,7 +291,6 @@ html, body {
     overflow: hidden;
 
     box-shadow:
-        0 0 34px rgba(184, 77, 255, 0.42),
         0 18px 42px rgba(0, 0, 0, 0.8),
         inset 0 0 26px rgba(255, 255, 255, 0.05);
 
@@ -440,10 +439,24 @@ html, body {
             rgba(255,255,255,0.85) 11px
         );
 
+    background-size: 32px 32px;
+
     box-shadow:
-        0 0 14px var(--train-color, #b84dff);
+        0 0 10px var(--train-color, #b84dff);
 
     transition: width 0.5s linear;
+
+    animation: trainCountdownMove 0.65s linear infinite;
+}
+
+@keyframes trainCountdownMove {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 32px 0;
+    }
 }
 
 .train-progress-label {
@@ -478,7 +491,6 @@ html, body {
 .sub-train.active,
 .sub-train.running {
     box-shadow:
-        0 0 38px var(--train-color, #b84dff),
         0 18px 42px rgba(0,0,0,0.8),
         inset 0 0 28px rgba(255,255,255,0.06);
 }
