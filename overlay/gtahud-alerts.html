@@ -656,6 +656,59 @@ html, body {
         opacity: 0.85;
     }
 }
+
+.hype-confetti {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    pointer-events: none;
+    opacity: 0;
+    overflow: hidden;
+    z-index: 999;
+}
+
+.hype-confetti.active {
+    opacity: 1;
+}
+
+.hype-confetti::before,
+.hype-confetti::after {
+    content: "";
+    position: absolute;
+    inset: -200px 0 0 0;
+    background-repeat: repeat;
+    background-size: 420px 420px;
+
+    background-image:
+        radial-gradient(circle, #ffffff 0 3px, transparent 4px),
+        radial-gradient(circle, #b84dff 0 5px, transparent 6px),
+        radial-gradient(circle, #ff4fd8 0 4px, transparent 5px);
+
+    animation: hypeConfettiFall 8s linear infinite;
+}
+
+.hype-confetti::after {
+    animation-duration: 10s;
+    opacity: 0.65;
+    transform: translateX(80px);
+}
+
+@keyframes hypeConfettiFall {
+    from {
+        background-position:
+            0px -800px,
+            120px -600px,
+            240px -1000px;
+    }
+
+    to {
+        background-position:
+            0px 1200px,
+            120px 1400px,
+            240px 1000px;
+    }
+}
     
 </style>
 </head>
@@ -757,6 +810,8 @@ html, body {
     <div class="summary-thanks">THANK YOU FOR THE HYPE</div>
 </div>
 
+<div class="hype-confetti" id="hypeConfetti"></div>
+
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
@@ -793,6 +848,7 @@ const trainTimeFill = document.getElementById("trainTimeFill");
 const trainSummary = document.getElementById("trainSummary");
 const summaryLevel = document.getElementById("summaryLevel");
 const core = document.getElementById("core");
+const hypeConfetti = document.getElementById("hypeConfetti");
 
 const uptimeValue = document.getElementById("uptimeValue");
 
@@ -1149,15 +1205,19 @@ socket.on("hype-train-update", (data) => {
 
             summaryLevel.textContent =
                 `LEVEL ${finalHypeTrainLevel}`;
-
+            
             subTrain.classList.remove("running");
             subTrain.classList.add("summary");
             
+            launchConfetti();
+            
+            hypeConfetti.classList.add("active");
             trainSummary.classList.add("show");
 
             setTimeout(() => {
 
                 trainSummary.classList.remove("show");
+                hypeConfetti.classList.remove("active");
                 subTrain.classList.remove("summary");
 
                 serverSubTrainCount = 0;
