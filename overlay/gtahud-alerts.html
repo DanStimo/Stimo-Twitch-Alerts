@@ -277,7 +277,7 @@ html, body {
     box-sizing: border-box;
 
     background:
-        linear-gradient(135deg, rgba(60,40,0,.95), rgba(0,0,0,.92) );
+        linear-gradient(135deg, rgba(35, 0, 55, 0.92), rgba(0, 0, 0, 0.86)),
         radial-gradient(circle at 50% 0%, rgba(184, 77, 255, 0.28), transparent 65%);
 
     border-top: 1px solid var(--train-color, #b84dff);
@@ -321,7 +321,7 @@ html, body {
     background:
     linear-gradient(
         135deg,
-        rgba(35,0,55,.95),
+        rgba(60,40,0,.95),
         rgba(0,0,0,.92)
     );
 
@@ -711,6 +711,47 @@ html, body {
             240px 1000px;
     }
 }
+
+.hype-finale {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 998;
+
+    background:
+        radial-gradient(circle at center,
+            transparent 58%,
+            rgba(255,210,60,.10) 70%,
+            rgba(255,185,0,.28) 86%,
+            rgba(255,220,90,.55) 100%);
+
+    transition: opacity .5s ease;
+}
+
+.hype-finale.active{
+    opacity:1;
+    animation:hypeFinalePulse 2s ease-in-out infinite;
+}
+
+@keyframes hypeFinalePulse{
+
+    0%{
+        opacity:.2;
+        transform:scale(1);
+    }
+
+    50%{
+        opacity:1;
+        transform:scale(1.02);
+    }
+
+    100%{
+        opacity:.2;
+        transform:scale(1);
+    }
+
+}
     
 </style>
 </head>
@@ -812,7 +853,7 @@ html, body {
     <div class="summary-thanks">THANK YOU FOR THE SUPPORT</div>
 </div>
 
-<div class="hype-confetti" id="hypeConfetti"></div>
+<div class="hype-finale" id="hypeFinale"></div>
 
 <script src="/socket.io/socket.io.js"></script>
 
@@ -850,7 +891,7 @@ const trainTimeFill = document.getElementById("trainTimeFill");
 const trainSummary = document.getElementById("trainSummary");
 const summaryLevel = document.getElementById("summaryLevel");
 const core = document.getElementById("core");
-const hypeConfetti = document.getElementById("hypeConfetti");
+const hypeFinale = document.getElementById("hypeFinale");
 
 const uptimeValue = document.getElementById("uptimeValue");
 
@@ -1211,13 +1252,13 @@ socket.on("hype-train-update", (data) => {
             subTrain.classList.remove("running");
             subTrain.classList.add("summary");
             
-            hypeConfetti.classList.add("active");
+            hypeFinale.classList.add("active");
             trainSummary.classList.add("show");
 
             setTimeout(() => {
 
+                hypeFinale.classList.remove("active");
                 trainSummary.classList.remove("show");
-                hypeConfetti.classList.remove("active");
                 subTrain.classList.remove("summary");
 
                 serverSubTrainCount = 0;
