@@ -756,6 +756,7 @@ let serverSubTrainInterval = null;
 
 let hypeTrainProgress = 0;
 let hypeTrainGoal = 1;
+let lastHypeTrainLevel = 0;
     
 function updateSubTrainDisplay() {
     const remaining =
@@ -1007,6 +1008,7 @@ socket.on("hype-train-update", (data) => {
         serverSubTrainEndsAt = 0;
         serverSubTrainStartedAt = 0;
         serverSubTrainDuration = 0;
+        lastHypeTrainLevel = 0;
         
         updateSubTrainDisplay();
         
@@ -1015,18 +1017,26 @@ socket.on("hype-train-update", (data) => {
 
     serverSubTrainCount =
         data.level || 0;
+
+    const newEndsAt =
+        data.expiresAt
+            ? new Date(data.expiresAt).getTime()
+            : 0;
+    
+    if (newEndsAt !== serverSubTrainEndsAt) {
+        serverSubTrainStartedAt = Date.now();
+    }
+    
+    serverSubTrainEndsAt = newEndsAt;
+    
+    lastHypeTrainLevel = serverSubTrainCount;
     
     hypeTrainProgress =
         data.progress || 0;
     
     hypeTrainGoal =
         data.goal || 1;
-    
-    serverSubTrainEndsAt =
-        data.expiresAt
-            ? new Date(data.expiresAt).getTime()
-            : 0;
-    
+        
     if (!serverSubTrainStartedAt || serverSubTrainStartedAt > Date.now()) {
         serverSubTrainStartedAt = Date.now();
     }
