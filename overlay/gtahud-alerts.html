@@ -372,6 +372,12 @@ html, body {
     margin-top: 8px;
 }
 
+.train-header,
+.train-middle,
+.train-bg-sweep {
+    transition: opacity .35s ease;
+}
+
 .train-icon {
     width: 34px;
     height: 34px;
@@ -548,6 +554,71 @@ html, body {
     }
 }
 
+.train-ended{
+
+    position:absolute;
+    inset:0;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    background:
+    linear-gradient(
+        135deg,
+        rgba(35,0,55,.96),
+        rgba(0,0,0,.92)
+    );
+
+    opacity:0;
+
+    transition:.35s;
+
+    z-index:20;
+
+}
+
+.sub-train.ending .train-ended{
+
+    opacity:1;
+
+}
+
+.sub-train.ending .train-header,
+.sub-train.ending .train-middle,
+.sub-train.ending .train-bg-sweep{
+
+    opacity:0;
+
+}
+
+.train-ended-title{
+
+    color:var(--train-color);
+
+    font-size:11px;
+
+    font-weight:900;
+
+    letter-spacing:4px;
+
+}
+
+.train-ended-level{
+
+    margin-top:8px;
+
+    color:white;
+
+    font-size:22px;
+
+    font-weight:900;
+
+    letter-spacing:3px;
+
+}
+
 @keyframes hudGlow {
     0%, 100% {
         opacity: 0.45;
@@ -648,8 +719,21 @@ html, body {
                 <div class="train-progress-bar">
                     <div class="train-fill" id="trainFill"></div>
                 </div>
-            </div>
-        </div>
+                
+                </div>
+                
+                <div class="train-ended" id="trainEnded">
+                    <div class="train-ended-title">
+                        THANK YOU FOR THE HYPE
+                    </div>
+                
+                    <div class="train-ended-level" id="trainEndedLevel">
+                        FINAL LEVEL 1
+                    </div>
+                </div>
+                
+                </div>
+                </div>
     </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -685,6 +769,8 @@ const trainCount = document.getElementById("trainCount");
 const trainFill = document.getElementById("trainFill");
 const trainTimer = document.getElementById("trainTimer");
 const trainTimeFill = document.getElementById("trainTimeFill");
+const trainEnded = document.getElementById("trainEnded");
+const trainEndedLevel = document.getElementById("trainEndedLevel");
 const core = document.getElementById("core");
 
 const uptimeValue = document.getElementById("uptimeValue");
@@ -768,6 +854,7 @@ let serverSubTrainInterval = null;
 let hypeTrainProgress = 0;
 let hypeTrainGoal = 1;
 let lastHypeTrainLevel = 0;
+let finalHypeTrainLevel = 0;
     
 function updateSubTrainDisplay() {
     const remaining =
@@ -802,6 +889,9 @@ function updateSubTrainDisplay() {
 
     trainCount.textContent =
         `LVL ${serverSubTrainCount}`;
+    
+    finalHypeTrainLevel =
+        serverSubTrainCount;
 
     if (previousLevel !== trainCount.textContent) {
         trainCount.classList.remove("bump");
@@ -1013,6 +1103,35 @@ function processAlert(data) {
 socket.on("hype-train-update", (data) => {
     if (!data.active) {
 
+        if(finalHypeTrainLevel>0){
+    
+            trainEndedLevel.textContent =
+                `FINAL LEVEL ${finalHypeTrainLevel}`;
+    
+            subTrain.classList.add("running");
+            subTrain.classList.add("ending");
+    
+            setTimeout(()=>{
+    
+                subTrain.classList.remove("ending");
+    
+                serverSubTrainCount = 0;
+                hypeTrainProgress = 0;
+                hypeTrainGoal = 1;
+                serverSubTrainEndsAt = 0;
+                serverSubTrainStartedAt = 0;
+                serverSubTrainDuration = 0;
+                lastHypeTrainLevel = 0;
+                finalHypeTrainLevel = 0;
+    
+                updateSubTrainDisplay();
+    
+            },4000);
+    
+            return;
+    
+        }
+    
         serverSubTrainCount = 0;
         hypeTrainProgress = 0;
         hypeTrainGoal = 1;
@@ -1020,10 +1139,11 @@ socket.on("hype-train-update", (data) => {
         serverSubTrainStartedAt = 0;
         serverSubTrainDuration = 0;
         lastHypeTrainLevel = 0;
-        
+    
         updateSubTrainDisplay();
-        
+    
         return;
+    
     }
 
     serverSubTrainCount =
