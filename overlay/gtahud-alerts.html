@@ -387,13 +387,17 @@ html, body {
         inset 0 0 12px rgba(255,255,255,0.06);
 }
 
-.train-icon svg {
-    width: 22px;
-    height: 22px;
-    fill: var(--train-color, #b84dff);
+.train-icon svg{
+    width:22px;
+    height:22px;
 
-    filter:
-        drop-shadow(0 0 8px var(--train-color, #b84dff));
+    stroke:var(--train-color);
+    stroke-width:2;
+
+    fill:none;
+
+    stroke-linecap:round;
+    stroke-linejoin:round;
 }
 
 .train-bars {
@@ -624,13 +628,8 @@ html, body {
     
         <div class="train-middle">
             <div class="train-icon">
-                <svg viewBox="0 0 64 64" aria-hidden="true">
-                    <path d="M16 8h32c4.4 0 8 3.6 8 8v24c0 4.4-3.6 8-8 8l6 8h-7l-4-6H21l-4 6h-7l6-8c-4.4 0-8-3.6-8-8V16c0-4.4 3.6-8 8-8z"/>
-                    <path d="M18 16h28v14H18z"/>
-                    <path d="M48 16h4v14h-4z"/>
-                    <circle cx="22" cy="40" r="4"/>
-                    <circle cx="42" cy="40" r="4"/>
-                    <path d="M22 54h20"/>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M10 2h4c3.3 0 6 2.7 6 6v8c0 2.2-1.8 4-4 4l2 2h-2l-2-2H10l-2 2H6l2-2c-2.2 0-4-1.8-4-4V8c0-3.3 2.7-6 6-6zm-2 6h8M8 12h8M9 17h.01M15 17h.01"/>
                 </svg>
             </div>
     
