@@ -301,6 +301,99 @@ html, body {
         border-color 0.35s ease;
 }
 
+.train-summary{
+
+    position:absolute;
+
+    top:94px;
+    left:50%;
+
+    transform:translateX(-50%) translateY(-10px);
+
+    width:460px;
+    height:92px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    background:
+    linear-gradient(
+        135deg,
+        rgba(35,0,55,.95),
+        rgba(0,0,0,.92)
+    );
+
+    border-top:1px solid #b84dff;
+    border-bottom:2px solid #b84dff;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:
+    opacity .35s,
+    transform .35s;
+
+}
+
+.train-summary.show{
+
+    opacity:1;
+
+    transform:
+    translateX(-50%)
+    translateY(0);
+
+}
+
+.sub-train.summary {
+    opacity: 0 !important;
+    transform: translateX(-50%) translateY(-10px);
+}
+
+.summary-small{
+
+    font-size:10px;
+
+    letter-spacing:4px;
+
+    color:#b84dff;
+
+    font-weight:900;
+
+}
+
+.summary-level{
+
+    margin-top:8px;
+
+    font-size:24px;
+
+    font-weight:900;
+
+    color:white;
+
+    text-shadow:
+    0 0 16px #b84dff;
+
+}
+
+.summary-thanks{
+
+    margin-top:8px;
+
+    font-size:11px;
+
+    letter-spacing:3px;
+
+    color:white;
+
+    opacity:.7;
+
+}
+
 .sub-train.running {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
@@ -554,71 +647,6 @@ html, body {
     }
 }
 
-.train-ended{
-
-    position:absolute;
-    inset:0;
-
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-
-    background:
-    linear-gradient(
-        135deg,
-        rgba(35,0,55,.96),
-        rgba(0,0,0,.92)
-    );
-
-    opacity:0;
-
-    transition:.35s;
-
-    z-index:20;
-
-}
-
-.sub-train.ending .train-ended{
-
-    opacity:1;
-
-}
-
-.sub-train.ending .train-header,
-.sub-train.ending .train-middle,
-.sub-train.ending .train-bg-sweep{
-
-    opacity:0;
-
-}
-
-.train-ended-title{
-
-    color:var(--train-color);
-
-    font-size:11px;
-
-    font-weight:900;
-
-    letter-spacing:4px;
-
-}
-
-.train-ended-level{
-
-    margin-top:8px;
-
-    color:white;
-
-    font-size:22px;
-
-    font-weight:900;
-
-    letter-spacing:3px;
-
-}
-
 @keyframes hudGlow {
     0%, 100% {
         opacity: 0.45;
@@ -690,51 +718,44 @@ html, body {
 </div>
 
     <div class="sub-train" id="subTrain">
-        <div class="train-bg-sweep"></div>
-    
-        <div class="train-header">
-            <div class="train-title">HYPE TRAIN ACTIVE</div>
-            <div class="train-level" id="trainCount">LVL 0</div>
-        </div>
-    
-        <div class="train-middle">
-            <div class="train-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M10 2h4c3.3 0 6 2.7 6 6v8c0 2.2-1.8 4-4 4l2 2h-2l-2-2H10l-2 2H6l2-2c-2.2 0-4-1.8-4-4V8c0-3.3 2.7-6 6-6zm-2 6h8M8 12h8M9 17h.01M15 17h.01"/>
-                </svg>
-            </div>
-    
-            <div class="train-bars">
-                <div class="train-bar-labels">
-                    <span>TIME REMAINING</span>
-                    <span id="trainTimer">STANDING BY</span>
-                </div>
-    
-                <div class="train-time-bar">
-                    <div class="train-time-fill" id="trainTimeFill"></div>
-                </div>
-    
-                <div class="train-progress-label">NEXT LEVEL PROGRESS</div>
-    
-                <div class="train-progress-bar">
-                    <div class="train-fill" id="trainFill"></div>
-                </div>
-                
-                </div>
-                
-                <div class="train-ended" id="trainEnded">
-                    <div class="train-ended-title">
-                        THANK YOU FOR THE HYPE
-                    </div>
-                
-                    <div class="train-ended-level" id="trainEndedLevel">
-                        FINAL LEVEL 1
-                    </div>
-                </div>
-                
-                </div>
-                </div>
+    <div class="train-bg-sweep"></div>
+
+    <div class="train-header">
+        <div class="train-title">HYPE TRAIN ACTIVE</div>
+        <div class="train-level" id="trainCount">LVL 0</div>
     </div>
+
+    <div class="train-middle">
+        <div class="train-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M10 2h4c3.3 0 6 2.7 6 6v8c0 2.2-1.8 4-4 4l2 2h-2l-2-2H10l-2 2H6l2-2c-2.2 0-4-1.8-4-4V8c0-3.3 2.7-6 6-6zm-2 6h8M8 12h8M9 17h.01M15 17h.01"/>
+            </svg>
+        </div>
+
+        <div class="train-bars">
+            <div class="train-bar-labels">
+                <span>TIME REMAINING</span>
+                <span id="trainTimer">STANDING BY</span>
+            </div>
+
+            <div class="train-time-bar">
+                <div class="train-time-fill" id="trainTimeFill"></div>
+            </div>
+
+            <div class="train-progress-label">NEXT LEVEL PROGRESS</div>
+
+            <div class="train-progress-bar">
+                <div class="train-fill" id="trainFill"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="train-summary" id="trainSummary">
+    <div class="summary-small">TRANSMISSION COMPLETE</div>
+    <div class="summary-level" id="summaryLevel">LEVEL 1</div>
+    <div class="summary-thanks">THANK YOU FOR THE HYPE</div>
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 
@@ -769,8 +790,8 @@ const trainCount = document.getElementById("trainCount");
 const trainFill = document.getElementById("trainFill");
 const trainTimer = document.getElementById("trainTimer");
 const trainTimeFill = document.getElementById("trainTimeFill");
-const trainEnded = document.getElementById("trainEnded");
-const trainEndedLevel = document.getElementById("trainEndedLevel");
+const trainSummary = document.getElementById("trainSummary");
+const summaryLevel = document.getElementById("summaryLevel");
 const core = document.getElementById("core");
 
 const uptimeValue = document.getElementById("uptimeValue");
@@ -857,36 +878,42 @@ let lastHypeTrainLevel = 0;
 let finalHypeTrainLevel = 0;
     
 function updateSubTrainDisplay() {
-    
-    if (subTrain.classList.contains("ending")) {
+
+    if (subTrain.classList.contains("summary")) {
         return;
     }
-    
+
     const remaining =
         Math.max(
             0,
             serverSubTrainEndsAt - Date.now()
         );
 
-    if (
-        serverSubTrainCount <= 0 ||
-        remaining <= 0
-    ) {
-        subTrain.classList.remove("running", "medium", "low", "warning");
+if (
+    serverSubTrainCount <= 0 ||
+    remaining <= 0
+) {
 
-        trainCount.textContent = "LVL 0";
-        trainFill.style.width = "0%";
-        trainTimeFill.style.width = "0%";
+    subTrain.classList.remove(
+        "running",
+        "medium",
+        "low",
+        "warning"
+    );
 
-        trainTimer.textContent = "STANDING BY";
+    trainCount.textContent = "LVL 0";
+    trainFill.style.width = "0%";
+    trainTimeFill.style.width = "0%";
 
-        if (serverSubTrainInterval) {
-            clearInterval(serverSubTrainInterval);
-            serverSubTrainInterval = null;
-        }
+    trainTimer.textContent = "STANDING BY";
 
-        return;
+    if (serverSubTrainInterval) {
+        clearInterval(serverSubTrainInterval);
+        serverSubTrainInterval = null;
     }
+
+    return;
+}
 
     subTrain.classList.add("running");
 
@@ -1106,55 +1133,70 @@ function processAlert(data) {
 }
 
 socket.on("hype-train-update", (data) => {
+
+    // ==========================
+    // TRAIN HAS ENDED
+    // ==========================
+
     if (!data.active) {
 
-        if(finalHypeTrainLevel>0){
+        if (finalHypeTrainLevel > 0) {
 
             if (serverSubTrainInterval) {
                 clearInterval(serverSubTrainInterval);
                 serverSubTrainInterval = null;
             }
-        
-            trainEndedLevel.textContent =
-                `FINAL LEVEL ${finalHypeTrainLevel}`;
-    
-            subTrain.classList.add("running");
-            subTrain.classList.add("ending");
-    
-            setTimeout(()=>{
-    
-                subTrain.classList.remove("ending");
-    
+
+            summaryLevel.textContent =
+                `LEVEL ${finalHypeTrainLevel}`;
+
+            subTrain.classList.remove("running");
+            subTrain.classList.add("summary");
+            
+            trainSummary.classList.add("show");
+
+            setTimeout(() => {
+
+                trainSummary.classList.remove("show");
+                subTrain.classList.remove("summary");
+
                 serverSubTrainCount = 0;
                 hypeTrainProgress = 0;
                 hypeTrainGoal = 1;
+
                 serverSubTrainEndsAt = 0;
                 serverSubTrainStartedAt = 0;
                 serverSubTrainDuration = 0;
+
                 lastHypeTrainLevel = 0;
                 finalHypeTrainLevel = 0;
-    
+
                 updateSubTrainDisplay();
-    
-            },4000);
-    
+
+            }, 4000);
+
             return;
-    
         }
-    
+
         serverSubTrainCount = 0;
         hypeTrainProgress = 0;
         hypeTrainGoal = 1;
+
         serverSubTrainEndsAt = 0;
         serverSubTrainStartedAt = 0;
         serverSubTrainDuration = 0;
+
         lastHypeTrainLevel = 0;
-    
+        finalHypeTrainLevel = 0;
+
         updateSubTrainDisplay();
-    
+
         return;
-    
     }
+
+    // ==========================
+    // TRAIN ACTIVE
+    // ==========================
 
     serverSubTrainCount =
         data.level || 0;
@@ -1163,29 +1205,34 @@ socket.on("hype-train-update", (data) => {
         data.expiresAt
             ? new Date(data.expiresAt).getTime()
             : 0;
-    
+
     if (newEndsAt !== serverSubTrainEndsAt) {
         serverSubTrainStartedAt = Date.now();
     }
-    
+
     serverSubTrainEndsAt = newEndsAt;
-    
-    lastHypeTrainLevel = serverSubTrainCount;
-    
+
+    lastHypeTrainLevel =
+        serverSubTrainCount;
+
     hypeTrainProgress =
         data.progress || 0;
-    
+
     hypeTrainGoal =
         data.goal || 1;
-        
-    if (!serverSubTrainStartedAt || serverSubTrainStartedAt > Date.now()) {
+
+    if (
+        !serverSubTrainStartedAt ||
+        serverSubTrainStartedAt > Date.now()
+    ) {
         serverSubTrainStartedAt = Date.now();
     }
-    
+
     serverSubTrainDuration =
         Math.max(
             1,
-            serverSubTrainEndsAt - serverSubTrainStartedAt
+            serverSubTrainEndsAt -
+            serverSubTrainStartedAt
         );
 
     updateSubTrainDisplay();
@@ -1195,6 +1242,7 @@ socket.on("hype-train-update", (data) => {
         clearInterval(
             serverSubTrainInterval
         );
+
     }
 
     if (
@@ -1207,11 +1255,13 @@ socket.on("hype-train-update", (data) => {
                 updateSubTrainDisplay,
                 500
             );
+
     }
 
 });
 
 socket.on("stream-status", (data) => {
+
     if (data.live && data.startedAt) {
         streamStartTime = new Date(data.startedAt).getTime();
     } else {
@@ -1219,15 +1269,19 @@ socket.on("stream-status", (data) => {
     }
 
     updateStreamUptime();
+
 });
-    
+
 socket.on("alert", (data) => {
+
     queueAlert(data);
+
 });
 
 fetch("/api/alert-history")
     .then(res => res.json())
     .then(loadFromHistory);
+    
 </script>
 
 </body>
