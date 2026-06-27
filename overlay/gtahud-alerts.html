@@ -270,8 +270,8 @@ html, body {
     left: 50%;
     transform: translateX(-50%) translateY(-10px);
 
-    width: 620px;
-    height: 84px;
+    width: 460px;
+    height: 92px;
     padding: 10px 14px;
 
     box-sizing: border-box;
@@ -282,30 +282,6 @@ html, body {
 
     border-top: 1px solid var(--train-color, #b84dff);
     border-bottom: 2px solid var(--train-color, #b84dff);
-
-    .sub-train.level-1 {
-        --train-color: #b84dff;
-    }
-    
-    .sub-train.level-2 {
-        --train-color: #00a8ff;
-    }
-    
-    .sub-train.level-3 {
-        --train-color: #00d9ff;
-    }
-    
-    .sub-train.level-4 {
-        --train-color: #ffaa00;
-    }
-    
-    .sub-train.level-5 {
-        --train-color: #ffdd66;
-    }
-    
-    .sub-train.warning {
-        --train-color: #ff4444;
-    }
 
     color: white;
     text-transform: uppercase;
@@ -329,9 +305,7 @@ html, body {
 .sub-train.running {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
-    animation:
-        trainIdlePulse 2.8s ease-in-out infinite,
-        trainGlowPulse 1.8s ease-in-out infinite;
+    animation: trainIdlePulse 2.8s ease-in-out infinite;
 }
 
 .train-bg-sweep {
@@ -377,7 +351,7 @@ html, body {
 }
 
 .train-level {
-    font-size: 28px;
+    font-size: 16px;
     letter-spacing: 2px;
     font-weight: 900;
 
@@ -429,20 +403,11 @@ html, body {
     justify-content: space-between;
     align-items: center;
 
-    font-size: 9px;
+    font-size: 8px;
     letter-spacing: 2px;
     font-weight: 900;
 
     color: rgba(255,255,255,0.72);
-}
-
-#trainTimer {
-    font-size: 18px;
-    letter-spacing: 2px;
-    color: white;
-    text-shadow:
-        0 0 10px var(--train-color, #b84dff),
-        0 0 22px var(--train-color, #b84dff);
 }
 
 .train-time-bar,
@@ -496,41 +461,18 @@ html, body {
     height: 100%;
 
     background:
-        repeating-linear-gradient(
-            -45deg,
-            var(--train-color) 0px,
-            var(--train-color) 12px,
-            rgba(255,255,255,.85) 12px,
-            rgba(255,255,255,.85) 18px
+        linear-gradient(
+            90deg,
+            var(--train-color, #b84dff),
+            #ffffff,
+            var(--train-color, #b84dff)
         );
-
-    background-size:40px 40px;
-
-    animation:trainStripes .8s linear infinite;
-
-}
 
     box-shadow:
         0 0 14px var(--train-color, #b84dff),
         0 0 26px rgba(184,77,255,0.5);
 
     transition: width 0.5s ease-out;
-}
-
-@keyframes trainStripes{
-
-    from{
-
-        background-position:0 0;
-
-    }
-
-    to{
-
-        background-position:40px 0;
-
-    }
-
 }
 
 .sub-train.active,
@@ -594,23 +536,6 @@ html, body {
 
     50% {
         opacity: 0.85;
-    }
-}
-
-@keyframes trainGlowPulse {
-    0%, 100% {
-        box-shadow:
-            0 0 30px var(--train-color, #b84dff),
-            0 18px 42px rgba(0,0,0,0.8),
-            inset 0 0 26px rgba(255,255,255,0.05);
-    }
-
-    50% {
-        box-shadow:
-            0 0 55px var(--train-color, #b84dff),
-            0 0 95px var(--train-color, #b84dff),
-            0 18px 42px rgba(0,0,0,0.8),
-            inset 0 0 32px rgba(255,255,255,0.08);
     }
 }
     
@@ -679,11 +604,11 @@ html, body {
     
         <div class="train-header">
             <div class="train-title">HYPE TRAIN ACTIVE</div>
-            <div class="train-level" id="trainCount">LEVEL 0</div>
+            <div class="train-level" id="trainCount">LVL 0</div>
         </div>
     
         <div class="train-middle">
-            <div class="train-icon">🚆</div>
+            <div class="train-icon">◆</div>
     
             <div class="train-bars">
                 <div class="train-bar-labels">
@@ -695,7 +620,7 @@ html, body {
                     <div class="train-time-fill" id="trainTimeFill"></div>
                 </div>
     
-                <div class="train-progress-label">NEXT LEVEL</div>
+                <div class="train-progress-label">NEXT LEVEL PROGRESS</div>
     
                 <div class="train-progress-bar">
                     <div class="train-fill" id="trainFill"></div>
@@ -833,7 +758,7 @@ function updateSubTrainDisplay() {
     ) {
         subTrain.classList.remove("running", "medium", "low", "warning");
 
-        trainCount.textContent = "LEVEL 0";
+        trainCount.textContent = "LVL 0";
         trainFill.style.width = "0%";
         trainTimeFill.style.width = "0%";
 
@@ -852,7 +777,7 @@ function updateSubTrainDisplay() {
     const previousLevel = trainCount.textContent;
 
     trainCount.textContent =
-        `LEVEL ${serverSubTrainCount}`;
+        `LVL ${serverSubTrainCount}`;
 
     if (previousLevel !== trainCount.textContent) {
         trainCount.classList.remove("bump");
@@ -892,23 +817,16 @@ function updateSubTrainDisplay() {
         );
 
     trainTimer.textContent =
-        `${mins}:${String(secs).padStart(2, "0")}`;
+        `${mins}:${String(secs).padStart(2, "0")} REMAINING`;
 
-    subTrain.classList.remove(
-        "level-1",
-        "level-2",
-        "level-3",
-        "level-4",
-        "level-5",
-        "warning"
-    );
-    
-    subTrain.classList.add(
-        `level-${Math.min(serverSubTrainCount, 5)}`
-    );
-    
+    subTrain.classList.remove("medium", "low", "warning");
+
     if (remaining <= 30000) {
         subTrain.classList.add("warning");
+    } else if (remaining <= 90000) {
+        subTrain.classList.add("low");
+    } else if (remaining <= 180000) {
+        subTrain.classList.add("medium");
     }
 }
     
