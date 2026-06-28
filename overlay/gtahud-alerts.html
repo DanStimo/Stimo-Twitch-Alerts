@@ -143,16 +143,16 @@ html, body {
 
 .sub-streak {
     display: none;
-    align-items: center;
-    justify-content: flex-end;
 
-    gap: 4px;
+    height: 38px;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 3px;
 
     margin-left: 12px;
     min-width: 42px;
-
-    position: relative;
-    top: 2px;
 
     font-size: 15px;
     font-weight: 900;
@@ -161,20 +161,23 @@ html, body {
 
     color: #ff944d;
 
-    text-shadow: 0 0 8px rgba(255,148,77,.65);
+    text-shadow:
+        0 0 8px rgba(255,148,77,.65);
 }
 
 .sub-flame {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     font-size: 15px;
     line-height: 1;
-
-    margin-right: 2px;
 }
 
 .sub-streak-count {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     font-size: 15px;
     font-weight: 900;
@@ -216,8 +219,8 @@ html, body {
 
     flex: 1;
 
-    height: 100%;
     width: 100%;
+    height: 38px;
 }
 
 .core {
