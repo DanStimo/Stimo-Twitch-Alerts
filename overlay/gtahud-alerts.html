@@ -996,10 +996,7 @@ function updateSubTrainDisplay() {
             serverSubTrainEndsAt - Date.now()
         );
 
-if (
-    serverSubTrainCount <= 0 ||
-    remaining <= 0
-) {
+if (serverSubTrainCount <= 0) {
 
     subTrain.classList.remove(
         "running",
@@ -1011,13 +1008,52 @@ if (
     trainCount.textContent = "LVL 0";
     trainFill.style.width = "0%";
     trainTimeFill.style.width = "0%";
-
     trainTimer.textContent = "STANDING BY";
 
     if (serverSubTrainInterval) {
         clearInterval(serverSubTrainInterval);
         serverSubTrainInterval = null;
     }
+
+    return;
+}
+
+if (remaining <= 0) {
+
+    if (serverSubTrainInterval) {
+        clearInterval(serverSubTrainInterval);
+        serverSubTrainInterval = null;
+    }
+
+    summaryLevel.textContent =
+        `LEVEL ${finalHypeTrainLevel || serverSubTrainCount}`;
+
+    subTrain.classList.remove("running");
+    subTrain.classList.add("summary");
+
+    hypeFinale.classList.add("active");
+    trainSummary.classList.add("show");
+
+    setTimeout(() => {
+
+        hypeFinale.classList.remove("active");
+        trainSummary.classList.remove("show");
+        subTrain.classList.remove("summary");
+
+        serverSubTrainCount = 0;
+        hypeTrainProgress = 0;
+        hypeTrainGoal = 1;
+
+        serverSubTrainEndsAt = 0;
+        serverSubTrainStartedAt = 0;
+        serverSubTrainDuration = 0;
+
+        lastHypeTrainLevel = 0;
+        finalHypeTrainLevel = 0;
+
+        updateSubTrainDisplay();
+
+    }, 10000);
 
     return;
 }
