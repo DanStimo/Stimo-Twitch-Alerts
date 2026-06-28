@@ -141,6 +141,36 @@ html, body {
     text-shadow: 0 0 8px rgba(255,255,255,0.45);
 }
 
+.sub-streak {
+    display: none;
+    align-items: center;
+    gap: 4px;
+
+    margin-left: auto;
+
+    font-size: 14px;
+    font-weight: 900;
+    color: #ff944d;
+
+    text-shadow:
+        0 0 8px #ff944d,
+        0 0 16px rgba(255,120,0,.8);
+}
+
+.sub-streak.show {
+    display: flex;
+}
+
+.sub-streak.bump {
+    animation: subStreakBump .35s ease;
+}
+
+@keyframes subStreakBump {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+
 .chip.active {
     
     background: linear-gradient(
@@ -776,8 +806,12 @@ html, body {
         <div class="chip-label">FOLLOW</div>
 
         <div class="chip-text">
-            <div class="chip-value" id="latestFollow">
+            <div class="chip-value" id="latestSub">
                 WAITING
+            </div>
+        
+            <div class="sub-streak" id="subStreak">
+                🔥 <span id="subStreakCount">0</span>
             </div>
         </div>
     </div>
@@ -896,6 +930,11 @@ const latestFollow = document.getElementById("latestFollow");
 const latestSub = document.getElementById("latestSub");
 const latestTip = document.getElementById("latestTip");
 const latestBits = document.getElementById("latestBits");
+const subStreak = document.getElementById("subStreak");
+const subStreakCount = document.getElementById("subStreakCount");
+
+let subTrainCount = 0;
+let subTrainResetTimer = null;
 const subTrain = document.getElementById("subTrain");
 const trainCount = document.getElementById("trainCount");
 const trainFill = document.getElementById("trainFill");
@@ -1228,6 +1267,28 @@ function playNextAlert() {
     }, duration);
 }
 
+function bumpSubTrain() {
+    subTrainCount++;
+
+    subStreakCount.textContent = subTrainCount;
+
+    subStreak.classList.add("show");
+
+    subStreak.classList.remove("bump");
+    void subStreak.offsetWidth;
+    subStreak.classList.add("bump");
+
+    if (subTrainResetTimer) {
+        clearTimeout(subTrainResetTimer);
+    }
+
+    subTrainResetTimer = setTimeout(() => {
+        subTrainCount = 0;
+        subStreakCount.textContent = "0";
+        subStreak.classList.remove("show");
+    }, 5 * 60 * 1000);
+}
+    
 function processAlert(data) {
 
     if (data.type === "follow") {
@@ -1277,6 +1338,14 @@ function processAlert(data) {
         updateCounts(data.history);
     }
 
+    if (
+        data.type === "sub" ||
+        data.type === "primesub" ||
+        data.type === "giftsub"
+    ) {
+        bumpSubTrain();
+    }
+    
     pulse(data.type);
 }
 
