@@ -1276,8 +1276,8 @@ function playNextAlert() {
     }, duration);
 }
 
-function bumpSubTrain() {
-    subTrainCount++;
+function bumpSubTrain(amount = 1) {
+    subTrainCount += amount;
 
     subStreakCount.textContent = subTrainCount;
 
@@ -1347,12 +1347,21 @@ function processAlert(data) {
         updateCounts(data.history);
     }
 
-    if (
-        data.type === "sub" ||
-        data.type === "primesub" ||
-        data.type === "giftsub"
+   if (
+    data.type === "sub" ||
+    data.type === "primesub" ||
+    data.type === "giftsub"
     ) {
-        bumpSubTrain();
+        const subAmount =
+            data.type === "giftsub"
+                ? parseInt(
+                    String(data.user || data.extra || "")
+                        .match(/(\d+)/)?.[0] || "1",
+                    10
+                )
+                : 1;
+    
+        bumpSubTrain(subAmount);
     }
     
     pulse(data.type);
