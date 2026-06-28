@@ -443,28 +443,54 @@ html, body {
     pointer-events:none;
 }
 
-.top-hype-summary.show::before{
-    animation:summaryGoldSweep 1.4s ease-out forwards;
+.top-hype-summary::before{
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    width:35%;
+
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,245,170,.95),
+        transparent
+    );
+
+    opacity:0;
+
+    transform:
+        translateX(-180%)
+        skewX(-22deg);
+
+    will-change: transform, opacity;
+
+    pointer-events:none;
 }
 
 @keyframes summaryGoldSweep{
 
     0%{
-        left:-35%;
         opacity:0;
+        transform:
+            translateX(-180%)
+            skewX(-22deg);
     }
 
     10%{
         opacity:.95;
     }
 
-    80%{
+    90%{
         opacity:.95;
     }
 
     100%{
-        left:120%;
         opacity:0;
+        transform:
+            translateX(420%)
+            skewX(-22deg);
     }
 
 }
