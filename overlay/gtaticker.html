@@ -948,6 +948,26 @@ socket.on("alert", (data) => {
     queueBanner(data);
 });
 
+function testTrain() {
+
+    const train = document.getElementById("topHypeTrain");
+
+    train.classList.add("running");
+
+    document.getElementById("topTrainLevel").textContent = "LVL 4";
+    document.getElementById("topTrainTimer").textContent = "3:12 REMAINING";
+    document.getElementById("topTrainFill").style.width = "72%";
+    document.getElementById("topTrainTimeFill").style.width = "64%";
+    document.getElementById("topTrainPercent").textContent = "72%";
+
+    setTimeout(() => {
+        train.classList.remove("running");
+    }, 10000);
+
+}
+
+window.testTrain = testTrain;
+
 fetch("/api/alert-history")
     .then(res => res.json())
     .then(history => {
