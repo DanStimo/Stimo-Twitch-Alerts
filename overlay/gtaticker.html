@@ -494,17 +494,26 @@ html, body {
         linear-gradient(
             110deg,
             transparent 0%,
-            rgba(255,255,255,.10) 45%,
-            transparent 70%
+            transparent 35%,
+            rgba(255,255,255,.10) 50%,
+            transparent 65%,
+            transparent 100%
         );
 
-    transform: translateX(-120%);
-    animation: topTrainSweep 2.4s linear infinite;
+    background-size: 260% 100%;
+    background-position: 260% 0;
+
+    animation: topTrainSweep 4.5s linear infinite;
 }
 
 @keyframes topTrainSweep {
-    from { transform: translateX(-120%); }
-    to { transform: translateX(120%); }
+    from {
+        background-position: 260% 0;
+    }
+
+    to {
+        background-position: -160% 0;
+    }
 }
 
 .top-train-left,
