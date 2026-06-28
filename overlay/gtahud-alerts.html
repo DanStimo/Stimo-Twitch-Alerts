@@ -270,7 +270,7 @@ html, body {
     left: 50%;
     transform: translateX(-50%) translateY(-10px);
 
-    width: 460px;
+    width: 1548px;
     height: 92px;
     padding: 10px 14px;
 
@@ -445,23 +445,28 @@ html, body {
 }
 
 .train-level {
-    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    font-size: 22px;
     letter-spacing: 2px;
     font-weight: 900;
 
     color: white;
 
+    text-align: right;
+
     text-shadow:
         0 0 10px var(--train-color, #b84dff),
         0 0 20px var(--train-color, #b84dff);
 }
-
 .train-middle {
     position: relative;
     z-index: 2;
 
     display: grid;
-    grid-template-columns: 38px 1fr;
+    grid-template-columns: 50px 1fr 90px;
     gap: 10px;
 
     margin-top: 8px;
@@ -818,7 +823,6 @@ html, body {
 
     <div class="train-header">
         <div class="train-title">HYPE TRAIN ACTIVE</div>
-        <div class="train-level" id="trainCount">LVL 0</div>
     </div>
 
     <div class="train-middle">
@@ -832,6 +836,10 @@ html, body {
             <div class="train-bar-labels">
                 <span>TIME REMAINING</span>
                 <span id="trainTimer">STANDING BY</span>
+            </div>
+
+            <div class="train-level" id="trainCount">
+                LVL 0
             </div>
 
             <div class="train-time-bar">
