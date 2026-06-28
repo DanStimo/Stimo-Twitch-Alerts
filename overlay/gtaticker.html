@@ -423,33 +423,9 @@ html, body {
     content:"";
 
     position:absolute;
-    top:0;
-    left:-35%;
-
-    width:25%;
-    height:100%;
-
-    background:linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,245,170,.95),
-        transparent
-    );
-
-    opacity:0;
-
-    transform:skewX(-22deg);
-
-    pointer-events:none;
-}
-
-.top-hype-summary::before{
-    content:"";
-
-    position:absolute;
     inset:0;
 
-    width:35%;
+    width:45%;
 
     background:linear-gradient(
         90deg,
@@ -467,6 +443,10 @@ html, body {
     will-change: transform, opacity;
 
     pointer-events:none;
+}
+
+.top-hype-summary.show::before {
+    animation: summaryGoldSweep 1.4s ease-out forwards;
 }
 
 @keyframes summaryGoldSweep{
