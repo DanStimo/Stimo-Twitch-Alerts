@@ -296,6 +296,176 @@ html, body {
     z-index: -1;
 }
 
+.top-hype-train {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 74px;
+
+    box-sizing: border-box;
+    padding: 10px 42px;
+
+    display: grid;
+    grid-template-columns: 260px 1fr 110px;
+    align-items: center;
+    gap: 28px;
+
+    background:
+        linear-gradient(180deg, rgba(35,0,55,.92), rgba(0,0,0,.88)),
+        radial-gradient(circle at center, rgba(184,77,255,.28), transparent 65%);
+
+    border-bottom: 2px solid #b84dff;
+
+    color: white;
+    text-transform: uppercase;
+
+    opacity: 0;
+    transform: translateY(-110%);
+
+    pointer-events: none;
+    z-index: 9999;
+
+    transition:
+        opacity .45s ease,
+        transform .45s ease;
+}
+
+.top-hype-train.running {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.top-train-bg {
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            110deg,
+            transparent 0%,
+            rgba(255,255,255,.10) 45%,
+            transparent 70%
+        );
+
+    transform: translateX(-120%);
+    animation: topTrainSweep 2.4s linear infinite;
+}
+
+@keyframes topTrainSweep {
+    from { transform: translateX(-120%); }
+    to { transform: translateX(120%); }
+}
+
+.top-train-left,
+.top-train-center,
+.top-train-right {
+    position: relative;
+    z-index: 2;
+}
+
+.top-train-label {
+    font-size: 11px;
+    letter-spacing: 4px;
+    font-weight: 900;
+    color: #b84dff;
+}
+
+.top-train-level {
+    margin-top: 4px;
+
+    font-size: 24px;
+    letter-spacing: 2px;
+    font-weight: 900;
+
+    text-shadow:
+        0 0 10px #b84dff,
+        0 0 22px #b84dff;
+}
+
+.top-train-meta {
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 9px;
+    letter-spacing: 3px;
+    font-weight: 900;
+
+    color: rgba(255,255,255,.72);
+}
+
+.top-train-time,
+.top-train-progress {
+    width: 100%;
+    height: 6px;
+
+    margin-top: 6px;
+
+    background: rgba(255,255,255,.12);
+    overflow: hidden;
+
+    box-shadow:
+        inset 0 0 8px rgba(0,0,0,.75);
+}
+
+.top-train-time-fill {
+    width: 100%;
+    height: 100%;
+
+    background:
+        repeating-linear-gradient(
+            45deg,
+            #b84dff 0px,
+            #b84dff 8px,
+            rgba(255,255,255,.85) 8px,
+            rgba(255,255,255,.85) 11px
+        );
+
+    background-size: 32px 32px;
+    animation: topTrainCountdownMove .65s linear infinite;
+
+    transition: width .5s linear;
+}
+
+@keyframes topTrainCountdownMove {
+    from { background-position: 0 0; }
+    to { background-position: 32px 0; }
+}
+
+.top-train-progress-fill {
+    width: 0%;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            #b84dff,
+            white,
+            #b84dff
+        );
+
+    box-shadow:
+        0 0 14px #b84dff,
+        0 0 26px rgba(184,77,255,.5);
+
+    transition: width .5s ease-out;
+}
+
+.top-train-right {
+    text-align: right;
+
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 2px;
+
+    color: white;
+
+    text-shadow:
+        0 0 10px #b84dff,
+        0 0 22px #b84dff;
+}
+    
 @keyframes tickerMove {
     from {
         transform: translate3d(0, 0, 0);
@@ -368,6 +538,38 @@ html, body {
 </head>
 
 <body>
+
+<div class="top-hype-train" id="topHypeTrain">
+    <div class="top-train-bg"></div>
+
+    <div class="top-train-left">
+        <div class="top-train-label">HYPE TRAIN ACTIVE</div>
+        <div class="top-train-level" id="topTrainLevel">LVL 0</div>
+    </div>
+
+    <div class="top-train-center">
+        <div class="top-train-meta">
+            <span>NEXT LEVEL PROGRESS</span>
+            <span id="topTrainTimer">STANDING BY</span>
+        </div>
+
+        <div class="top-train-time">
+            <div class="top-train-time-fill" id="topTrainTimeFill"></div>
+        </div>
+
+        <div class="top-train-progress">
+            <div class="top-train-progress-fill" id="topTrainFill"></div>
+        </div>
+    </div>
+
+    <div class="top-train-right" id="topTrainPercent">0%</div>
+</div>
+
+<div class="top-hype-summary" id="topHypeSummary">
+    <div class="top-summary-small">HYPE TRAIN COMPLETE</div>
+    <div class="top-summary-level" id="topSummaryLevel">LEVEL 1</div>
+    <div class="top-summary-thanks">THANK YOU FOR THE SUPPORT</div>
+</div>
 
 <div id="ticker">
     <div class="track" id="track"></div>
