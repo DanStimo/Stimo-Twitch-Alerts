@@ -300,6 +300,7 @@ html, body {
     position: fixed;
     top: 0;
     left: 0;
+    --top-train-color: #b84dff;
 
     width: 100vw;
     height: 74px;
@@ -316,7 +317,7 @@ html, body {
         linear-gradient(180deg, rgba(35,0,55,.92), rgba(0,0,0,.88)),
         radial-gradient(circle at center, rgba(184,77,255,.28), transparent 65%);
 
-    border-bottom: 2px solid #b84dff;
+    border-bottom: 2px solid var(--top-train-color);
 
     color: white;
     text-transform: uppercase;
@@ -473,6 +474,18 @@ html, body {
     transform: translateY(0);
 }
 
+.top-hype-train.medium {
+    --top-train-color: #00d9ff;
+}
+
+.top-hype-train.low {
+    --top-train-color: #ffaa00;
+}
+
+.top-hype-train.warning {
+    --top-train-color: #ff4444;
+}
+
 .top-train-bg {
     position: absolute;
     inset: 0;
@@ -505,7 +518,7 @@ html, body {
     font-size: 11px;
     letter-spacing: 4px;
     font-weight: 900;
-    color: #b84dff;
+    color: var(--top-train-color);
 }
 
 .top-train-level {
@@ -516,8 +529,8 @@ html, body {
     font-weight: 900;
 
     text-shadow:
-        0 0 10px #b84dff,
-        0 0 22px #b84dff;
+        0 0 10px var(--top-train-color),
+        0 0 22px var(--top-train-color);
 }
 
 .top-train-meta {
@@ -552,8 +565,8 @@ html, body {
     background:
         repeating-linear-gradient(
             45deg,
-            #b84dff 0px,
-            #b84dff 8px,
+            var(--top-train-color) 0px,
+            var(--top-train-color) 8px,
             rgba(255,255,255,.85) 8px,
             rgba(255,255,255,.85) 11px
         );
@@ -576,14 +589,14 @@ html, body {
     background:
         linear-gradient(
             90deg,
-            #b84dff,
+            var(--top-train-color),
             white,
-            #b84dff
+            var(--top-train-color)
         );
 
     box-shadow:
-        0 0 14px #b84dff,
-        0 0 26px rgba(184,77,255,.5);
+        0 0 14px var(--top-train-color),
+        0 0 26px var(--top-train-color);
 
     transition: width .5s ease-out;
 }
@@ -598,8 +611,8 @@ html, body {
     color: white;
 
     text-shadow:
-        0 0 10px #b84dff,
-        0 0 22px #b84dff;
+        0 0 10px var(--top-train-color),
+        0 0 22px var(--top-train-color);
 }
     
 @keyframes tickerMove {
@@ -1155,7 +1168,24 @@ function updateTopHypeTrain() {
 
     topTrainTimer.textContent =
         `${mins}:${String(secs).padStart(2, "0")} REMAINING`;
-}
+
+    topHypeTrain.classList.remove(
+        "medium",
+        "low",
+        "warning"
+    );
+    
+    if (remaining <= 30000) {
+        topHypeTrain.classList.add("warning");
+    }
+    else if (remaining <= 90000) {
+        topHypeTrain.classList.add("low");
+    }
+    else if (remaining <= 180000) {
+        topHypeTrain.classList.add("medium");
+    }
+
+    }
 
 socket.on("hype-train-update", (data) => {
     if (!data.active) {
