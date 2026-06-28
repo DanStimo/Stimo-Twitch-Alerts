@@ -310,13 +310,16 @@ html, body {
 
     transform:translateX(-50%) translateY(-10px);
 
-    width:460px;
+    padding: 0 32px;
+    box-sizing: border-box;
+
+    width:1368px;
     height:92px;
 
     display:flex;
     flex-direction:column;
     justify-content:center;
-    align-items:center;
+    align-items:flex-start;
 
     background:
     linear-gradient(
@@ -353,47 +356,43 @@ html, body {
     transform: translateX(-50%) translateY(-10px);
 }
 
-.summary-small{
-
-    font-size:10px;
-
-    letter-spacing:4px;
-
-    color:#ffd44d;
-
-    font-weight:900;
-
+.summary-small {
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: #ffd44d;
+    font-weight: 900;
+    text-align: left;
+    width: 100%;
 }
 
-.summary-level{
+.summary-level {
+    margin-top: 8px;
 
-    margin-top:8px;
+    font-size: 28px;
+    font-weight: 900;
 
-    font-size:24px;
+    color: #ffffff;
 
-    font-weight:900;
-
-    color:#ffffff;
+    width: 100%;
+    text-align: left;
 
     text-shadow:
         0 0 12px #ffd44d,
         0 0 24px #ffb300,
         0 0 40px rgba(255,212,77,.6);
-
 }
 
-.summary-thanks{
+.summary-thanks {
+    margin-top: 8px;
 
-    margin-top:8px;
+    font-size: 11px;
+    letter-spacing: 3px;
 
-    font-size:11px;
+    color: white;
+    opacity: .7;
 
-    letter-spacing:3px;
-
-    color:white;
-
-    opacity:.7;
-
+    width: 100%;
+    text-align: left;
 }
 
 .sub-train.running {
