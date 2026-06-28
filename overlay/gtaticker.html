@@ -332,6 +332,75 @@ html, body {
         transform .45s ease;
 }
 
+.top-hype-summary {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 74px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(180deg, rgba(60,40,0,.96), rgba(0,0,0,.92)),
+        radial-gradient(circle at center, rgba(255,212,77,.25), transparent 65%);
+
+    border-bottom: 2px solid #ffb300;
+
+    color: white;
+    text-transform: uppercase;
+
+    opacity: 0;
+    transform: translateY(-110%);
+    pointer-events: none;
+
+    z-index: 10000;
+
+    transition:
+        opacity .45s ease,
+        transform .45s ease;
+}
+
+.top-hype-summary.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.top-summary-small {
+    font-size: 11px;
+    letter-spacing: 5px;
+    font-weight: 900;
+    color: #ffd44d;
+}
+
+.top-summary-level {
+    margin-top: 4px;
+
+    font-size: 28px;
+    letter-spacing: 3px;
+    font-weight: 900;
+
+    color: white;
+
+    text-shadow:
+        0 0 12px #ffd44d,
+        0 0 26px #ffb300;
+}
+
+.top-summary-thanks {
+    margin-top: 3px;
+
+    font-size: 10px;
+    letter-spacing: 4px;
+    font-weight: 900;
+
+    color: rgba(255,255,255,.78);
+}
+
 .top-hype-train.running {
     opacity: 1;
     transform: translateY(0);
@@ -606,6 +675,8 @@ const topTrainTimer = document.getElementById("topTrainTimer");
 const topTrainFill = document.getElementById("topTrainFill");
 const topTrainTimeFill = document.getElementById("topTrainTimeFill");
 const topTrainPercent = document.getElementById("topTrainPercent");
+const topHypeSummary = document.getElementById("topHypeSummary");
+const topSummaryLevel = document.getElementById("topSummaryLevel");
 const topHypeSummary = document.getElementById("topHypeSummary");
 const topSummaryLevel = document.getElementById("topSummaryLevel");
 
