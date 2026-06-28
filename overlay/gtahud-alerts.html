@@ -161,6 +161,17 @@ html, body {
         0 0 16px rgba(255,120,0,.8);
 }
 
+.sub-flame {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+
+    position: relative;
+    top: -2px;
+}
+
 .sub-streak.show {
     display: flex;
 }
@@ -830,7 +841,8 @@ html, body {
             </div>
         
             <div class="sub-streak" id="subStreak">
-                🔥 <span id="subStreakCount">0</span>
+                <span class="sub-flame">🔥</span>
+                <span id="subStreakCount">0</span>
             </div>
         </div>
     </div>
