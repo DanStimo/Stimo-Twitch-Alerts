@@ -600,6 +600,14 @@ const alertType = document.getElementById("alertType");
 const alertMain = document.getElementById("alertMain");
 const alertDetail = document.getElementById("alertDetail");
 const bannerVideo = document.getElementById("bannerVideo");
+const topHypeTrain = document.getElementById("topHypeTrain");
+const topTrainLevel = document.getElementById("topTrainLevel");
+const topTrainTimer = document.getElementById("topTrainTimer");
+const topTrainFill = document.getElementById("topTrainFill");
+const topTrainTimeFill = document.getElementById("topTrainTimeFill");
+const topTrainPercent = document.getElementById("topTrainPercent");
+const topHypeSummary = document.getElementById("topHypeSummary");
+const topSummaryLevel = document.getElementById("topSummaryLevel");
 
 const alertSounds = {
     follow: new Audio("assets/sounds/New Follower.mp3"),
@@ -681,6 +689,15 @@ const alertVideos = {
 let items = [];
 const bannerQueue = [];
 let bannerPlaying = false;
+
+let topTrainLevelValue = 0;
+let topTrainProgress = 0;
+let topTrainGoal = 1;
+let topTrainEndsAt = 0;
+let topTrainStartedAt = 0;
+let topTrainDuration = 0;
+let topTrainInterval = null;
+let topFinalLevel = 0;
 
 function applyTheme(type) {
     const theme = alertThemes[type] || alertThemes.follow;
@@ -940,6 +957,152 @@ function playNextBanner() {
     }, bannerDuration);
 }
 
+function updateTopHypeTrain() {
+    const remaining =
+        Math.max(0, topTrainEndsAt - Date.now());
+
+    if (
+        topTrainLevelValue <= 0 ||
+        remaining <= 0
+    ) {
+        topHypeTrain.classList.remove("running");
+
+        topTrainLevel.textContent = "LVL 0";
+        topTrainFill.style.width = "0%";
+        topTrainTimeFill.style.width = "0%";
+        topTrainTimer.textContent = "STANDING BY";
+        topTrainPercent.textContent = "0%";
+
+        if (topTrainInterval) {
+            clearInterval(topTrainInterval);
+            topTrainInterval = null;
+        }
+
+        return;
+    }
+
+    topHypeTrain.classList.add("running");
+
+    topTrainLevel.textContent =
+        `LVL ${topTrainLevelValue}`;
+
+    topFinalLevel = topTrainLevelValue;
+
+    const progressPercent =
+        Math.min(
+            100,
+            ((topTrainProgress || 0) / (topTrainGoal || 1)) * 100
+        );
+
+    topTrainFill.style.width =
+        `${progressPercent}%`;
+
+    topTrainPercent.textContent =
+        `${Math.round(progressPercent)}%`;
+
+    const timePercent =
+        topTrainDuration > 0
+            ? Math.max(
+                0,
+                Math.min(
+                    100,
+                    (remaining / topTrainDuration) * 100
+                )
+            )
+            : 100;
+
+    topTrainTimeFill.style.width =
+        `${timePercent}%`;
+
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+
+    topTrainTimer.textContent =
+        `${mins}:${String(secs).padStart(2, "0")} REMAINING`;
+}
+
+socket.on("hype-train-update", (data) => {
+    if (!data.active) {
+        if (topFinalLevel > 0) {
+            if (topTrainInterval) {
+                clearInterval(topTrainInterval);
+                topTrainInterval = null;
+            }
+
+            topSummaryLevel.textContent =
+                `LEVEL ${topFinalLevel}`;
+
+            topHypeTrain.classList.remove("running");
+            topHypeSummary.classList.add("show");
+
+            setTimeout(() => {
+                topHypeSummary.classList.remove("show");
+
+                topTrainLevelValue = 0;
+                topTrainProgress = 0;
+                topTrainGoal = 1;
+                topTrainEndsAt = 0;
+                topTrainStartedAt = 0;
+                topTrainDuration = 0;
+                topFinalLevel = 0;
+
+                updateTopHypeTrain();
+
+            }, 10000);
+
+            return;
+        }
+
+        topTrainLevelValue = 0;
+        topTrainProgress = 0;
+        topTrainGoal = 1;
+        topTrainEndsAt = 0;
+        topTrainStartedAt = 0;
+        topTrainDuration = 0;
+        topFinalLevel = 0;
+
+        updateTopHypeTrain();
+        return;
+    }
+
+    topTrainLevelValue = data.level || 0;
+
+    const newEndsAt =
+        data.expiresAt
+            ? new Date(data.expiresAt).getTime()
+            : 0;
+
+    if (newEndsAt !== topTrainEndsAt) {
+        topTrainStartedAt = Date.now();
+    }
+
+    topTrainEndsAt = newEndsAt;
+
+    topTrainProgress = data.progress || 0;
+    topTrainGoal = data.goal || 1;
+
+    if (!topTrainStartedAt || topTrainStartedAt > Date.now()) {
+        topTrainStartedAt = Date.now();
+    }
+
+    topTrainDuration =
+        Math.max(1, topTrainEndsAt - topTrainStartedAt);
+
+    updateTopHypeTrain();
+
+    if (topTrainInterval) {
+        clearInterval(topTrainInterval);
+    }
+
+    if (
+        topTrainLevelValue > 0 &&
+        topTrainEndsAt > Date.now()
+    ) {
+        topTrainInterval =
+            setInterval(updateTopHypeTrain, 500);
+    }
+});
+    
 socket.on("connect", () => {
     console.log("[TICKER] Connected to socket");
 });
