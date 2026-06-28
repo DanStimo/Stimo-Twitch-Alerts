@@ -1128,25 +1128,60 @@ function updateTopHypeTrain() {
     const remaining =
         Math.max(0, topTrainEndsAt - Date.now());
 
-    if (
-        topTrainLevelValue <= 0 ||
-        remaining <= 0
-    ) {
-        topHypeTrain.classList.remove("running");
+    if (topTrainLevelValue <= 0) {
 
-        topTrainLevel.textContent = "LVL 0";
-        topTrainFill.style.width = "0%";
-        topTrainTimeFill.style.width = "0%";
-        topTrainTimer.textContent = "STANDING BY";
-        topTrainPercent.textContent = "0%";
+    topHypeTrain.classList.remove("running");
 
-        if (topTrainInterval) {
-            clearInterval(topTrainInterval);
-            topTrainInterval = null;
-        }
+    topTrainLevel.textContent = "LVL 0";
+    topTrainFill.style.width = "0%";
+    topTrainTimeFill.style.width = "0%";
+    topTrainTimer.textContent = "STANDING BY";
+    topTrainPercent.textContent = "0%";
 
+    if (topTrainInterval) {
+        clearInterval(topTrainInterval);
+        topTrainInterval = null;
+    }
+
+    return;
+}
+
+if (remaining <= 0) {
+
+    if (topTrainInterval) {
+        clearInterval(topTrainInterval);
+        topTrainInterval = null;
+    }
+
+    topHypeTrain.classList.remove("running");
+    
+    if (topHypeSummary.classList.contains("show")) {
         return;
     }
+
+    topSummaryLevel.textContent =
+        `LEVEL ${topFinalLevel}`;
+
+    topHypeSummary.classList.add("show");
+
+    setTimeout(() => {
+
+        topHypeSummary.classList.remove("show");
+
+        topTrainLevelValue = 0;
+        topTrainProgress = 0;
+        topTrainGoal = 1;
+        topTrainEndsAt = 0;
+        topTrainStartedAt = 0;
+        topTrainDuration = 0;
+        topFinalLevel = 0;
+
+        updateTopHypeTrain();
+
+    }, 10000);
+
+    return;
+}
 
     topHypeTrain.classList.add("running");
 
