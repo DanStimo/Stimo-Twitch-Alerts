@@ -151,8 +151,12 @@ html, body {
     margin-left: 12px;
     min-width: 42px;
 
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 900;
+    letter-spacing: 1px;
+    line-height: 1;
+    
+    text-shadow: 0 0 8px rgba(255,148,77,.65);
 
     color: #ff944d;
 
@@ -162,20 +166,27 @@ html, body {
 }
 
 .sub-flame {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-block;
 
-    font-size: 14px;
+    font-size: 15px;
+    line-height: 1;
 
     position: relative;
     top: -2px;
+
+    margin-right: 2px;
 }
 
 .sub-streak-count {
     display: inline-block;
+
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    line-height: 1;
+
     position: relative;
-    top: -1px;
+    top: -2px;
 }
 
 .sub-streak.show {
