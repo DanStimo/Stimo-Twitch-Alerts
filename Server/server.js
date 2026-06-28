@@ -12,6 +12,11 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+let currentHypeTrain = {
+    active: false
+};
+let currentHypeTrainSummary = null;
+
 const twitchClient = new tmi.Client({
     options: { debug: true },
 
@@ -531,6 +536,14 @@ io.on("connection", (socket) => {
     console.log("Overlay connected");
 
     checkStreamStatus();
+
+    if (currentHypeTrain.active) {
+        socket.emit("hype-train-update", currentHypeTrain);
+    }
+    
+    if (currentHypeTrainSummary) {
+        socket.emit("hype-train-update", currentHypeTrainSummary);
+    }
 });
 
 app.get("/api/alert-history", (req, res) => {
@@ -609,14 +622,17 @@ app.get("/test/openpack", (req, res) => {
 });
 
 app.get("/test/hypetrain/start", (req, res) => {
-    io.emit("hype-train-update", {
+
+    currentHypeTrain = {
         active: true,
         level: 1,
         progress: 25,
         goal: 100,
         expiresAt: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
         topContributions: []
-    });
+    };
+
+    io.emit("hype-train-update", currentHypeTrain);
 
     res.send("Test hype train started: Level 1, 25/100, 5 minutes remaining.");
 });
@@ -627,27 +643,45 @@ app.get("/test/hypetrain/progress", (req, res) => {
     const goal = Number(req.query.goal) || 100;
     const minutes = Number(req.query.minutes) || 3;
 
-    io.emit("hype-train-update", {
+    currentHypeTrain = {
         active: true,
         level,
         progress,
         goal,
         expiresAt: new Date(Date.now() + minutes * 60 * 1000).toISOString(),
         topContributions: []
-    });
+    };
+    
+    io.emit("hype-train-update", currentHypeTrain);
 
     res.send(`Test hype train progress: Level ${level}, ${progress}/${goal}, ${minutes} minutes remaining.`);
 });
 
 app.get("/test/hypetrain/end", (req, res) => {
-    io.emit("hype-train-update", {
+   currentHypeTrain = {
         active: false,
         level: 0,
         progress: 0,
         goal: 1,
         expiresAt: null,
         topContributions: []
-    });
+    };
+    
+    currentHypeTrainSummary = {
+        active: false,
+        level: 3,
+        progress: 0,
+        goal: 1,
+        expiresAt: null,
+        topContributions: [],
+        summary: true
+    };
+    
+    io.emit("hype-train-update", currentHypeTrainSummary);
+    
+    setTimeout(() => {
+        currentHypeTrainSummary = null;
+    }, 10000);
 
     res.send("Test hype train ended.");
 });
@@ -1292,14 +1326,16 @@ function connectTwitchEventSub() {
                 subType === "channel.hype_train.begin" ||
                 subType === "channel.hype_train.progress"
             ) {
-                io.emit("hype-train-update", {
+                currentHypeTrain = {
                     active: true,
                     level: event.level || 1,
                     progress: event.progress || event.total || 0,
                     goal: event.goal || 1,
                     expiresAt: event.expires_at || null,
                     topContributions: event.top_contributions || []
-                });
+                };
+            
+            io.emit("hype-train-update", currentHypeTrain);
             
                 if (subType === "channel.hype_train.begin") {
                     announceChat(
@@ -1315,14 +1351,30 @@ function connectTwitchEventSub() {
             }
                            
             if (subType === "channel.hype_train.end") {
-                io.emit("hype-train-update", {
+                currentHypeTrain = {
                     active: false,
                     level: 0,
                     progress: 0,
                     goal: 1,
                     expiresAt: null,
                     topContributions: []
-                });
+                };
+                
+                currentHypeTrainSummary = {
+                    active: false,
+                    level: event.level || 1,
+                    progress: 0,
+                    goal: 1,
+                    expiresAt: null,
+                    topContributions: [],
+                    summary: true
+                };
+                
+                io.emit("hype-train-update", currentHypeTrainSummary);
+                
+                setTimeout(() => {
+                    currentHypeTrainSummary = null;
+                }, 10000);
             
                 announceChat(
                     `🚂 Hype Train ended at Level ${event.level || 1}! Thank you for the support!`
