@@ -1246,6 +1246,44 @@ socket.on("hype-train-update", (data) => {
     // ==========================
 
     if (!data.active) {
+    if (data.summary) {
+
+        if (serverSubTrainInterval) {
+            clearInterval(serverSubTrainInterval);
+            serverSubTrainInterval = null;
+        }
+    
+        summaryLevel.textContent = `LEVEL ${data.level}`;
+    
+        subTrain.classList.remove("running");
+        subTrain.classList.add("summary");
+    
+        hypeFinale.classList.add("active");
+        trainSummary.classList.add("show");
+    
+        setTimeout(() => {
+    
+            hypeFinale.classList.remove("active");
+            trainSummary.classList.remove("show");
+            subTrain.classList.remove("summary");
+    
+            serverSubTrainCount = 0;
+            hypeTrainProgress = 0;
+            hypeTrainGoal = 1;
+    
+            serverSubTrainEndsAt = 0;
+            serverSubTrainStartedAt = 0;
+            serverSubTrainDuration = 0;
+    
+            lastHypeTrainLevel = 0;
+            finalHypeTrainLevel = 0;
+    
+            updateSubTrainDisplay();
+    
+        }, 10000);
+    
+        return;
+    }
 
         if (finalHypeTrainLevel > 0) {
 
