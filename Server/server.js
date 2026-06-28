@@ -623,6 +623,8 @@ app.get("/test/openpack", (req, res) => {
 
 app.get("/test/hypetrain/start", (req, res) => {
 
+    currentHypeTrainSummary = null;
+    
     currentHypeTrain = {
         active: true,
         level: 1,
@@ -643,6 +645,8 @@ app.get("/test/hypetrain/progress", (req, res) => {
     const goal = Number(req.query.goal) || 100;
     const minutes = Number(req.query.minutes) || 3;
 
+    currentHypeTrainSummary = null;
+    
     currentHypeTrain = {
         active: true,
         level,
@@ -1326,6 +1330,8 @@ function connectTwitchEventSub() {
                 subType === "channel.hype_train.begin" ||
                 subType === "channel.hype_train.progress"
             ) {
+                currentHypeTrainSummary = null;
+                
                 currentHypeTrain = {
                     active: true,
                     level: event.level || 1,
