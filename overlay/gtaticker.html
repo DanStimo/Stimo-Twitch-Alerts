@@ -342,23 +342,29 @@ html, body {
 
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 
     background:
-        linear-gradient(180deg, rgba(60,40,0,.96), rgba(0,0,0,.92)),
-        radial-gradient(circle at center, rgba(255,212,77,.25), transparent 65%);
+        linear-gradient(
+            180deg,
+            rgba(60,40,0,.96),
+            rgba(0,0,0,.92)
+        ),
+        radial-gradient(
+            circle at center,
+            rgba(255,212,77,.28),
+            transparent 65%
+        );
 
-    border-bottom: 2px solid #ffb300;
+    border-bottom:2px solid #ffb300;
 
-    color: white;
-    text-transform: uppercase;
+    opacity:0;
+    transform:translateY(-110%);
 
-    opacity: 0;
-    transform: translateY(-110%);
-    pointer-events: none;
+    pointer-events:none;
 
-    z-index: 10000;
+    z-index:10001;
 
     transition:
         opacity .45s ease,
@@ -370,35 +376,44 @@ html, body {
     transform: translateY(0);
 }
 
-.top-summary-small {
-    font-size: 11px;
-    letter-spacing: 5px;
-    font-weight: 900;
-    color: #ffd44d;
+.top-summary-small{
+    font-size:13px;
+    letter-spacing:6px;
+    font-weight:900;
+    color:#ffd44d;
 }
 
-.top-summary-level {
-    margin-top: 4px;
+.top-summary-level{
 
-    font-size: 28px;
-    letter-spacing: 3px;
-    font-weight: 900;
+    margin-top:2px;
 
-    color: white;
+    font-size:34px;
+
+    font-weight:900;
+
+    letter-spacing:4px;
+
+    color:white;
 
     text-shadow:
-        0 0 12px #ffd44d,
-        0 0 26px #ffb300;
+        0 0 14px #ffd44d,
+        0 0 28px #ffb300,
+        0 0 46px rgba(255,212,77,.45);
+
 }
 
-.top-summary-thanks {
-    margin-top: 3px;
+.top-summary-thanks{
 
-    font-size: 10px;
-    letter-spacing: 4px;
-    font-weight: 900;
+    margin-top:4px;
 
-    color: rgba(255,255,255,.78);
+    font-size:11px;
+
+    letter-spacing:5px;
+
+    color:rgba(255,255,255,.82);
+
+    font-weight:900;
+
 }
 
 .top-hype-train.running {
