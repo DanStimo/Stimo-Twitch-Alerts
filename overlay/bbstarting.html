@@ -249,14 +249,15 @@ html, body {
         radial-gradient(circle at 85% 75%, rgba(255,255,255,.06), transparent 18%);
 
     filter: blur(38px);
-    animation: smokeMove 20s linear infinite;
+    animation: smokeMove 40s ease-in-out infinite;
 }
 
 @keyframes smokeMove {
-    from { transform: translateX(-70px); }
-    to { transform: translateX(90px); }
+    0% { transform: translateX(-70px); }
+    50% { transform: translateX(90px); }
+    100% { transform: translateX(-70px); }
 }
-
+    
 .dust {
     position: absolute;
     inset: 0;
@@ -266,13 +267,14 @@ html, body {
         radial-gradient(circle, rgba(255,255,255,.16) 0 1px, transparent 2px);
 
     background-size: 360px 240px, 280px 200px;
-    animation: dustDrift 18s linear infinite;
+    animation: dustDrift 36s ease-in-out infinite;
     opacity: .22;
 }
 
 @keyframes dustDrift {
-    from { background-position: 0 0, 0 0; }
-    to { background-position: 220px 120px, -180px 100px; }
+    0% { background-position: 0 0, 0 0; }
+    50% { background-position: 220px 120px, -180px 100px; }
+    100% { background-position: 0 0, 0 0; }
 }
 
 .light-sweep {
@@ -288,12 +290,15 @@ html, body {
         );
 
     transform: translateX(-120%);
-    animation: sweep 8s linear infinite;
+    animation: sweep 12s linear infinite;
 }
 
 @keyframes sweep {
-    from { transform: translateX(-120%); }
-    to { transform: translateX(120%); }
+    0% { transform: translateX(-120%); opacity: 0; }
+    10% { opacity: 1; }
+    50% { transform: translateX(120%); opacity: 1; }
+    60% { opacity: 0; }
+    100% { transform: translateX(120%); opacity: 0; }
 }
 
 .vignette {
