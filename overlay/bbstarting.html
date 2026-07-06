@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>BattleBit Starting Screen</title>
+<title>Starting Screen</title>
 
 <style>
 html, body {
@@ -9,20 +9,46 @@ html, body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: #050505;
+    background: #050604;
     font-family: Consolas, monospace;
 }
 
 .screen {
+    position: relative;
     width: 1920px;
     height: 1080px;
-    position: relative;
     overflow: hidden;
 
     background:
-        linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.85)),
-        radial-gradient(circle at 50% 35%, rgba(255,180,60,.18), transparent 35%),
-        linear-gradient(135deg, #181818, #070707 65%);
+        radial-gradient(circle at 70% 35%, rgba(255,130,30,.18), transparent 28%),
+        linear-gradient(135deg, #182015 0%, #070807 55%, #020302 100%);
+}
+
+.sky-glow {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(to bottom, rgba(80,95,70,.35), transparent 45%),
+        radial-gradient(circle at 55% 30%, rgba(255,170,70,.22), transparent 35%);
+}
+
+.ground {
+    position: absolute;
+    left: -100px;
+    right: -100px;
+    bottom: 0;
+    height: 310px;
+
+    background:
+        linear-gradient(to top, #15180f, transparent),
+        repeating-linear-gradient(
+            90deg,
+            #202817 0 70px,
+            #151b11 70px 140px
+        );
+
+    transform: skewY(-2deg);
+    opacity: .95;
 }
 
 .grid {
@@ -31,8 +57,8 @@ html, body {
     background-image:
         linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-    background-size: 48px 48px;
-    opacity: .35;
+    background-size: 54px 54px;
+    opacity: .28;
 }
 
 .scanlines {
@@ -42,85 +68,209 @@ html, body {
         to bottom,
         rgba(255,255,255,.035) 0px,
         rgba(255,255,255,.035) 1px,
-        transparent 2px,
-        transparent 5px
+        transparent 3px,
+        transparent 6px
     );
-    opacity: .18;
+    opacity: .14;
 }
 
-.top-bar {
+.smoke {
     position: absolute;
-    top: 70px;
-    left: 80px;
-    right: 80px;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    color: #ffb13b;
-    font-size: 18px;
-    letter-spacing: 6px;
-    font-weight: 900;
+    inset: -200px;
+    background:
+        radial-gradient(circle at 20% 70%, rgba(255,255,255,.08), transparent 18%),
+        radial-gradient(circle at 65% 55%, rgba(255,255,255,.06), transparent 20%),
+        radial-gradient(circle at 85% 75%, rgba(255,255,255,.08), transparent 18%);
+    filter: blur(35px);
+    animation: smokeMove 18s linear infinite;
 }
 
-.title-block {
+@keyframes smokeMove {
+    from { transform: translateX(-60px); }
+    to { transform: translateX(80px); }
+}
+
+.block-soldier {
+    position: absolute;
+    right: 230px;
+    bottom: 245px;
+    width: 330px;
+    height: 460px;
+    filter: drop-shadow(0 0 35px rgba(255,150,40,.22));
+}
+
+.head {
+    position: absolute;
+    left: 110px;
+    top: 35px;
+    width: 110px;
+    height: 95px;
+    background: #d7d7d7;
+}
+
+.helmet {
+    position: absolute;
+    left: 88px;
+    top: 12px;
+    width: 155px;
+    height: 44px;
+    background: #3e4b32;
+}
+
+.body {
+    position: absolute;
+    left: 55px;
+    top: 145px;
+    width: 220px;
+    height: 185px;
+    background: #425239;
+}
+
+.vest {
+    position: absolute;
+    left: 84px;
+    top: 165px;
+    width: 160px;
+    height: 130px;
+    background: #20281d;
+}
+
+.arm-left,
+.arm-right {
+    position: absolute;
+    top: 155px;
+    width: 58px;
+    height: 190px;
+    background: #4b5d3f;
+}
+
+.arm-left {
+    left: 10px;
+    transform: rotate(13deg);
+}
+
+.arm-right {
+    right: 10px;
+    transform: rotate(-13deg);
+}
+
+.leg-left,
+.leg-right {
+    position: absolute;
+    top: 325px;
+    width: 78px;
+    height: 150px;
+    background: #2c3827;
+}
+
+.leg-left { left: 78px; }
+.leg-right { right: 78px; }
+
+.gun {
+    position: absolute;
+    left: -20px;
+    top: 220px;
+    width: 380px;
+    height: 28px;
+    background: #111;
+    box-shadow: 120px -10px 0 #242424;
+}
+
+.vehicle {
+    position: absolute;
+    left: 170px;
+    bottom: 270px;
+    width: 420px;
+    height: 160px;
+    opacity: .5;
+}
+
+.vehicle-body {
+    position: absolute;
+    bottom: 35px;
+    width: 420px;
+    height: 90px;
+    background: #2d3526;
+}
+
+.vehicle-top {
+    position: absolute;
+    left: 90px;
+    bottom: 120px;
+    width: 185px;
+    height: 60px;
+    background: #3c4934;
+}
+
+.wheel {
+    position: absolute;
+    bottom: 0;
+    width: 85px;
+    height: 85px;
+    background: #080808;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 15px #1d1d1d;
+}
+
+.wheel.one { left: 40px; }
+.wheel.two { right: 40px; }
+
+.panel {
     position: absolute;
     left: 120px;
-    bottom: 170px;
+    bottom: 165px;
+    width: 680px;
 }
 
-.small {
+.status {
     color: #ffb13b;
-    font-size: 22px;
-    letter-spacing: 10px;
+    font-size: 18px;
+    letter-spacing: 8px;
     font-weight: 900;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
 .title {
     color: white;
-    font-size: 92px;
+    font-size: 86px;
     line-height: .9;
     font-weight: 900;
     letter-spacing: 4px;
 
     text-shadow:
         0 0 12px rgba(255,255,255,.35),
-        0 0 28px rgba(255,160,40,.35);
+        0 0 32px rgba(255,150,40,.3);
 }
 
 .subtitle {
     margin-top: 26px;
     color: rgba(255,255,255,.75);
-    font-size: 24px;
+    font-size: 21px;
     letter-spacing: 5px;
     font-weight: 900;
 }
 
-.starting {
-    margin-top: 46px;
-    width: 520px;
-    height: 46px;
-
+.loading-box {
+    margin-top: 42px;
+    width: 500px;
+    height: 44px;
     border-left: 4px solid #ffb13b;
-    background: rgba(0,0,0,.55);
+    background: rgba(0,0,0,.62);
+    box-shadow:
+        inset 0 0 22px rgba(255,170,60,.08),
+        0 0 20px rgba(255,140,40,.25);
 
     display: flex;
     align-items: center;
-    padding-left: 22px;
+    padding-left: 20px;
 
     color: white;
-    font-size: 20px;
+    font-size: 18px;
     letter-spacing: 5px;
     font-weight: 900;
-
-    box-shadow:
-        0 0 22px rgba(255,170,60,.35),
-        inset 0 0 18px rgba(255,170,60,.08);
 }
 
-.dots::after {
+.loading-box span::after {
     content: "";
     animation: dots 1.4s infinite;
 }
@@ -133,173 +283,57 @@ html, body {
     100% { content: ""; }
 }
 
-.soldier-box {
+.hud-top {
     position: absolute;
-    right: 110px;
-    bottom: 115px;
+    top: 70px;
+    left: 90px;
+    right: 90px;
 
-    width: 560px;
-    height: 620px;
+    display: flex;
+    justify-content: space-between;
 
-    border: 2px solid rgba(255,177,59,.35);
-    background:
-        linear-gradient(135deg, rgba(255,177,59,.12), transparent 45%),
-        rgba(0,0,0,.38);
-
-    box-shadow:
-        0 0 45px rgba(255,177,59,.15),
-        inset 0 0 50px rgba(255,255,255,.04);
-}
-
-.block-soldier {
-    position: absolute;
-    left: 120px;
-    bottom: 60px;
-    width: 310px;
-    height: 430px;
-}
-
-.head {
-    width: 120px;
-    height: 95px;
-    background: #cfcfcf;
-    position: absolute;
-    left: 95px;
-    top: 0;
-}
-
-.helmet {
-    width: 150px;
-    height: 42px;
-    background: #3f4a36;
-    position: absolute;
-    left: 80px;
-    top: -18px;
-}
-
-.body {
-    width: 220px;
-    height: 190px;
-    background: #3d4b35;
-    position: absolute;
-    left: 45px;
-    top: 110px;
-}
-
-.vest {
-    width: 170px;
-    height: 145px;
-    background: #222a20;
-    position: absolute;
-    left: 70px;
-    top: 130px;
-}
-
-.arm-left,
-.arm-right {
-    width: 55px;
-    height: 190px;
-    background: #46563d;
-    position: absolute;
-    top: 120px;
-}
-
-.arm-left {
-    left: 0;
-    transform: rotate(14deg);
-}
-
-.arm-right {
-    right: 0;
-    transform: rotate(-14deg);
-}
-
-.leg-left,
-.leg-right {
-    width: 78px;
-    height: 150px;
-    background: #2f3c2d;
-    position: absolute;
-    top: 300px;
-}
-
-.leg-left {
-    left: 65px;
-}
-
-.leg-right {
-    right: 65px;
-}
-
-.gun {
-    position: absolute;
-    width: 310px;
-    height: 28px;
-    background: #111;
-    left: -10px;
-    top: 185px;
-    box-shadow: 75px -10px 0 #222;
+    color: #ffb13b;
+    font-size: 13px;
+    letter-spacing: 5px;
+    font-weight: 900;
 }
 
 .warning {
     position: absolute;
-    bottom: 58px;
-    left: 80px;
-    right: 80px;
-
-    height: 22px;
+    left: 90px;
+    right: 90px;
+    bottom: 62px;
+    height: 24px;
 
     background: repeating-linear-gradient(
         45deg,
-        #ffb13b 0 26px,
-        #111 26px 52px
+        #ffb13b 0 28px,
+        #101010 28px 56px
     );
-
-    opacity: .95;
 }
 
 .corner {
     position: absolute;
     width: 90px;
     height: 90px;
-    border-color: #ffb13b;
-    opacity: .75;
+    border-color: rgba(255,177,59,.65);
 }
 
-.tl {
-    top: 35px;
-    left: 35px;
-    border-top: 3px solid;
-    border-left: 3px solid;
-}
+.tl { top: 40px; left: 40px; border-top: 3px solid; border-left: 3px solid; }
+.tr { top: 40px; right: 40px; border-top: 3px solid; border-right: 3px solid; }
+.bl { bottom: 40px; left: 40px; border-bottom: 3px solid; border-left: 3px solid; }
+.br { bottom: 40px; right: 40px; border-bottom: 3px solid; border-right: 3px solid; }
 
-.tr {
-    top: 35px;
-    right: 35px;
-    border-top: 3px solid;
-    border-right: 3px solid;
-}
-
-.bl {
-    bottom: 35px;
-    left: 35px;
-    border-bottom: 3px solid;
-    border-left: 3px solid;
-}
-
-.br {
-    bottom: 35px;
-    right: 35px;
-    border-bottom: 3px solid;
-    border-right: 3px solid;
-}
 </style>
 </head>
 
 <body>
-<div class="screen">
 
+<div class="screen">
+    <div class="sky-glow"></div>
     <div class="grid"></div>
+    <div class="smoke"></div>
+    <div class="ground"></div>
     <div class="scanlines"></div>
 
     <div class="corner tl"></div>
@@ -307,44 +341,49 @@ html, body {
     <div class="corner bl"></div>
     <div class="corner br"></div>
 
-    <div class="top-bar">
-        <div>STIMO DEPLOYMENT SYSTEM</div>
+    <div class="hud-top">
+        <div>SQUAD LINK ONLINE</div>
         <div>127v127 READY</div>
     </div>
 
-    <div class="title-block">
-        <div class="small">BATTLEBIT REMASTERED</div>
+    <div class="vehicle">
+        <div class="vehicle-body"></div>
+        <div class="vehicle-top"></div>
+        <div class="wheel one"></div>
+        <div class="wheel two"></div>
+    </div>
+
+    <div class="block-soldier">
+        <div class="helmet"></div>
+        <div class="head"></div>
+        <div class="body"></div>
+        <div class="vest"></div>
+        <div class="arm-left"></div>
+        <div class="arm-right"></div>
+        <div class="leg-left"></div>
+        <div class="leg-right"></div>
+        <div class="gun"></div>
+    </div>
+
+    <div class="panel">
+        <div class="status">DEPLOYMENT STATUS</div>
 
         <div class="title">
-            DEPLOYMENT<br>
+            STREAM<br>
             STARTING
         </div>
 
         <div class="subtitle">
-            LOADOUT CHECK • SQUAD LINK • COMMS ONLINE
+            LOADOUT CHECK • COMMS ONLINE • WAITING FOR SQUAD
         </div>
 
-        <div class="starting">
-            STREAM STARTING<span class="dots"></span>
-        </div>
-    </div>
-
-    <div class="soldier-box">
-        <div class="block-soldier">
-            <div class="helmet"></div>
-            <div class="head"></div>
-            <div class="body"></div>
-            <div class="vest"></div>
-            <div class="arm-left"></div>
-            <div class="arm-right"></div>
-            <div class="leg-left"></div>
-            <div class="leg-right"></div>
-            <div class="gun"></div>
+        <div class="loading-box">
+            <span>CONNECTING TO SERVER</span>
         </div>
     </div>
 
     <div class="warning"></div>
-
 </div>
+
 </body>
 </html>
