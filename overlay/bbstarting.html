@@ -181,3 +181,177 @@ html, body {
     letter-spacing: 5px;
     font-weight: 900;
 }
+
+.loading-box span::after {
+    content: "";
+    animation: dots 1.4s infinite;
+}
+
+@keyframes dots {
+    0% { content: ""; }
+    25% { content: "."; }
+    50% { content: ".."; }
+    75% { content: "..."; }
+    100% { content: ""; }
+}
+
+.ambient-panel {
+    position: absolute;
+    right: 125px;
+    top: 250px;
+
+    width: 560px;
+    height: 380px;
+
+    border: 1px solid rgba(255,177,59,.28);
+
+    background:
+        linear-gradient(135deg, rgba(255,177,59,.08), rgba(0,0,0,.30)),
+        rgba(0,0,0,.22);
+
+    box-shadow:
+        inset 0 0 35px rgba(255,177,59,.05),
+        0 0 35px rgba(255,140,40,.08);
+}
+
+.ambient-panel::before {
+    content: "TACTICAL LINK";
+    position: absolute;
+    top: 26px;
+    left: 28px;
+
+    color: #ffb13b;
+    font-size: 12px;
+    letter-spacing: 5px;
+    font-weight: 900;
+}
+
+.ambient-panel::after {
+    content: "";
+    position: absolute;
+    inset: 56px 28px 28px 28px;
+
+    background-image:
+        linear-gradient(rgba(255,177,59,.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,177,59,.07) 1px, transparent 1px);
+
+    background-size: 42px 42px;
+    opacity: .45;
+}
+
+.smoke {
+    position: absolute;
+    inset: -200px;
+
+    background:
+        radial-gradient(circle at 20% 70%, rgba(255,255,255,.07), transparent 18%),
+        radial-gradient(circle at 65% 55%, rgba(255,255,255,.05), transparent 22%),
+        radial-gradient(circle at 85% 75%, rgba(255,255,255,.06), transparent 18%);
+
+    filter: blur(38px);
+    animation: smokeMove 20s linear infinite;
+}
+
+@keyframes smokeMove {
+    from { transform: translateX(-70px); }
+    to { transform: translateX(90px); }
+}
+
+.dust {
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        radial-gradient(circle, rgba(255,177,59,.45) 0 2px, transparent 3px),
+        radial-gradient(circle, rgba(255,255,255,.16) 0 1px, transparent 2px);
+
+    background-size: 360px 240px, 280px 200px;
+    animation: dustDrift 18s linear infinite;
+    opacity: .22;
+}
+
+@keyframes dustDrift {
+    from { background-position: 0 0, 0 0; }
+    to { background-position: 220px 120px, -180px 100px; }
+}
+
+.light-sweep {
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            110deg,
+            transparent 0%,
+            rgba(255,177,59,.05) 45%,
+            transparent 70%
+        );
+
+    transform: translateX(-120%);
+    animation: sweep 8s linear infinite;
+}
+
+@keyframes sweep {
+    from { transform: translateX(-120%); }
+    to { transform: translateX(120%); }
+}
+
+.vignette {
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(circle at center, transparent 45%, rgba(0,0,0,.72) 100%);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="screen">
+
+    <div class="sky-glow"></div>
+    <div class="grid"></div>
+    <div class="smoke"></div>
+    <div class="dust"></div>
+    <div class="light-sweep"></div>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <div class="hud-top">
+        <div>SQUAD LINK ONLINE</div>
+        <div>127v127 READY</div>
+    </div>
+
+    <div class="panel">
+        <div class="status">DEPLOYMENT STATUS</div>
+
+        <div class="title">
+            STREAM<br>
+            STARTING
+        </div>
+
+        <div class="subtitle">
+            LOADOUT CHECK • COMMS ONLINE • WAITING<br>
+            FOR SQUAD
+        </div>
+
+        <div class="loading-box">
+            <span>CONNECTING TO SERVER</span>
+        </div>
+    </div>
+
+    <div class="ambient-panel"></div>
+
+    <div class="safe-bottom"></div>
+
+</div>
+
+</body>
+</html>
