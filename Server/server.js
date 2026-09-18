@@ -307,6 +307,188 @@ app.use(express.json());
 
 app.use(express.static("../overlay"));
 
+// ============================================================
+// FC 27 / PRO CLUBS - CEEFAX RESULTS
+// ============================================================
+
+const FC_CLUBS = {
+    passophonics: {
+        name: "PASSOPHONICS",
+        id: "799294" // TEMP: old club ID - replace with FC27 ID later
+    },
+
+    neverEnough: {
+        name: "xNEVER ENOUGHx",
+        id: "304203" // old xNever Enoughx ID
+    }
+};
+
+
+async function getClubMatches(club) {
+
+    const url =
+        `https://proclubs.ea.com/api/fc/clubs/matches` +
+        `?matchType=leagueMatch` +
+        `&platform=common-gen5` +
+        `&clubIds=${club.id}` +
+        `&maxResultCount=2`;
+
+    const response = await fetch(url, {
+        headers: {
+            "Accept": "application/json",
+            "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/140.0.0.0 Safari/537.36",
+            "Referer": "https://www.ea.com/",
+            "Origin": "https://www.ea.com"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(
+            `${club.name} EA API returned ${response.status}`
+        );
+    }
+
+    const matches = await response.json();
+
+    return Array.isArray(matches)
+        ? matches.slice(0, 2)
+        : [];
+}
+
+
+function formatClubMatch(match, club) {
+
+    const clubs = match.clubs || {};
+
+    const clubEntry =
+        clubs[club.id] ||
+        Object.values(clubs).find(
+            entry =>
+                String(entry.details?.clubId) === String(club.id)
+        );
+
+    if (!clubEntry) {
+        return null;
+    }
+
+    const opponentEntry =
+        Object.entries(clubs).find(
+            ([id]) => String(id) !== String(club.id)
+        );
+
+    if (!opponentEntry) {
+        return null;
+    }
+
+    const [, opponent] = opponentEntry;
+
+    const goalsFor =
+        Number(clubEntry.goals ?? 0);
+
+    const goalsAgainst =
+        Number(opponent.goals ?? 0);
+
+    let result = "DRAW";
+
+    if (goalsFor > goalsAgainst) {
+        result = "WIN";
+    }
+
+    if (goalsFor < goalsAgainst) {
+        result = "LOSS";
+    }
+
+    return {
+        club: club.name,
+
+        opponent:
+            opponent.details?.name ||
+            opponent.name ||
+            "OPPOSITION",
+
+        goalsFor,
+        goalsAgainst,
+
+        score:
+            `${goalsFor}-${goalsAgainst}`,
+
+        result
+    };
+}
+
+
+app.get("/api/fc27/latest-results", async (req, res) => {
+
+    try {
+
+        const clubs = [
+            FC_CLUBS.passophonics,
+            FC_CLUBS.neverEnough
+        ];
+
+        const results = [];
+
+        for (const club of clubs) {
+
+            try {
+
+                const matches =
+                    await getClubMatches(club);
+
+                for (const match of matches) {
+
+                    const formatted =
+                        formatClubMatch(match, club);
+
+                    if (formatted) {
+                        results.push(formatted);
+                    }
+                }
+
+            } catch (err) {
+
+                console.log(
+                    `[FC27] ${club.name}:`,
+                    err.message
+                );
+
+                results.push({
+                    club: club.name,
+                    opponent: "DATA UNAVAILABLE",
+                    score: "-",
+                    result: "WAITING"
+                });
+            }
+        }
+
+        res.setHeader(
+            "Cache-Control",
+            "no-store"
+        );
+
+        res.json({
+            updated:
+                new Date().toISOString(),
+
+            results
+        });
+
+    } catch (err) {
+
+        console.log(
+            "[FC27] Results error:",
+            err.message
+        );
+
+        res.status(500).json({
+            error: "Unable to retrieve club results"
+        });
+    }
+});
+
 const twitchChat = new tmi.Client({
     connection: {
         reconnect: true,
