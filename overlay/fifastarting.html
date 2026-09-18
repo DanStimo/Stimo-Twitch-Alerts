@@ -403,6 +403,69 @@ body {
 }
 
 /* =========================
+   MATCHDAY INFORMATION
+   ========================= */
+
+.matchday-info {
+    margin-top: 22px;
+
+    border-top: 3px solid #00ffff;
+
+    padding-top: 14px;
+
+    font-size: 21px;
+    letter-spacing: 2px;
+}
+
+.matchday-info-title {
+    background: #0000cc;
+    color: #ffff00;
+
+    padding: 6px 14px;
+
+    font-size: 24px;
+    letter-spacing: 4px;
+
+    margin-bottom: 12px;
+}
+
+.matchday-info-grid {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    column-gap: 80px;
+}
+
+.matchday-info-column {
+    display: grid;
+
+    grid-template-columns:
+        190px
+        1fr;
+
+    row-gap: 8px;
+}
+
+.info-label {
+    color: #00ffff;
+}
+
+.info-value {
+    color: #ffffff;
+}
+
+.info-green {
+    color: #00ff00;
+}
+
+.info-yellow {
+    color: #ffff00;
+}
+
+/* =========================
    CEEFAX NAVIGATION
    ========================= */
 
@@ -412,7 +475,7 @@ body {
     left: 86px;
     right: 86px;
 
-    bottom: 25px;
+    bottom: 90px;
 
     display: flex;
     justify-content: space-between;
@@ -956,13 +1019,90 @@ body {
                     STANDBY
                 </span>
             </div>
+</div>
+
+
+<!-- ==================================
+     MATCHDAY INFORMATION
+     ================================== -->
+
+<div class="matchday-info">
+
+    <div class="matchday-info-title">
+        MATCHDAY INFORMATION
+    </div>
+
+    <div class="matchday-info-grid">
+
+        <div class="matchday-info-column">
+
+            <div class="info-label">
+                CLUB
+            </div>
+
+            <div class="info-value">
+                PASSOPHONICS
+            </div>
+
+
+            <div class="info-label">
+                GAME
+            </div>
+
+            <div class="info-value">
+                EA SPORTS FC 27
+            </div>
+
+
+            <div class="info-label">
+                MODE
+            </div>
+
+            <div class="info-value">
+                PRO CLUBS
+            </div>
 
         </div>
 
 
-        <!-- ==================================
-             CEEFAX NAVIGATION
-             ================================== -->
+        <div class="matchday-info-column">
+
+            <div class="info-label">
+                COVERAGE
+            </div>
+
+            <div class="info-green">
+                LIVE MATCHDAY
+            </div>
+
+
+            <div class="info-label">
+                STREAM
+            </div>
+
+            <div class="info-yellow">
+                STARTING SOON
+            </div>
+
+
+            <div class="info-label">
+                NEXT UPDATE
+            </div>
+
+            <div class="info-value">
+                AT KICK-OFF
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================
+     CEEFAX NAVIGATION
+     ================================== -->
 
         <div class="navigation">
 
