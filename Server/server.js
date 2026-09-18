@@ -353,10 +353,14 @@ async function getClubMatches(club) {
 
     const matches = await response.json();
 
+    console.log(
+        `[FC27] ${club.name} (${club.id}) EA RESPONSE:`,
+        JSON.stringify(matches, null, 2)
+    );
+    
     return Array.isArray(matches)
         ? matches.slice(0, 2)
         : [];
-}
 
 
 function formatClubMatch(match, club) {
