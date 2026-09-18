@@ -567,30 +567,23 @@ body {
 .crt-scanlines {
     position: absolute;
     inset: 0;
+
     pointer-events: none;
-    z-index: 80;
-    border-radius: inherit;
+
+    z-index: 9999;
 
     background:
         repeating-linear-gradient(
             to bottom,
-            rgba(0,0,0,0) 0px,
-            rgba(0,0,0,0) 2px,
-            rgba(0,0,0,.48) 3px,
-            rgba(0,0,0,.48) 4px
-        ),
-        repeating-linear-gradient(
-            to right,
-            rgba(255,0,0,.055) 0px,
-            rgba(255,0,0,.055) 1px,
-            rgba(0,255,0,.035) 1px,
-            rgba(0,255,0,.035) 2px,
-            rgba(0,90,255,.055) 2px,
-            rgba(0,90,255,.055) 3px
+
+            transparent 0px,
+            transparent 5px,
+
+            rgba(0, 0, 0, 0.95) 5px,
+            rgba(0, 0, 0, 0.95) 9px
         );
 
-    opacity: .82;
-    animation: crtLineDrift 8s linear infinite;
+    opacity: 1;
 }
 
 /* Curved-glass darkness at the edges */
