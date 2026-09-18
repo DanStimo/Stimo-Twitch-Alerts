@@ -347,19 +347,22 @@ body {
 
 .match-state {
     text-align: right;
+}
+
+.result-win {
     color: #00ff00;
 }
 
-.fixture:nth-child(2) .match-state {
+.result-draw {
     color: #ffff00;
 }
 
-.fixture:nth-child(3) .match-state {
-    color: #00ffff;
+.result-loss {
+    color: #ff0000;
 }
 
-.fixture:nth-child(4) .match-state {
-    color: #ff00ff;
+.result-waiting {
+    color: #00ffff;
 }
 
 /* =========================
@@ -655,47 +658,49 @@ body {
              FOOTBALL SCORES
              ================================== -->
 
-        <div class="football-heading">
+        <<div class="football-heading">
 
-            <span>
-                TODAY'S FOOTBALL
-            </span>
-
-            <span>
-                LATEST
-            </span>
-
-        </div>
-
-
-        <div class="fixtures">
-
+             <span>
+                 LATEST RESULTS
+             </span>
+         
+             <span>
+                 RESULT
+             </span>
+         
+         </div>
+         
+         
+         <div
+             class="fixtures"
+             id="latestResults">
+         
              <div class="fixture">
                  <div class="home">PASSOPHONICS</div>
                  <div class="score">-</div>
-                 <div class="away">OPPOSITION</div>
-                 <div class="match-state">NEXT</div>
+                 <div class="away">AWAITING FC27 DATA</div>
+                 <div class="match-state result-waiting">WAITING</div>
              </div>
          
              <div class="fixture">
-                 <div class="home">RECENT FORM</div>
-                 <div class="score"></div>
-                 <div class="away">- - - - -</div>
-                 <div class="match-state">WAITING</div>
+                 <div class="home">PASSOPHONICS</div>
+                 <div class="score">-</div>
+                 <div class="away">AWAITING FC27 DATA</div>
+                 <div class="match-state result-waiting">WAITING</div>
              </div>
          
              <div class="fixture">
                  <div class="home">xNEVER ENOUGHx</div>
-                 <div class="score"></div>
-                 <div class="away">CLUB WATCH</div>
-                 <div class="match-state">ONLINE</div>
+                 <div class="score">-</div>
+                 <div class="away">AWAITING FC27 DATA</div>
+                 <div class="match-state result-waiting">WAITING</div>
              </div>
          
              <div class="fixture">
-                 <div class="home">WINGUS FC</div>
-                 <div class="score"></div>
-                 <div class="away">CLUB WATCH</div>
-                 <div class="match-state">ONLINE</div>
+                 <div class="home">xNEVER ENOUGHx</div>
+                 <div class="score">-</div>
+                 <div class="away">AWAITING FC27 DATA</div>
+                 <div class="match-state result-waiting">WAITING</div>
              </div>
          
          </div>
@@ -954,6 +959,241 @@ setInterval(() => {
         statusMessages[statusIndex];
 
 }, 12000);
+
+/* =========================================================
+   FC27 LIVE CLUB RESULTS
+   ========================================================= */
+
+const latestResults =
+    document.getElementById("latestResults");
+
+
+function getResultClass(result) {
+
+    if (result === "WIN") {
+        return "result-win";
+    }
+
+    if (result === "DRAW") {
+        return "result-draw";
+    }
+
+    if (result === "LOSS") {
+        return "result-loss";
+    }
+
+    return "result-waiting";
+}
+
+
+function createResultRow(match) {
+
+    const row =
+        document.createElement("div");
+
+    row.className = "fixture";
+
+
+    const home =
+        document.createElement("div");
+
+    home.className = "home";
+    home.textContent =
+        match.club || "CLUB";
+
+
+    const score =
+        document.createElement("div");
+
+    score.className = "score";
+    score.textContent =
+        match.score || "-";
+
+
+    const away =
+        document.createElement("div");
+
+    away.className = "away";
+    away.textContent =
+        match.opponent || "OPPOSITION";
+
+
+    const state =
+        document.createElement("div");
+
+    state.className =
+        `match-state ${getResultClass(match.result)}`;
+
+    state.textContent =
+        match.result || "WAITING";
+
+
+    row.appendChild(home);
+    row.appendChild(score);
+    row.appendChild(away);
+    row.appendChild(state);
+
+    return row;
+}
+
+
+function createWaitingRow(club) {
+
+    return createResultRow({
+        club: club,
+        score: "-",
+        opponent: "AWAITING FC27 DATA",
+        result: "WAITING"
+    });
+}
+
+
+async function updateFC27Results() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/fc27/latest-results",
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const results =
+            Array.isArray(data.results)
+                ? data.results
+                : [];
+
+
+        latestResults.innerHTML = "";
+
+
+        const passophonics =
+            results
+                .filter(
+                    match =>
+                        match.club ===
+                        "PASSOPHONICS"
+                )
+                .slice(0, 2);
+
+
+        const neverEnough =
+            results
+                .filter(
+                    match =>
+                        match.club ===
+                        "xNEVER ENOUGHx"
+                )
+                .slice(0, 2);
+
+
+        /* PASSOPHONICS */
+
+        for (let i = 0; i < 2; i++) {
+
+            if (passophonics[i]) {
+
+                latestResults.appendChild(
+                    createResultRow(
+                        passophonics[i]
+                    )
+                );
+
+            } else {
+
+                latestResults.appendChild(
+                    createWaitingRow(
+                        "PASSOPHONICS"
+                    )
+                );
+            }
+        }
+
+
+        /* xNEVER ENOUGHx */
+
+        for (let i = 0; i < 2; i++) {
+
+            if (neverEnough[i]) {
+
+                latestResults.appendChild(
+                    createResultRow(
+                        neverEnough[i]
+                    )
+                );
+
+            } else {
+
+                latestResults.appendChild(
+                    createWaitingRow(
+                        "xNEVER ENOUGHx"
+                    )
+                );
+            }
+        }
+
+
+    } catch (err) {
+
+        console.log(
+            "[FC27] Results unavailable:",
+            err.message
+        );
+
+        latestResults.innerHTML = "";
+
+        latestResults.appendChild(
+            createWaitingRow(
+                "PASSOPHONICS"
+            )
+        );
+
+        latestResults.appendChild(
+            createWaitingRow(
+                "PASSOPHONICS"
+            )
+        );
+
+        latestResults.appendChild(
+            createWaitingRow(
+                "xNEVER ENOUGHx"
+            )
+        );
+
+        latestResults.appendChild(
+            createWaitingRow(
+                "xNEVER ENOUGHx"
+            )
+        );
+    }
+}
+
+
+/* Load immediately */
+
+updateFC27Results();
+
+
+/* Refresh every 2 minutes */
+
+setInterval(
+    updateFC27Results,
+    120000
+);
 
 </script>
 
