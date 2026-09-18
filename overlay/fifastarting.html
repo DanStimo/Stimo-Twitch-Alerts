@@ -7,8 +7,8 @@
 <style>
 /* =========================================================
    FC27 - CEEFAX FOOTBALL STARTING SCREEN
-   Designed for 2560x1440
-   Bottom 173.33px intentionally left clear for external ticker
+   Designed for 1920x1080
+   Bottom 130px intentionally left clear for external ticker
    ========================================================= */
 
 * {
@@ -40,26 +40,26 @@ body {
 
 .screen {
     position: relative;
-    width: 2560px;
-    height: 1440px;
+    width: 1920px;
+    height: 1080px;
     background: #000;
     overflow: hidden;
 }
 
-/* Everything Ceefax stays above y=1267 */
+/* Everything Ceefax stays above y=950 */
 
 .ceefax {
     position: absolute;
     left: 0;
     top: 0;
-    width: 2560px;
-    height: 1266.67px;
+    width: 1920px;
+    height: 950px;
 
     padding:
-        50.67px
-        114.67px
+        38px
+        86px
         0
-        114.67px;
+        86px;
 
     background: #000;
 
@@ -70,8 +70,8 @@ body {
 
     /* Gives the text the slightly chunky CRT appearance */
     text-shadow:
-        2.67px 0 currentColor,
-        0 1.33px currentColor;
+        2px 0 currentColor,
+        0 1px currentColor;
 
     overflow: hidden;
 }
@@ -89,9 +89,9 @@ body {
         repeating-linear-gradient(
             to bottom,
             rgba(255,255,255,.025) 0px,
-            rgba(255,255,255,.025) 1.33px,
-            transparent 1.33px,
-            transparent 5.33px
+            rgba(255,255,255,.025) 1px,
+            transparent 1px,
+            transparent 4px
         );
 
     opacity: .28;
@@ -114,19 +114,19 @@ body {
    ========================= */
 
 .topline {
-    height: 56px;
+    height: 42px;
 
     display: grid;
     grid-template-columns:
-        240px
+        180px
         1fr
-        240px
-        466.67px;
+        180px
+        350px;
 
     align-items: center;
 
-    font-size: 36px;
-    letter-spacing: 2.67px;
+    font-size: 27px;
+    letter-spacing: 2px;
 
     color: #fff;
 }
@@ -153,9 +153,9 @@ body {
    ========================= */
 
 .title-bar {
-    margin-top: 16px;
+    margin-top: 12px;
 
-    height: 100px;
+    height: 75px;
 
     display: flex;
     align-items: center;
@@ -165,11 +165,11 @@ body {
 
     color: #ffff00;
 
-    font-size: 60px;
-    letter-spacing: 14.67px;
+    font-size: 45px;
+    letter-spacing: 11px;
 
-    border-top: 6.67px solid #00ffff;
-    border-bottom: 6.67px solid #00ffff;
+    border-top: 5px solid #00ffff;
+    border-bottom: 5px solid #00ffff;
 }
 
 .title-block {
@@ -181,14 +181,14 @@ body {
    ========================= */
 
 .section-heading {
-    margin-top: 32px;
+    margin-top: 24px;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
 
-    font-size: 40px;
-    letter-spacing: 4px;
+    font-size: 30px;
+    letter-spacing: 3px;
 }
 
 .section-heading .left {
@@ -204,15 +204,15 @@ body {
    ========================= */
 
 .latest {
-    margin-top: 22.67px;
+    margin-top: 17px;
 
-    min-height: 57.33px;
+    min-height: 43px;
 
     display: flex;
     align-items: center;
 
-    font-size: 36px;
-    letter-spacing: 2.67px;
+    font-size: 27px;
+    letter-spacing: 2px;
 
     color: #fff;
 }
@@ -221,9 +221,9 @@ body {
     background: #ff0000;
     color: #fff;
 
-    padding: 6.67px 17.33px;
+    padding: 5px 13px;
 
-    margin-right: 24px;
+    margin-right: 18px;
 }
 
 .latest-text {
@@ -235,16 +235,16 @@ body {
    ========================= */
 
 .starting-panel {
-    margin-top: 33.33px;
+    margin-top: 25px;
 
-    border-top: 5.33px solid #00ffff;
-    border-bottom: 5.33px solid #00ffff;
+    border-top: 4px solid #00ffff;
+    border-bottom: 4px solid #00ffff;
 
     padding:
-        32px
-        40px
-        33.33px
-        40px;
+        24px
+        30px
+        25px
+        30px;
 }
 
 .starting-small {
@@ -252,10 +252,10 @@ body {
 
     color: #00ff00;
 
-    font-size: 33.33px;
-    letter-spacing: 9.33px;
+    font-size: 25px;
+    letter-spacing: 7px;
 
-    margin-bottom: 13.33px;
+    margin-bottom: 10px;
 }
 
 .starting-main {
@@ -263,21 +263,21 @@ body {
 
     color: #ffff00;
 
-    font-size: 89.33px;
+    font-size: 67px;
     line-height: 1;
 
-    letter-spacing: 14.67px;
+    letter-spacing: 11px;
 }
 
 .starting-sub {
-    margin-top: 22.67px;
+    margin-top: 17px;
 
     text-align: center;
 
     color: #00ffff;
 
-    font-size: 33.33px;
-    letter-spacing: 5.33px;
+    font-size: 25px;
+    letter-spacing: 4px;
 }
 
 /* =========================
@@ -285,18 +285,18 @@ body {
    ========================= */
 
 .football-heading {
-    margin-top: 33.33px;
+    margin-top: 25px;
 
     background: #0000cc;
 
     color: #fff;
 
     padding:
-        9.33px
-        22.67px;
+        7px
+        17px;
 
-    font-size: 38.67px;
-    letter-spacing: 5.33px;
+    font-size: 29px;
+    letter-spacing: 4px;
 
     display: flex;
     justify-content: space-between;
@@ -309,29 +309,29 @@ body {
 /* Individual fixtures */
 
 .fixtures {
-    margin-top: 17.33px;
+    margin-top: 13px;
 
-    font-size: 36px;
-    letter-spacing: 1.33px;
+    font-size: 27px;
+    letter-spacing: 1px;
 }
 
 .fixture {
-    height: 52px;
+    height: 39px;
 
     display: grid;
 
     grid-template-columns:
         1fr
-        120px
+        90px
         1fr
-        233.33px;
+        175px;
 
     align-items: center;
 }
 
 .home {
     text-align: right;
-    padding-right: 26.67px;
+    padding-right: 20px;
     color: #fff;
 }
 
@@ -341,7 +341,7 @@ body {
 }
 
 .away {
-    padding-left: 26.67px;
+    padding-left: 20px;
     color: #fff;
 }
 
@@ -370,7 +370,7 @@ body {
    ========================= */
 
 .status-line {
-    margin-top: 26.67px;
+    margin-top: 20px;
 
     display: grid;
 
@@ -379,15 +379,15 @@ body {
         1fr
         1fr;
 
-    border-top: 4px solid #fff;
-    border-bottom: 4px solid #fff;
+    border-top: 3px solid #fff;
+    border-bottom: 3px solid #fff;
 
     padding:
-        13.33px
+        10px
         0;
 
-    font-size: 30.67px;
-    letter-spacing: 2.67px;
+    font-size: 23px;
+    letter-spacing: 2px;
 }
 
 .status-item {
@@ -409,16 +409,16 @@ body {
 .navigation {
     position: absolute;
 
-    left: 114.67px;
-    right: 114.67px;
+    left: 86px;
+    right: 86px;
 
-    bottom: 33.33px;
+    bottom: 25px;
 
     display: flex;
     justify-content: space-between;
 
-    font-size: 30.67px;
-    letter-spacing: 2.67px;
+    font-size: 23px;
+    letter-spacing: 2px;
 }
 
 .nav-red {
@@ -513,8 +513,8 @@ body {
     left: 0;
     bottom: 0;
 
-    width: 2560px;
-    height: 173.33px;
+    width: 1920px;
+    height: 130px;
 
     background: #000;
 
@@ -548,6 +548,124 @@ body {
     49%  { opacity: .11; }
     100% { opacity: .15; }
 }
+
+/* =========================================================
+   2560x1440 OUTPUT + CRT TELEVISION EFFECT
+
+   The original Ceefax layout remains 1920x1080 internally.
+   It is scaled uniformly to 2560x1440 so no individual
+   layout positions are changed.
+
+   Original 130px ticker-safe area therefore becomes
+   173.33px on the 1440p output.
+   ========================================================= */
+
+html,
+body {
+    width: 2560px;
+    height: 1440px;
+    overflow: hidden;
+    background: #000;
+}
+
+.screen {
+    width: 1920px;
+    height: 1080px;
+    transform: scale(1.3333333333);
+    transform-origin: top left;
+}
+
+/* CRT scanlines across the complete rendered television image */
+.screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 900;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(0,0,0,0) 0px,
+            rgba(0,0,0,0) 2px,
+            rgba(0,0,0,0.18) 3px,
+            rgba(0,0,0,0.18) 4px
+        );
+
+    animation: crtScanlines 8s linear infinite;
+}
+
+/* Soft CRT glass/vignette */
+.screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 899;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(255,255,255,0.025) 0%,
+            rgba(255,255,255,0.01) 48%,
+            rgba(0,0,0,0.07) 76%,
+            rgba(0,0,0,0.25) 100%
+        );
+}
+
+/* Slow analogue brightness band */
+.ceefax::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -160px;
+    width: 100%;
+    height: 150px;
+    pointer-events: none;
+    z-index: 45;
+
+    background:
+        linear-gradient(
+            to bottom,
+            transparent,
+            rgba(255,255,255,0.025),
+            rgba(255,255,255,0.055),
+            rgba(255,255,255,0.02),
+            transparent
+        );
+
+    animation: crtRoll 7s linear infinite;
+}
+
+@keyframes crtScanlines {
+    from { transform: translateY(0); }
+    to   { transform: translateY(4px); }
+}
+
+@keyframes crtRoll {
+    from { transform: translateY(-150px); }
+    to   { transform: translateY(1250px); }
+}
+
+/* Tiny old-TV brightness instability */
+.ceefax {
+    animation: crtPictureFlicker 5s steps(1) infinite;
+}
+
+@keyframes crtPictureFlicker {
+    0%   { filter: brightness(1); }
+    8%   { filter: brightness(.98); }
+    9%   { filter: brightness(1.025); }
+    10%  { filter: brightness(1); }
+    47%  { filter: brightness(.975); }
+    48%  { filter: brightness(1.02); }
+    49%  { filter: brightness(1); }
+    82%  { filter: brightness(.985); }
+    83%  { filter: brightness(1.015); }
+    84%  { filter: brightness(1); }
+    100% { filter: brightness(1); }
+}
+
 </style>
 </head>
 
@@ -781,7 +899,7 @@ body {
 
 
     <!--
-        BLANK 173PX AREA.
+        BLANK 130PX AREA.
         Your existing ticker sits over this in Meld.
     -->
 
