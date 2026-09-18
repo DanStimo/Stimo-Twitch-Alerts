@@ -645,14 +645,18 @@ body {
     z-index: 81;
 
     background:
-        linear-gradient(
-            to bottom,
-            transparent 0%,
-            rgba(255,255,255,.012) 25%,
-            rgba(255,255,255,.045) 50%,
-            rgba(255,255,255,.012) 75%,
-            transparent 100%
-        );
+       linear-gradient(
+           to bottom,
+           transparent 0%,
+           rgba(255,255,255,.025) 20%,
+           rgba(255,255,255,.10) 40%,
+           rgba(255,255,255,.22) 50%,
+           rgba(255,255,255,.10) 60%,
+           rgba(255,255,255,.025) 80%,
+           transparent 100%
+       );
+   
+   filter: blur(1px);
 
     animation: crtRollDown 9s linear infinite;
 }
