@@ -326,104 +326,100 @@ const FC_CLUBS = {
 
 async function getClubMatches(club) {
 
-    const url =
-        `https://proclubs.ea.com/api/fc/clubs/matches` +
-        `?matchType=leagueMatch` +
-        `&platform=common-gen5` +
-        `&clubIds=${club.id}` +
-        `&maxResultCount=2`;
+    const matchTypes = [
+        "friendlyMatch",
+        "leagueMatch",
+        "playoffMatch"
+    ];
 
-    const response = await fetch(url, {
-        headers: {
-            "Accept": "application/json",
-            "User-Agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                "Chrome/140.0.0.0 Safari/537.36",
-            "Referer": "https://www.ea.com/",
-            "Origin": "https://www.ea.com"
+    const allMatches = [];
+
+    for (const matchType of matchTypes) {
+
+        const url =
+            `https://proclubs.ea.com/api/fc/clubs/matches` +
+            `?matchType=${matchType}` +
+            `&platform=common-gen5` +
+            `&clubIds=${club.id}` +
+            `&maxResultCount=10`;
+
+        try {
+
+            const response = await fetch(url, {
+                headers: {
+                    "Accept": "application/json",
+                    "Accept-Language": "en-US,en;q=0.9",
+                    "User-Agent":
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                        "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                        "Chrome/141.0.0.0 Safari/537.36",
+                    "sec-ch-ua":
+                        '"Google Chrome";v="141", "Not?A_Brand";v="8", "Chromium";v="141"',
+                    "sec-fetch-site": "same-origin"
+                }
+            });
+
+            if (!response.ok) {
+
+                console.log(
+                    `[FC27] ${club.name} ${matchType} returned HTTP ${response.status}`
+                );
+
+                continue;
+            }
+
+            const matches = await response.json();
+
+            console.log(
+                `[FC27] ${club.name} (${club.id}) ${matchType}:`,
+                Array.isArray(matches)
+                    ? `${matches.length} matches`
+                    : "invalid response"
+            );
+
+            if (Array.isArray(matches)) {
+
+                for (const match of matches) {
+
+                    allMatches.push({
+                        ...match,
+                        matchType
+                    });
+                }
+            }
+
+        } catch (err) {
+
+            console.log(
+                `[FC27] ${club.name} ${matchType} error:`,
+                err.message
+            );
         }
+    }
+
+
+    // Sort newest match first.
+    allMatches.sort((a, b) => {
+
+        const timeA =
+            Number(a.timestamp) || 0;
+
+        const timeB =
+            Number(b.timestamp) || 0;
+
+        return timeB - timeA;
     });
 
-    if (!response.ok) {
-        throw new Error(
-            `${club.name} EA API returned ${response.status}`
-        );
-    }
-
-    const matches = await response.json();
 
     console.log(
-        `[FC27] ${club.name} (${club.id}) EA RESPONSE:`,
-        JSON.stringify(matches, null, 2)
+        `[FC27] ${club.name}: ${allMatches.length} total matches found`
     );
-    
-    return Array.isArray(matches)
-        ? matches.slice(0, 2)
-        : [];
-    }
-    
-    
-    function formatClubMatch(match, club) {
 
-    const clubs = match.clubs || {};
 
-    const clubEntry =
-        clubs[club.id] ||
-        Object.values(clubs).find(
-            entry =>
-                String(entry.details?.clubId) === String(club.id)
-        );
-
-    if (!clubEntry) {
-        return null;
-    }
-
-    const opponentEntry =
-        Object.entries(clubs).find(
-            ([id]) => String(id) !== String(club.id)
-        );
-
-    if (!opponentEntry) {
-        return null;
-    }
-
-    const [, opponent] = opponentEntry;
-
-    const goalsFor =
-        Number(clubEntry.goals ?? 0);
-
-    const goalsAgainst =
-        Number(opponent.goals ?? 0);
-
-    let result = "DRAW";
-
-    if (goalsFor > goalsAgainst) {
-        result = "WIN";
-    }
-
-    if (goalsFor < goalsAgainst) {
-        result = "LOSS";
-    }
-
-    return {
-        club: club.name,
-
-        opponent:
-            opponent.details?.name ||
-            opponent.name ||
-            "OPPOSITION",
-
-        goalsFor,
-        goalsAgainst,
-
-        score:
-            `${goalsFor}-${goalsAgainst}`,
-
-        result
-    };
+    // Return the two most recent matches,
+    // regardless of match type.
+    return allMatches.slice(0, 2);
 }
-
 
 app.get("/api/fc27/latest-results", async (req, res) => {
 
