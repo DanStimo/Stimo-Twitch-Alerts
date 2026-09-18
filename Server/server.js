@@ -361,9 +361,10 @@ async function getClubMatches(club) {
     return Array.isArray(matches)
         ? matches.slice(0, 2)
         : [];
-
-
-function formatClubMatch(match, club) {
+    }
+    
+    
+    function formatClubMatch(match, club) {
 
     const clubs = match.clubs || {};
 
