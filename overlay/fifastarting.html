@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FC27 - Ceefax Starting Soon</title>
+
+<style>
+/* =========================================================
+   FC27 - CEEFAX FOOTBALL STARTING SCREEN
+   Designed for 1920x1080
+   Bottom 130px intentionally left clear for external ticker
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
+
+body {
+    font-family:
+        "Lucida Console",
+        "Courier New",
+        monospace;
+
+    image-rendering: pixelated;
+}
+
+/* =========================
+   MAIN 1920x1080 CANVAS
+   ========================= */
+
+.screen {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    background: #000;
+    overflow: hidden;
+}
+
+/* Everything Ceefax stays above y=950 */
+
+.ceefax {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 950px;
+
+    padding:
+        38px
+        86px
+        0
+        86px;
+
+    background: #000;
+
+    color: #fff;
+
+    font-weight: 900;
+    text-transform: uppercase;
+
+    /* Gives the text the slightly chunky CRT appearance */
+    text-shadow:
+        2px 0 currentColor,
+        0 1px currentColor;
+
+    overflow: hidden;
+}
+
+/* Very subtle CRT lines */
+
+.ceefax::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,.025) 0px,
+            rgba(255,255,255,.025) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+
+    opacity: .28;
+}
+
+/* =========================
+   CLASSIC CEEFAX COLOURS
+   ========================= */
+
+.white  { color: #ffffff; }
+.cyan   { color: #00ffff; }
+.yellow { color: #ffff00; }
+.green  { color: #00ff00; }
+.red    { color: #ff0000; }
+.blue   { color: #0080ff; }
+.magenta { color: #ff00ff; }
+
+/* =========================
+   TOP HEADER
+   ========================= */
+
+.topline {
+    height: 42px;
+
+    display: grid;
+    grid-template-columns:
+        180px
+        1fr
+        180px
+        350px;
+
+    align-items: center;
+
+    font-size: 27px;
+    letter-spacing: 2px;
+
+    color: #fff;
+}
+
+.page-number {
+    color: #ffff00;
+}
+
+.service {
+    color: #00ffff;
+}
+
+.page-repeat {
+    color: #fff;
+}
+
+.date-time {
+    text-align: right;
+    color: #fff;
+}
+
+/* =========================
+   MAIN CEEFAX TITLE
+   ========================= */
+
+.title-bar {
+    margin-top: 12px;
+
+    height: 75px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #0000cc;
+
+    color: #ffff00;
+
+    font-size: 45px;
+    letter-spacing: 11px;
+
+    border-top: 5px solid #00ffff;
+    border-bottom: 5px solid #00ffff;
+}
+
+.title-block {
+    display: inline-block;
+}
+
+/* =========================
+   SUB HEADER
+   ========================= */
+
+.section-heading {
+    margin-top: 24px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: 30px;
+    letter-spacing: 3px;
+}
+
+.section-heading .left {
+    color: #00ffff;
+}
+
+.section-heading .right {
+    color: #ffff00;
+}
+
+/* =========================
+   BREAKING / LATEST LINE
+   ========================= */
+
+.latest {
+    margin-top: 17px;
+
+    min-height: 43px;
+
+    display: flex;
+    align-items: center;
+
+    font-size: 27px;
+    letter-spacing: 2px;
+
+    color: #fff;
+}
+
+.latest-label {
+    background: #ff0000;
+    color: #fff;
+
+    padding: 5px 13px;
+
+    margin-right: 18px;
+}
+
+.latest-text {
+    color: #ffff00;
+}
+
+/* =========================
+   MAIN STARTING MESSAGE
+   ========================= */
+
+.starting-panel {
+    margin-top: 25px;
+
+    border-top: 4px solid #00ffff;
+    border-bottom: 4px solid #00ffff;
+
+    padding:
+        24px
+        30px
+        25px
+        30px;
+}
+
+.starting-small {
+    text-align: center;
+
+    color: #00ff00;
+
+    font-size: 25px;
+    letter-spacing: 7px;
+
+    margin-bottom: 10px;
+}
+
+.starting-main {
+    text-align: center;
+
+    color: #ffff00;
+
+    font-size: 67px;
+    line-height: 1;
+
+    letter-spacing: 11px;
+}
+
+.starting-sub {
+    margin-top: 17px;
+
+    text-align: center;
+
+    color: #00ffff;
+
+    font-size: 25px;
+    letter-spacing: 4px;
+}
+
+/* =========================
+   FOOTBALL RESULTS AREA
+   ========================= */
+
+.football-heading {
+    margin-top: 25px;
+
+    background: #0000cc;
+
+    color: #fff;
+
+    padding:
+        7px
+        17px;
+
+    font-size: 29px;
+    letter-spacing: 4px;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+.football-heading span:last-child {
+    color: #ffff00;
+}
+
+/* Individual fixtures */
+
+.fixtures {
+    margin-top: 13px;
+
+    font-size: 27px;
+    letter-spacing: 1px;
+}
+
+.fixture {
+    height: 39px;
+
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        90px
+        1fr
+        175px;
+
+    align-items: center;
+}
+
+.home {
+    text-align: right;
+    padding-right: 20px;
+    color: #fff;
+}
+
+.score {
+    text-align: center;
+    color: #ffff00;
+}
+
+.away {
+    padding-left: 20px;
+    color: #fff;
+}
+
+.match-state {
+    text-align: right;
+    color: #00ff00;
+}
+
+.fixture:nth-child(2) .match-state {
+    color: #ffff00;
+}
+
+.fixture:nth-child(3) .match-state {
+    color: #00ffff;
+}
+
+.fixture:nth-child(4) .match-state {
+    color: #ff00ff;
+}
+
+/* =========================
+   STATUS LINE
+   ========================= */
+
+.status-line {
+    margin-top: 20px;
+
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr
+        1fr;
+
+    border-top: 3px solid #fff;
+    border-bottom: 3px solid #fff;
+
+    padding:
+        10px
+        0;
+
+    font-size: 23px;
+    letter-spacing: 2px;
+}
+
+.status-item {
+    text-align: center;
+}
+
+.status-name {
+    color: #00ffff;
+}
+
+.status-value {
+    color: #00ff00;
+}
+
+/* =========================
+   CEEFAX NAVIGATION
+   ========================= */
+
+.navigation {
+    position: absolute;
+
+    left: 86px;
+    right: 86px;
+
+    bottom: 25px;
+
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 23px;
+    letter-spacing: 2px;
+}
+
+.nav-red {
+    color: #ff0000;
+}
+
+.nav-green {
+    color: #00ff00;
+}
+
+.nav-yellow {
+    color: #ffff00;
+}
+
+.nav-cyan {
+    color: #00ffff;
+}
+
+/* =========================
+   PAGE CHANGE EFFECT
+   ========================= */
+
+.page-flash {
+    position: absolute;
+    inset: 0;
+
+    background: #000;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    z-index: 50;
+}
+
+.page-flash.change {
+    animation: pageChange .18s steps(2);
+}
+
+@keyframes pageChange {
+    0% {
+        opacity: 0;
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    65% {
+        opacity: .25;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* =========================
+   FLASHING CEEFAX TEXT
+   ========================= */
+
+.flash {
+    animation: teletextFlash 1.2s steps(1) infinite;
+}
+
+@keyframes teletextFlash {
+    0%,
+    55% {
+        visibility: visible;
+    }
+
+    56%,
+    100% {
+        visibility: hidden;
+    }
+}
+
+/* =========================
+   BOTTOM SAFE AREA
+
+   IMPORTANT:
+   NOTHING is drawn here.
+
+   This area is deliberately
+   left clear for your existing
+   Meld ticker browser source.
+   ========================= */
+
+.bottom-safe-area {
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    width: 1920px;
+    height: 130px;
+
+    background: #000;
+
+    z-index: 100;
+}
+
+/* =========================
+   SMALL CRT FLICKER
+   ========================= */
+
+.crt-flicker {
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
+    background: rgba(255,255,255,.015);
+
+    animation: crtFlicker 7s steps(1) infinite;
+
+    z-index: 40;
+}
+
+@keyframes crtFlicker {
+    0%   { opacity: .15; }
+    8%   { opacity: .10; }
+    9%   { opacity: .18; }
+    10%  { opacity: .10; }
+    47%  { opacity: .12; }
+    48%  { opacity: .18; }
+    49%  { opacity: .11; }
+    100% { opacity: .15; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="screen">
+
+    <div class="ceefax">
+
+        <!-- ==================================
+             TOP CEEFAX HEADER
+             ================================== -->
+
+        <div class="topline">
+
+            <div class="page-number">
+                P302
+            </div>
+
+            <div class="service">
+                CEEFAX 1
+            </div>
+
+            <div class="page-repeat">
+                302
+            </div>
+
+            <div
+                class="date-time"
+                id="dateTime">
+                FRI 18 SEP 08:30
+            </div>
+
+        </div>
+
+
+        <!-- ==================================
+             FOOTBALL TITLE
+             ================================== -->
+
+        <div class="title-bar">
+            <span class="title-block">
+                FOOTBALL
+            </span>
+        </div>
+
+
+        <!-- ==================================
+             SECTION INFORMATION
+             ================================== -->
+
+        <div class="section-heading">
+
+            <div class="left">
+                MATCHDAY LIVE
+            </div>
+
+            <div class="right">
+                PAGE 1 OF 1
+            </div>
+
+        </div>
+
+
+        <!-- ==================================
+             LATEST NEWS
+             ================================== -->
+
+        <div class="latest">
+
+            <span class="latest-label flash">
+                LATEST
+            </span>
+
+            <span
+                class="latest-text"
+                id="latestText">
+                STREAM PREPARATIONS UNDER WAY
+            </span>
+
+        </div>
+
+
+        <!-- ==================================
+             STARTING SOON
+             ================================== -->
+
+        <div class="starting-panel">
+
+            <div class="starting-small">
+                LIVE COVERAGE
+            </div>
+
+            <div class="starting-main">
+                STREAM STARTING SOON
+            </div>
+
+            <div
+                class="starting-sub"
+                id="startingStatus">
+                WARMING UP • COMMS ONLINE • WAITING FOR KICK-OFF
+            </div>
+
+        </div>
+
+
+        <!-- ==================================
+             FOOTBALL SCORES
+             ================================== -->
+
+        <div class="football-heading">
+
+            <span>
+                TODAY'S FOOTBALL
+            </span>
+
+            <span>
+                LATEST
+            </span>
+
+        </div>
+
+
+        <div class="fixtures">
+
+            <div class="fixture">
+
+                <div class="home">
+                    WINGUS FC
+                </div>
+
+                <div class="score">
+                    -
+                </div>
+
+                <div class="away">
+                    OPPOSITION
+                </div>
+
+                <div class="match-state">
+                    STANDBY
+                </div>
+
+            </div>
+
+
+            <div class="fixture">
+
+                <div class="home">
+                    STREAM
+                </div>
+
+                <div class="score">
+                    -
+                </div>
+
+                <div class="away">
+                    MATCHDAY
+                </div>
+
+                <div class="match-state">
+                    SOON
+                </div>
+
+            </div>
+
+
+            <div class="fixture">
+
+                <div class="home">
+                    SQUAD
+                </div>
+
+                <div class="score">
+                    -
+                </div>
+
+                <div class="away">
+                    READY ROOM
+                </div>
+
+                <div class="match-state">
+                    READY
+                </div>
+
+            </div>
+
+
+            <div class="fixture">
+
+                <div class="home">
+                    FC 27
+                </div>
+
+                <div class="score">
+                    -
+                </div>
+
+                <div class="away">
+                    PRO CLUBS
+                </div>
+
+                <div class="match-state">
+                    LIVE SOON
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================
+             SYSTEM STATUS
+             ================================== -->
+
+        <div class="status-line">
+
+            <div class="status-item">
+                <span class="status-name">
+                    COMMS
+                </span>
+                &nbsp;
+                <span class="status-value">
+                    ONLINE
+                </span>
+            </div>
+
+            <div class="status-item">
+                <span class="status-name">
+                    SQUAD
+                </span>
+                &nbsp;
+                <span class="status-value">
+                    READY
+                </span>
+            </div>
+
+            <div class="status-item">
+                <span class="status-name">
+                    KICK-OFF
+                </span>
+                &nbsp;
+                <span class="status-value">
+                    STANDBY
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- ==================================
+             CEEFAX NAVIGATION
+             ================================== -->
+
+        <div class="navigation">
+
+            <span class="nav-red">
+                301 INDEX
+            </span>
+
+            <span class="nav-green">
+                303 RESULTS
+            </span>
+
+            <span class="nav-yellow">
+                304 TABLES
+            </span>
+
+            <span class="nav-cyan">
+                305 FIXTURES
+            </span>
+
+        </div>
+
+
+        <div
+            class="page-flash"
+            id="pageFlash">
+        </div>
+
+        <div class="crt-flicker"></div>
+
+    </div>
+
+
+    <!--
+        BLANK 130PX AREA.
+        Your existing ticker sits over this in Meld.
+    -->
+
+    <div class="bottom-safe-area"></div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   LIVE UK CLOCK
+   ========================================================= */
+
+const dateTime =
+    document.getElementById("dateTime");
+
+function updateClock() {
+
+    const now = new Date();
+
+    const day =
+        new Intl.DateTimeFormat(
+            "en-GB",
+            {
+                weekday: "short",
+                timeZone: "Europe/London"
+            }
+        )
+        .format(now)
+        .toUpperCase();
+
+    const date =
+        new Intl.DateTimeFormat(
+            "en-GB",
+            {
+                day: "2-digit",
+                month: "short",
+                timeZone: "Europe/London"
+            }
+        )
+        .format(now)
+        .toUpperCase();
+
+    const time =
+        new Intl.DateTimeFormat(
+            "en-GB",
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+                timeZone: "Europe/London"
+            }
+        )
+        .format(now);
+
+    dateTime.textContent =
+        `${day} ${date} ${time}`;
+}
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
+
+/* =========================================================
+   ROTATING CEEFAX HEADLINES
+   ========================================================= */
+
+const latestText =
+    document.getElementById("latestText");
+
+const headlines = [
+
+    "STREAM PREPARATIONS UNDER WAY",
+
+    "PLAYERS ARRIVING AHEAD OF KICK-OFF",
+
+    "FINAL LOADOUT CHECKS IN PROGRESS",
+
+    "COMMS ONLINE - SQUAD STANDING BY",
+
+    "LIVE COVERAGE DUE TO BEGIN SHORTLY"
+
+];
+
+let headlineIndex = 0;
+
+
+/* =========================================================
+   PAGE CHANGE FLASH
+   ========================================================= */
+
+const pageFlash =
+    document.getElementById("pageFlash");
+
+function changeHeadline() {
+
+    pageFlash.classList.remove("change");
+
+    void pageFlash.offsetWidth;
+
+    pageFlash.classList.add("change");
+
+
+    setTimeout(() => {
+
+        headlineIndex++;
+
+        if (
+            headlineIndex >=
+            headlines.length
+        ) {
+            headlineIndex = 0;
+        }
+
+        latestText.textContent =
+            headlines[headlineIndex];
+
+    }, 90);
+}
+
+
+/*
+    Changes every 8 seconds.
+
+    Long enough to read and gives
+    it that old teletext page feel.
+*/
+
+setInterval(
+    changeHeadline,
+    8000
+);
+
+
+/* =========================================================
+   STARTING STATUS ROTATION
+   ========================================================= */
+
+const startingStatus =
+    document.getElementById(
+        "startingStatus"
+    );
+
+const statusMessages = [
+
+    "WARMING UP • COMMS ONLINE • WAITING FOR KICK-OFF",
+
+    "TEAM SHEET READY • PLAYERS STANDING BY",
+
+    "MATCHDAY SERVICES ONLINE • COVERAGE STARTING SOON",
+
+    "FINAL PREPARATIONS • KICK-OFF APPROACHING"
+
+];
+
+let statusIndex = 0;
+
+setInterval(() => {
+
+    statusIndex++;
+
+    if (
+        statusIndex >=
+        statusMessages.length
+    ) {
+        statusIndex = 0;
+    }
+
+    startingStatus.textContent =
+        statusMessages[statusIndex];
+
+}, 12000);
+
+</script>
+
+</body>
+</html>
