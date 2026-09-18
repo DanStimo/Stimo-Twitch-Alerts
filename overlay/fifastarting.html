@@ -549,46 +549,26 @@ body {
     100% { opacity: .15; }
 }
 
+
 /* =========================================================
-   STRONG CRT + CURVED OLD-TV EFFECT
-   Original 1920x1080 layout is preserved.
-   The bottom 130px remains the ticker-safe area.
+   VISIBLE CRT EFFECT - CEEFAX AREA ONLY (0-950px)
+   The separate bottom ticker is NOT affected.
    ========================================================= */
 
-/* Give the picture a little breathing room so curved edges
-   are not clipped by the browser source. */
-.screen {
-    position: relative;
-    width: 1920px;
-    height: 1080px;
-    overflow: hidden;
-    background: #000;
-
-    /* Old CRT / fisheye-style screen shape */
-    border-radius: 55px / 38px;
-
-    /* Slight barrel-like perspective impression */
-    transform:
-        perspective(1800px)
-        rotateX(0.35deg)
-        scaleX(0.985)
-        scaleY(0.975);
-
-    transform-origin: center center;
-
+/* Slight curved-tube silhouette without moving the Ceefax layout */
+.ceefax {
+    border-radius: 46px / 30px;
     box-shadow:
-        inset 0 0 45px rgba(0,0,0,.85),
-        inset 0 0 110px rgba(0,0,0,.55);
+        inset 0 0 45px rgba(0,0,0,.70),
+        inset 0 0 100px rgba(0,0,0,.45);
 }
 
-/* Strong visible scanlines + RGB phosphor texture */
-.screen::after {
-    content: "";
+/* Strong horizontal scanlines */
+.crt-scanlines {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 900;
-
+    z-index: 80;
     border-radius: inherit;
 
     background:
@@ -596,134 +576,92 @@ body {
             to bottom,
             rgba(0,0,0,0) 0px,
             rgba(0,0,0,0) 2px,
-            rgba(0,0,0,.34) 3px,
-            rgba(0,0,0,.34) 4px
+            rgba(0,0,0,.48) 3px,
+            rgba(0,0,0,.48) 4px
         ),
         repeating-linear-gradient(
             to right,
-            rgba(255,0,0,.035) 0px,
-            rgba(255,0,0,.035) 1px,
-            rgba(0,255,0,.025) 1px,
-            rgba(0,255,0,.025) 2px,
-            rgba(0,80,255,.035) 2px,
-            rgba(0,80,255,.035) 3px
+            rgba(255,0,0,.055) 0px,
+            rgba(255,0,0,.055) 1px,
+            rgba(0,255,0,.035) 1px,
+            rgba(0,255,0,.035) 2px,
+            rgba(0,90,255,.055) 2px,
+            rgba(0,90,255,.055) 3px
         );
 
-    animation:
-        crtScanlines 7s linear infinite,
-        crtOverlayFlicker 4.5s steps(1) infinite;
+    opacity: .82;
+    animation: crtLineDrift 8s linear infinite;
 }
 
-/* Dark curved-glass vignette */
-.screen::before {
-    content: "";
+/* Curved-glass darkness at the edges */
+.crt-vignette {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 899;
-
+    z-index: 82;
     border-radius: inherit;
 
     background:
         radial-gradient(
             ellipse at center,
-            rgba(255,255,255,.045) 0%,
-            rgba(255,255,255,.015) 45%,
-            rgba(0,0,0,.10) 70%,
-            rgba(0,0,0,.42) 92%,
-            rgba(0,0,0,.70) 100%
+            transparent 0%,
+            transparent 56%,
+            rgba(0,0,0,.10) 72%,
+            rgba(0,0,0,.38) 90%,
+            rgba(0,0,0,.72) 100%
         );
 
     box-shadow:
-        inset 0 0 75px rgba(0,0,0,.75);
+        inset 0 0 65px rgba(0,0,0,.78);
 }
 
-/* Give bright Ceefax pixels a little CRT bloom */
-.ceefax {
-    animation: crtPictureFlicker 5s steps(1) infinite;
-
-    filter:
-        contrast(1.08)
-        brightness(1.04)
-        saturate(1.08);
-
-    text-shadow:
-        2px 0 currentColor,
-        0 1px currentColor,
-        0 0 5px currentColor;
-}
-
-/* Visible rolling refresh band */
-.ceefax::before {
-    content: "";
+/* Moving analogue refresh band */
+.crt-roll {
     position: absolute;
     left: 0;
-    top: -190px;
+    top: -180px;
     width: 100%;
-    height: 180px;
-
+    height: 170px;
     pointer-events: none;
-    z-index: 45;
+    z-index: 81;
 
     background:
         linear-gradient(
             to bottom,
             transparent 0%,
             rgba(255,255,255,.025) 20%,
-            rgba(255,255,255,.11) 50%,
-            rgba(255,255,255,.035) 75%,
+            rgba(255,255,255,.13) 50%,
+            rgba(255,255,255,.035) 78%,
             transparent 100%
         );
 
-    animation: crtRoll 6.5s linear infinite;
+    animation: crtRollDown 6.5s linear infinite;
 }
 
-@keyframes crtScanlines {
+/* More visible CRT bloom on the actual Ceefax picture */
+.ceefax {
+    filter:
+        contrast(1.08)
+        brightness(1.035)
+        saturate(1.08);
+}
+
+/* Existing text keeps its chunky Ceefax edge plus phosphor bloom */
+.ceefax * {
+    text-shadow:
+        1px 0 rgba(255,0,0,.16),
+        -1px 0 rgba(0,180,255,.16),
+        0 0 3px currentColor;
+}
+
+@keyframes crtLineDrift {
     from { background-position: 0 0, 0 0; }
     to   { background-position: 0 4px, 3px 0; }
 }
 
-@keyframes crtRoll {
-    from { transform: translateY(-180px); }
-    to   { transform: translateY(1320px); }
-}
-
-@keyframes crtOverlayFlicker {
-    0%   { opacity: .90; }
-    7%   { opacity: .96; }
-    8%   { opacity: .82; }
-    9%   { opacity: .94; }
-    42%  { opacity: .91; }
-    43%  { opacity: .78; }
-    44%  { opacity: .95; }
-    78%  { opacity: .92; }
-    79%  { opacity: .84; }
-    80%  { opacity: .94; }
-    100% { opacity: .90; }
-}
-
-@keyframes crtPictureFlicker {
-    0%   { filter: contrast(1.08) brightness(1.04) saturate(1.08); }
-    8%   { filter: contrast(1.08) brightness(.98) saturate(1.08); }
-    9%   { filter: contrast(1.10) brightness(1.09) saturate(1.10); }
-    10%  { filter: contrast(1.08) brightness(1.04) saturate(1.08); }
-    47%  { filter: contrast(1.08) brightness(.96) saturate(1.08); }
-    48%  { filter: contrast(1.10) brightness(1.08) saturate(1.10); }
-    49%  { filter: contrast(1.08) brightness(1.04) saturate(1.08); }
-    100% { filter: contrast(1.08) brightness(1.04) saturate(1.08); }
-}
-
-/* The ticker-safe block stays exactly where the original
-   overlay put it: bottom 130px. Make sure it does not cover
-   the separate Meld ticker layer. */
-.bottom-safe-area {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 1920px;
-    height: 130px;
-    background: #000;
-    z-index: 100;
+@keyframes crtRollDown {
+    from { transform: translateY(-170px); }
+    to   { transform: translateY(1120px); }
 }
 
 </style>
@@ -954,6 +892,9 @@ body {
         </div>
 
         <div class="crt-flicker"></div>
+        <div class="crt-scanlines"></div>
+        <div class="crt-vignette"></div>
+        <div class="crt-roll"></div>
 
     </div>
 
