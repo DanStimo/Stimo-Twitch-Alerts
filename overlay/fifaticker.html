@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Alert Ticker</title>
+
+<style>
+:root {
+    --primary: #00ffff;
+    --secondary: #ffffff;
+    --cyan: #00ffff;
+    --yellow: #ffff00;
+    --green: #00ff00;
+    --red: #ff2020;
+    --blue: #0000cc;
+    --magenta: #ff00ff;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: Consolas, "Courier New", monospace;
+}
+
+#ticker {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 104px;
+    overflow: hidden;
+    background: #000;
+    color: #fff;
+    z-index: 9999;
+    border-top: 2px solid var(--cyan);
+    box-sizing: border-box;
+}
+
+/* Fine CRT scanlines over ticker only */
+#ticker::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 3px,
+            rgba(0,0,0,.30) 3px,
+            rgba(0,0,0,.30) 5px
+        );
+    opacity: .72;
+}
+
+/* Small Ceefax service header */
+#ticker::before {
+    content: "P303   CEEFAX 1     SUPPORTER SERVICE                                      LIVE";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 25px;
+    padding: 3px 12px 0;
+    box-sizing: border-box;
+    background: #0000cc;
+    color: #ffff00;
+    font-size: 13px;
+    line-height: 21px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    white-space: pre;
+    text-shadow: 1px 0 rgba(255,0,0,.16), -1px 0 rgba(0,180,255,.16), 0 0 2px currentColor;
+    z-index: 1;
+}
+
+.track {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 76px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    animation: tickerMove 75s linear infinite;
+    opacity: 1;
+    transition: opacity .25s ease;
+    will-change: transform;
+    transform: translate3d(0,0,0);
+    backface-visibility: hidden;
+}
+
+#ticker.alerting .track {
+    opacity: 0;
+}
+
+.item {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    height: 76px;
+    margin-right: 100px;
+    text-transform: uppercase;
+    color: #fff;
+    font-weight: 900;
+}
+
+.label {
+    display: inline-block;
+    margin-right: 18px;
+    padding: 4px 8px 3px;
+    background: #0000cc;
+    color: var(--yellow);
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    line-height: 1;
+    opacity: 1;
+}
+
+.ticker-name {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1;
+    color: #fff;
+    text-shadow: 1px 0 rgba(255,0,0,.13), -1px 0 rgba(0,170,255,.13), 0 0 2px currentColor;
+}
+
+/* Ceefax alert takeover */
+.alert-banner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 102px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(110%);
+    opacity: 0;
+    background: #000;
+    color: #fff;
+    z-index: 5;
+    border-top: 2px solid var(--cyan);
+    box-sizing: border-box;
+}
+
+.alert-banner.show {
+    animation: bannerIn .35s steps(5,end) forwards;
+}
+
+.alert-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 8px 40px 5px;
+    box-sizing: border-box;
+}
+
+.alert-type {
+    display: inline-block;
+    background: #ff0000;
+    color: #fff;
+    padding: 3px 12px;
+    font-size: 14px;
+    letter-spacing: 4px;
+    font-weight: 900;
+    line-height: 1;
+    text-shadow: none;
+}
+
+.alert-main {
+    margin-top: 7px;
+    margin-bottom: 4px;
+    color: var(--primary);
+    font-size: 25px;
+    letter-spacing: 4px;
+    line-height: 1;
+    font-weight: 900;
+    text-shadow: 1px 0 rgba(255,0,0,.15), -1px 0 rgba(0,170,255,.15), 0 0 3px currentColor;
+}
+
+.alert-detail {
+    margin-top: 3px;
+    color: #ffff00;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-shadow: none;
+}
+
+.gift-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.gift-name { min-width: 300px; }
+.gift-name.left { text-align: right; }
+.gift-name.right { text-align: left; }
+.gift-diamond { margin: 0 22px; color: #fff; }
+
+/* Ceefax page-change sweep rather than sci-fi laser */
+.alert-scan {
+    position: absolute;
+    top: 0;
+    left: -20%;
+    width: 14%;
+    height: 100%;
+    background: rgba(255,255,255,.16);
+    opacity: 0;
+    z-index: 4;
+}
+.alert-scan.running {
+    opacity: .28;
+    animation: alertSweepPingPong var(--scan-duration,2.2s) steps(12,end) forwards;
+}
+
+/* Existing videos are deliberately hidden for FC27 ticker */
+.banner-video {
+    display: none !important;
+}
+
+/* Hype train becomes a Ceefax score/status strip */
+.sub-train-strip {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 28px;
+    opacity: 0;
+    background: #0000cc;
+    border-bottom: 2px solid #00ffff;
+    overflow: hidden;
+    transition: opacity .2s ease;
+    z-index: 40;
+}
+.sub-train-strip.running { opacity: 1; }
+
+.sub-train-fill {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 4px;
+    width: 0%;
+    background: #00ff00;
+    transition: width .65s steps(8,end);
+    opacity: 1;
+}
+
+.sub-train-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    font-weight: 900;
+    color: #ffff00;
+    pointer-events: none;
+}
+.sub-train-strip.warning .sub-train-fill { background:#ff2020; }
+.sub-train-strip.medium .sub-train-fill { background:#00ffff; }
+.sub-train-strip.low .sub-train-fill { background:#ffff00; }
+
+@keyframes tickerMove {
+    from { transform: translate3d(0,0,0); }
+    to   { transform: translate3d(-50%,0,0); }
+}
+
+@keyframes bannerIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes bannerOut {
+    from { transform: translateX(0); opacity: 1; }
+    to   { transform: translateX(-100%); opacity: 0; }
+}
+
+@keyframes alertSweepPingPong {
+    0%   { left: -20%; }
+    25%  { left: 106%; }
+    50%  { left: -20%; }
+    75%  { left: 106%; }
+    100% { left: -20%; }
+}
+</style>
+</head>
+
+<body>
+
+<div id="ticker">
+    <div class="track" id="track"></div>
+
+    <div class="sub-train-strip" id="subTrainStrip">
+    <div class="sub-train-fill" id="subTrainFill"></div>
+
+    <div class="sub-train-text">
+        <span>HYPE TRAIN</span>
+        <span id="subTrainCount">00</span>
+        <span id="subTrainTimer">STANDING BY</span>
+    </div>
+</div>
+
+    <div class="alert-banner" id="alertBanner">
+        <video class="banner-video" id="bannerVideo" muted playsinline loop>
+            <source src="assets/videos/Alert.webm" type="video/webm">
+        </video>
+        <div class="alert-scan"></div>
+
+        <div class="alert-content">
+            <div class="alert-type" id="alertType"></div>
+            <div class="alert-main" id="alertMain"></div>
+            <div class="alert-detail" id="alertDetail"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+const ticker = document.getElementById("ticker");
+const track = document.getElementById("track");
+const alertBanner = document.getElementById("alertBanner");
+const alertType = document.getElementById("alertType");
+const alertMain = document.getElementById("alertMain");
+const alertDetail = document.getElementById("alertDetail");
+const bannerVideo = document.getElementById("bannerVideo");
+const subTrainStrip = document.getElementById("subTrainStrip");
+const subTrainFill = document.getElementById("subTrainFill");
+const subTrainCount = document.getElementById("subTrainCount");
+const subTrainTimer = document.getElementById("subTrainTimer");
+
+let tickerTrainCountValue = 0;
+let tickerTrainEndsAt = 0;
+let tickerTrainInterval = null;
+
+let tickerTrainProgress = 0;
+let tickerTrainGoal = 1;
+
+const alertSounds = {
+    follow: new Audio("assets/sounds/New Follower.mp3"),
+    sub: new Audio("assets/sounds/New Subscriber.mp3"),
+    primesub: new Audio("assets/sounds/New Subscriber.mp3"),
+    giftsub: new Audio("assets/sounds/New Subscriber.mp3"),
+    raid: new Audio("assets/sounds/New Raid.mp3"),
+    bits: new Audio("assets/sounds/New Bits.mp3"),
+    redemption: new Audio("assets/sounds/New Redemption.mp3"),
+    tip: new Audio("assets/sounds/New Donation.mp3")
+};
+
+function playTickerSound(type) {
+    const sound = alertSounds[type];
+
+    if (!sound) return;
+
+    sound.pause();
+    sound.currentTime = 0;
+
+    sound.play().catch(err => {
+        console.log("Ticker sound failed:", err.message);
+    });
+}
+    
+const alertThemes = {
+    follow:     { primary: "#00ffff", secondary: "#ffffff" },
+    sub:        { primary: "#ffff00", secondary: "#ffffff" },
+    primesub:   { primary: "#00ffff", secondary: "#ffffff" },
+    giftsub:    { primary: "#ff00ff", secondary: "#ffffff" },
+    raid:        { primary: "#00ff00", secondary: "#ffffff" },
+    bits:        { primary: "#00ff00", secondary: "#ffffff" },
+    redemption:  { primary: "#ffff00", secondary: "#ffffff" },
+    tip:         { primary: "#00ff00", secondary: "#ffffff" }
+};
+
+const alertVideos = {
+    follow: "assets/videos/Follow.webm",
+    sub: "assets/videos/Sub.webm",
+    primesub: "assets/videos/Sub.webm",
+    giftsub: "assets/videos/Sub.webm",
+    raid: "assets/videos/Raid.webm",
+    bits: "assets/videos/Bits.webm",
+    redemption: "assets/videos/Redemption.webm",
+    tip: "assets/videos/Donation.webm"
+};
+
+let items = [];
+const bannerQueue = [];
+let bannerPlaying = false;
+
+function applyTheme(type) {
+    const theme = alertThemes[type] || alertThemes.follow;
+
+    document.documentElement.style.setProperty("--primary", theme.primary);
+    document.documentElement.style.setProperty("--secondary", theme.secondary);
+
+    return theme;
+}
+
+function getTickerLabel(data) {
+    if (data.type === "follow") return "FOLLOW";
+    if (data.type === "sub") return "SUB";
+    if (data.type === "primesub") return "PRIME";
+    if (data.type === "giftsub") return "GIFT SUB";
+    if (data.type === "raid") return "RAID";
+    if (data.type === "bits") return "BITS";
+    if (data.type === "redemption") return "REDEEM";
+    if (data.type === "tip") return "TIP";
+    return "ALERT";
+}
+
+function getTickerText(data) {
+    const user = (data.user || "UNKNOWN").toUpperCase();
+
+    if (data.type === "sub") return `${user} • ${data.extra || ""}`;
+    if (data.type === "primesub") return `${user} • PRIME`;
+    if (data.type === "giftsub") return `${user}`;
+    if (data.type === "raid") return `${user} • ${data.extra || ""}`;
+    if (data.type === "bits") return `${user} • ${data.extra || ""}`;
+    if (data.type === "redemption") return `${user} • ${data.reward || ""}`;
+    if (data.type === "tip") return `${user} • ${data.extra || ""}`;
+
+    return user;
+}
+
+function getBannerText(data) {
+    const user = (data.user || "UNKNOWN").toUpperCase();
+
+    if (data.type === "follow") {
+        return {
+            type: "LATEST • NEW FOLLOWER",
+            main: user,
+            detail: "SUPPORTER JOINED"
+        };
+    }
+
+    if (data.type === "sub") {
+        return {
+            type: "LATEST • NEW SUBSCRIBER",
+            main: user,
+            detail: data.extra || "THANKS FOR YOUR SUPPORT"
+        };
+    }
+
+    if (data.type === "primesub") {
+        return {
+            type: "LATEST • PRIME SUB",
+            main: user,
+            detail: data.extra || "PRIME SUPPORT CONFIRMED"
+        };
+    }
+
+    if (data.type === "giftsub") {
+        if (!data.reward) {
+            return {
+                type: "LATEST • GIFT SUBS",
+                main: user,
+                detail: "SUBSCRIPTIONS GIFTED"
+            };
+        }
+
+        const parts = user.split("◆");
+        const left = (parts[0] || "").trim();
+        const right = (parts[1] || "").trim();
+
+        return {
+            type: "LATEST • GIFT SUB",
+            main: `
+                <div class="gift-layout">
+                    <span class="gift-name left">${left}</span>
+                    <span class="gift-diamond">◆</span>
+                    <span class="gift-name right">${right}</span>
+                </div>
+            `,
+            detail: "SUBSCRIPTION GIFTED"
+        };
+    }
+
+    if (data.type === "tip") {
+        return {
+            type: "LATEST • TIP RECEIVED",
+            main: user,
+            detail: data.extra || "SUPPORT RECEIVED"
+        };
+    }
+
+    if (data.type === "raid") {
+        return {
+            type: "LATEST • RAID INCOMING",
+            main: user,
+            detail: data.extra || "AWAY SUPPORT ARRIVING"
+        };
+    }
+
+    if (data.type === "bits") {
+        return {
+            type: "LATEST • BITS RECEIVED",
+            main: user,
+            detail: data.extra || "SUPPORT RECEIVED"
+        };
+    }
+
+    if (data.type === "redemption") {
+        return {
+            type: "LATEST • REWARD REDEEMED",
+            main: user,
+            detail: data.reward || "CHANNEL POINTS USED"
+        };
+    }
+
+    return {
+        type: "LATEST • STREAM UPDATE",
+        main: user,
+        detail: ""
+    };
+}
+
+function renderTicker() {
+    track.innerHTML = "";
+
+    if (items.length === 0) {
+        items = [{
+            label: "SYSTEM",
+            text: "WAITING FOR ALERT DATA",
+            primary: "#ffffff"
+        }];
+    }
+
+    const doubled = [...items, ...items];
+
+    doubled.forEach((item) => {
+        const el = document.createElement("div");
+        el.className = "item";
+
+        el.innerHTML = `
+            <span class="label" style="color:${item.primary}">
+                ${item.label}
+            </span>
+            <span class="ticker-name">${item.text}</span>
+        `;
+
+        track.appendChild(el);
+    });
+}
+
+function addTickerItem(data) {
+    const theme = alertThemes[data.type] || alertThemes.follow;
+
+    items.unshift({
+        label: getTickerLabel(data),
+        text: getTickerText(data),
+        primary: theme.primary
+    });
+
+    items = items.slice(0, 10);
+
+    renderTicker();
+}
+
+function queueBanner(data) {
+    bannerQueue.push(data);
+    playNextBanner();
+}
+
+function playNextBanner() {
+    if (bannerPlaying) return;
+    if (bannerQueue.length === 0) return;
+
+    bannerPlaying = true;
+
+    const data = bannerQueue.shift();
+    const text = getBannerText(data);
+
+    applyTheme(data.type);
+    playTickerSound(data.type);
+
+    const videoPath = alertVideos[data.type] || alertVideos.follow;
+
+    const videoPositions = {
+        follow: "center 45%",
+        sub: "center 30%",
+        primesub: "center 30%",
+        giftsub: "center 30%",
+        raid: "center 40%",
+        bits: "center center%",
+        redemption: "center center"
+        
+    };
+    
+    bannerVideo.style.objectPosition =
+        videoPositions[data.type] || "center center";
+
+    if (bannerVideo.getAttribute("src") !== videoPath) {
+        bannerVideo.setAttribute("src", videoPath);
+        bannerVideo.load();
+    }
+    
+    bannerVideo.currentTime = 0;
+    bannerVideo.play().catch(() => {});
+
+    alertType.textContent = text.type;
+    alertMain.innerHTML = text.main;
+    alertDetail.textContent = text.detail;
+
+    ticker.classList.add("alerting");
+    
+    const scan = document.querySelector(".alert-scan");
+    scan.classList.remove("running");
+    scan.style.opacity = "0.35";
+    void scan.offsetWidth;
+    
+    alertBanner.classList.remove("show");
+    void alertBanner.offsetWidth;
+    alertBanner.classList.add("show");
+
+    const bannerDuration = (data.duration || 5000) + 750;
+
+    const scanDuration = Math.max(2200, bannerDuration - 900);
+    scan.style.setProperty("--scan-duration", `${scanDuration}ms`);
+    scan.classList.add("running");
+    
+    alertBanner.style.setProperty("--banner-duration", `${bannerDuration}ms`);
+
+    setTimeout(() => {
+        document.querySelector(".alert-scan").style.opacity = "0";
+    }, bannerDuration - 1000);
+    
+    setTimeout(() => {
+        alertBanner.style.animation = "bannerOut 0.65s ease forwards";
+    }, bannerDuration - 650);
+    
+    setTimeout(() => {
+        ticker.classList.remove("alerting");
+        alertBanner.classList.remove("show");
+        alertBanner.style.animation = "";
+    
+        addTickerItem(data);
+    
+        bannerPlaying = false;
+        playNextBanner();
+    }, bannerDuration);
+}
+
+socket.on("hype-train-update", (data) => {
+    if (!data.active) {
+
+        tickerTrainCountValue = 0;
+        tickerTrainProgress = 0;
+        tickerTrainGoal = 1;
+        tickerTrainEndsAt = 0;
+    
+        updateTickerSubTrain();
+    
+        return;
+    }
+    tickerTrainCountValue = data.level || 0;
+    tickerTrainProgress = data.progress || 0;
+    tickerTrainGoal = data.goal || 1;
+    tickerTrainEndsAt = data.expiresAt ? new Date(data.expiresAt).getTime() : 0;
+
+    updateTickerSubTrain();
+
+    if (tickerTrainInterval) {
+        clearInterval(tickerTrainInterval);
+    }
+
+    if (
+        tickerTrainCountValue > 0 &&
+        tickerTrainEndsAt > Date.now()
+    ) {
+        tickerTrainInterval =
+            setInterval(updateTickerSubTrain, 500);
+    }
+});
+
+function updateTickerSubTrain() {
+    const remaining =
+        Math.max(0, tickerTrainEndsAt - Date.now());
+
+    if (
+        tickerTrainCountValue <= 0 ||
+        remaining <= 0
+    ) {
+        subTrainStrip.classList.remove("running");
+        subTrainStrip.classList.remove("warning");
+
+        subTrainCount.textContent = "00";
+        subTrainFill.style.width = "0%";
+        subTrainTimer.textContent = "STANDING BY";
+
+        if (tickerTrainInterval) {
+            clearInterval(tickerTrainInterval);
+            tickerTrainInterval = null;
+        }
+
+        return;
+    }
+
+    subTrainStrip.classList.add("running");
+
+    subTrainCount.textContent =
+        `LVL ${tickerTrainCountValue}`;
+
+    const percent =
+        Math.min(
+            100,
+            ((tickerTrainProgress || 0) / (tickerTrainGoal || 1)) * 100
+        );
+
+    subTrainFill.style.width =
+        `${percent}%`;
+
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+
+    subTrainTimer.textContent =
+        `LEVEL ${tickerTrainCountValue} • ${mins}:${String(secs).padStart(2, "0")} REMAINING`;
+
+    subTrainStrip.classList.remove(
+        "medium",
+        "low",
+        "warning"
+    );
+    
+    if (remaining <= 30000) {
+    
+        subTrainStrip.classList.add("warning");
+    
+    } else if (remaining <= 90000) {
+    
+        subTrainStrip.classList.add("low");
+    
+    } else if (remaining <= 180000) {
+    
+        subTrainStrip.classList.add("medium");
+    }
+}
+
+socket.on("connect", () => {
+    console.log("[TICKER] Connected to socket");
+});
+    
+socket.on("alert", (data) => {
+    queueBanner(data);
+});
+
+fetch("/api/alert-history")
+    .then(res => res.json())
+    .then(history => {
+        const pastAlerts = [];
+
+        (history.follows || []).forEach(item => pastAlerts.push({ type: "follow", user: item.user, time: item.time }));
+        (history.subs || []).forEach(item => pastAlerts.push({ type: "sub", user: item.user, extra: item.extra, time: item.time }));
+        (history.primesubs || []).forEach(item => pastAlerts.push({ type: "primesub", user: item.user, extra: item.extra, time: item.time }));
+        (history.giftsubs || []).forEach(item => pastAlerts.push({ type: "giftsub", user: item.user, extra: item.extra, reward: item.reward, time: item.time }));
+        (history.bits || []).forEach(item => pastAlerts.push({ type: "bits", user: item.user, extra: item.extra, time: item.time }));
+        (history.raids || []).forEach(item => pastAlerts.push({ type: "raid", user: item.user, extra: item.extra, time: item.time }));
+        (history.redemptions || []).forEach(item => pastAlerts.push({ type: "redemption", user: item.user, reward: item.reward, time: item.time }));
+        (history.tips || []).forEach(item => pastAlerts.push({ type: "tip", user: item.user, extra: item.extra, reward: item.reward, time: item.time }));
+
+        items = [];
+
+        pastAlerts
+            .sort((a, b) => new Date(b.time) - new Date(a.time))
+            .slice(0, 10)
+            .reverse()
+            .forEach(addTickerItem);
+
+        renderTicker();
+    });
+</script>
+
+</body>
+</html>
