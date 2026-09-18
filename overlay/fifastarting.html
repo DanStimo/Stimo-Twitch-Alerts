@@ -7,8 +7,8 @@
 <style>
 /* =========================================================
    FC27 - CEEFAX FOOTBALL STARTING SCREEN
-   Designed for 1920x1080
-   Bottom 130px intentionally left clear for external ticker
+   Designed for 2560x1440
+   Bottom 173.33px intentionally left clear for external ticker
    ========================================================= */
 
 * {
@@ -40,26 +40,26 @@ body {
 
 .screen {
     position: relative;
-    width: 1920px;
-    height: 1080px;
+    width: 2560px;
+    height: 1440px;
     background: #000;
     overflow: hidden;
 }
 
-/* Everything Ceefax stays above y=950 */
+/* Everything Ceefax stays above y=1267 */
 
 .ceefax {
     position: absolute;
     left: 0;
     top: 0;
-    width: 1920px;
-    height: 950px;
+    width: 2560px;
+    height: 1266.67px;
 
     padding:
-        38px
-        86px
+        50.67px
+        114.67px
         0
-        86px;
+        114.67px;
 
     background: #000;
 
@@ -70,8 +70,8 @@ body {
 
     /* Gives the text the slightly chunky CRT appearance */
     text-shadow:
-        2px 0 currentColor,
-        0 1px currentColor;
+        2.67px 0 currentColor,
+        0 1.33px currentColor;
 
     overflow: hidden;
 }
@@ -89,9 +89,9 @@ body {
         repeating-linear-gradient(
             to bottom,
             rgba(255,255,255,.025) 0px,
-            rgba(255,255,255,.025) 1px,
-            transparent 1px,
-            transparent 4px
+            rgba(255,255,255,.025) 1.33px,
+            transparent 1.33px,
+            transparent 5.33px
         );
 
     opacity: .28;
@@ -114,19 +114,19 @@ body {
    ========================= */
 
 .topline {
-    height: 42px;
+    height: 56px;
 
     display: grid;
     grid-template-columns:
-        180px
+        240px
         1fr
-        180px
-        350px;
+        240px
+        466.67px;
 
     align-items: center;
 
-    font-size: 27px;
-    letter-spacing: 2px;
+    font-size: 36px;
+    letter-spacing: 2.67px;
 
     color: #fff;
 }
@@ -153,9 +153,9 @@ body {
    ========================= */
 
 .title-bar {
-    margin-top: 12px;
+    margin-top: 16px;
 
-    height: 75px;
+    height: 100px;
 
     display: flex;
     align-items: center;
@@ -165,11 +165,11 @@ body {
 
     color: #ffff00;
 
-    font-size: 45px;
-    letter-spacing: 11px;
+    font-size: 60px;
+    letter-spacing: 14.67px;
 
-    border-top: 5px solid #00ffff;
-    border-bottom: 5px solid #00ffff;
+    border-top: 6.67px solid #00ffff;
+    border-bottom: 6.67px solid #00ffff;
 }
 
 .title-block {
@@ -181,14 +181,14 @@ body {
    ========================= */
 
 .section-heading {
-    margin-top: 24px;
+    margin-top: 32px;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
 
-    font-size: 30px;
-    letter-spacing: 3px;
+    font-size: 40px;
+    letter-spacing: 4px;
 }
 
 .section-heading .left {
@@ -204,15 +204,15 @@ body {
    ========================= */
 
 .latest {
-    margin-top: 17px;
+    margin-top: 22.67px;
 
-    min-height: 43px;
+    min-height: 57.33px;
 
     display: flex;
     align-items: center;
 
-    font-size: 27px;
-    letter-spacing: 2px;
+    font-size: 36px;
+    letter-spacing: 2.67px;
 
     color: #fff;
 }
@@ -221,9 +221,9 @@ body {
     background: #ff0000;
     color: #fff;
 
-    padding: 5px 13px;
+    padding: 6.67px 17.33px;
 
-    margin-right: 18px;
+    margin-right: 24px;
 }
 
 .latest-text {
@@ -235,16 +235,16 @@ body {
    ========================= */
 
 .starting-panel {
-    margin-top: 25px;
+    margin-top: 33.33px;
 
-    border-top: 4px solid #00ffff;
-    border-bottom: 4px solid #00ffff;
+    border-top: 5.33px solid #00ffff;
+    border-bottom: 5.33px solid #00ffff;
 
     padding:
-        24px
-        30px
-        25px
-        30px;
+        32px
+        40px
+        33.33px
+        40px;
 }
 
 .starting-small {
@@ -252,10 +252,10 @@ body {
 
     color: #00ff00;
 
-    font-size: 25px;
-    letter-spacing: 7px;
+    font-size: 33.33px;
+    letter-spacing: 9.33px;
 
-    margin-bottom: 10px;
+    margin-bottom: 13.33px;
 }
 
 .starting-main {
@@ -263,21 +263,21 @@ body {
 
     color: #ffff00;
 
-    font-size: 67px;
+    font-size: 89.33px;
     line-height: 1;
 
-    letter-spacing: 11px;
+    letter-spacing: 14.67px;
 }
 
 .starting-sub {
-    margin-top: 17px;
+    margin-top: 22.67px;
 
     text-align: center;
 
     color: #00ffff;
 
-    font-size: 25px;
-    letter-spacing: 4px;
+    font-size: 33.33px;
+    letter-spacing: 5.33px;
 }
 
 /* =========================
@@ -285,18 +285,18 @@ body {
    ========================= */
 
 .football-heading {
-    margin-top: 25px;
+    margin-top: 33.33px;
 
     background: #0000cc;
 
     color: #fff;
 
     padding:
-        7px
-        17px;
+        9.33px
+        22.67px;
 
-    font-size: 29px;
-    letter-spacing: 4px;
+    font-size: 38.67px;
+    letter-spacing: 5.33px;
 
     display: flex;
     justify-content: space-between;
@@ -309,29 +309,29 @@ body {
 /* Individual fixtures */
 
 .fixtures {
-    margin-top: 13px;
+    margin-top: 17.33px;
 
-    font-size: 27px;
-    letter-spacing: 1px;
+    font-size: 36px;
+    letter-spacing: 1.33px;
 }
 
 .fixture {
-    height: 39px;
+    height: 52px;
 
     display: grid;
 
     grid-template-columns:
         1fr
-        90px
+        120px
         1fr
-        175px;
+        233.33px;
 
     align-items: center;
 }
 
 .home {
     text-align: right;
-    padding-right: 20px;
+    padding-right: 26.67px;
     color: #fff;
 }
 
@@ -341,7 +341,7 @@ body {
 }
 
 .away {
-    padding-left: 20px;
+    padding-left: 26.67px;
     color: #fff;
 }
 
@@ -370,7 +370,7 @@ body {
    ========================= */
 
 .status-line {
-    margin-top: 20px;
+    margin-top: 26.67px;
 
     display: grid;
 
@@ -379,15 +379,15 @@ body {
         1fr
         1fr;
 
-    border-top: 3px solid #fff;
-    border-bottom: 3px solid #fff;
+    border-top: 4px solid #fff;
+    border-bottom: 4px solid #fff;
 
     padding:
-        10px
+        13.33px
         0;
 
-    font-size: 23px;
-    letter-spacing: 2px;
+    font-size: 30.67px;
+    letter-spacing: 2.67px;
 }
 
 .status-item {
@@ -409,16 +409,16 @@ body {
 .navigation {
     position: absolute;
 
-    left: 86px;
-    right: 86px;
+    left: 114.67px;
+    right: 114.67px;
 
-    bottom: 25px;
+    bottom: 33.33px;
 
     display: flex;
     justify-content: space-between;
 
-    font-size: 23px;
-    letter-spacing: 2px;
+    font-size: 30.67px;
+    letter-spacing: 2.67px;
 }
 
 .nav-red {
@@ -513,179 +513,12 @@ body {
     left: 0;
     bottom: 0;
 
-    width: 1920px;
-    height: 130px;
+    width: 2560px;
+    height: 173.33px;
 
     background: #000;
 
     z-index: 100;
-}
-
-/* =========================
-   OLD CRT TELEVISION EFFECT
-   ========================= */
-
-/* Scanlines */
-
-.screen::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-
-    pointer-events: none;
-    z-index: 900;
-
-    background:
-        repeating-linear-gradient(
-            to bottom,
-            rgba(0, 0, 0, 0) 0px,
-            rgba(0, 0, 0, 0) 2px,
-            rgba(0, 0, 0, 0.22) 3px,
-            rgba(0, 0, 0, 0.22) 4px
-        );
-
-    animation: crtScanlines 8s linear infinite;
-}
-
-
-/* Soft glass / CRT glow */
-
-.screen::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-
-    pointer-events: none;
-    z-index: 899;
-
-    background:
-        radial-gradient(
-            ellipse at center,
-            rgba(255,255,255,0.035) 0%,
-            rgba(255,255,255,0.015) 45%,
-            rgba(0,0,0,0.08) 75%,
-            rgba(0,0,0,0.28) 100%
-        );
-}
-
-
-/* Slow moving horizontal television band */
-
-.ceefax::before {
-    content: "";
-    position: absolute;
-
-    left: 0;
-    top: -160px;
-
-    width: 100%;
-    height: 150px;
-
-    pointer-events: none;
-    z-index: 45;
-
-    background:
-        linear-gradient(
-            to bottom,
-            transparent,
-            rgba(255,255,255,0.035),
-            rgba(255,255,255,0.07),
-            rgba(255,255,255,0.025),
-            transparent
-        );
-
-    animation:
-        crtRoll 7s linear infinite;
-}
-
-
-/* Tiny analogue picture movement */
-
-.ceefax {
-    animation:
-        crtPictureFlicker 5s steps(1) infinite;
-}
-
-
-/* Scanline movement */
-
-@keyframes crtScanlines {
-
-    0% {
-        transform: translateY(0);
-    }
-
-    100% {
-        transform: translateY(4px);
-    }
-}
-
-
-/* Brightness band rolls down television */
-
-@keyframes crtRoll {
-
-    0% {
-        transform: translateY(-150px);
-    }
-
-    100% {
-        transform: translateY(1250px);
-    }
-}
-
-
-/* Very small old-TV brightness fluctuations */
-
-@keyframes crtPictureFlicker {
-
-    0% {
-        filter: brightness(1);
-    }
-
-    8% {
-        filter: brightness(0.97);
-    }
-
-    9% {
-        filter: brightness(1.03);
-    }
-
-    10% {
-        filter: brightness(1);
-    }
-
-    46% {
-        filter: brightness(1);
-    }
-
-    47% {
-        filter: brightness(0.96);
-    }
-
-    48% {
-        filter: brightness(1.02);
-    }
-
-    49% {
-        filter: brightness(1);
-    }
-
-    82% {
-        filter: brightness(0.98);
-    }
-
-    83% {
-        filter: brightness(1.02);
-    }
-
-    84% {
-        filter: brightness(1);
-    }
-
-    100% {
-        filter: brightness(1);
-    }
 }
 
 /* =========================
@@ -825,7 +658,7 @@ body {
              FOOTBALL SCORES
              ================================== -->
 
-       <div class="football-heading">
+        <div class="football-heading">
 
              <span>
                  LATEST RESULTS
@@ -948,7 +781,7 @@ body {
 
 
     <!--
-        BLANK 130PX AREA.
+        BLANK 173PX AREA.
         Your existing ticker sits over this in Meld.
     -->
 
