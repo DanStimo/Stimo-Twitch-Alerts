@@ -551,70 +551,89 @@ body {
 
 
 /* =========================================================
-   VISIBLE CRT EFFECT - CEEFAX AREA ONLY (0-950px)
-   The separate bottom ticker is NOT affected.
+   CRT EFFECT - CEEFAX AREA ONLY (0-950px)
+   Fine scanlines + phosphor glow + vignette + subtle flicker.
+   Bottom ticker remains untouched.
    ========================================================= */
 
-/* Slight curved-tube silhouette without moving the Ceefax layout */
+/* Keep the CRT treatment confined to the Ceefax picture */
 .ceefax {
-    border-radius: 46px / 30px;
+    border-radius: 28px / 20px;
+
     box-shadow:
-        inset 0 0 45px rgba(0,0,0,.70),
-        inset 0 0 100px rgba(0,0,0,.45);
+        inset 0 0 38px rgba(0,0,0,.45),
+        inset 0 0 90px rgba(0,0,0,.30);
+
+    filter:
+        contrast(1.06)
+        brightness(1.025)
+        saturate(1.08);
 }
 
-/* Strong horizontal scanlines */
+/* Fine horizontal scanlines + very subtle RGB phosphor mask */
 .crt-scanlines {
     position: absolute;
     inset: 0;
 
     pointer-events: none;
+    z-index: 80;
 
-    z-index: 9999;
+    border-radius: inherit;
 
     background:
         repeating-linear-gradient(
             to bottom,
-
-            transparent 0px,
-            transparent 5px,
-
-            rgba(0, 0, 0, 0.95) 5px,
-            rgba(0, 0, 0, 0.95) 9px
+            rgba(0,0,0,0) 0px,
+            rgba(0,0,0,0) 3px,
+            rgba(0,0,0,.34) 3px,
+            rgba(0,0,0,.34) 5px
+        ),
+        repeating-linear-gradient(
+            to right,
+            rgba(255,0,0,.045) 0px,
+            rgba(255,0,0,.045) 1px,
+            rgba(0,255,0,.035) 1px,
+            rgba(0,255,0,.035) 2px,
+            rgba(0,90,255,.045) 2px,
+            rgba(0,90,255,.045) 3px
         );
 
-    opacity: 1;
+    opacity: .72;
 }
 
-/* Curved-glass darkness at the edges */
+/* Old glass/tube edge darkening */
 .crt-vignette {
     position: absolute;
     inset: 0;
+
     pointer-events: none;
     z-index: 82;
+
     border-radius: inherit;
 
     background:
         radial-gradient(
             ellipse at center,
-            transparent 0%,
-            transparent 56%,
-            rgba(0,0,0,.10) 72%,
-            rgba(0,0,0,.38) 90%,
-            rgba(0,0,0,.72) 100%
+            rgba(0,0,0,0) 0%,
+            rgba(0,0,0,0) 58%,
+            rgba(0,0,0,.08) 72%,
+            rgba(0,0,0,.24) 88%,
+            rgba(0,0,0,.55) 100%
         );
 
     box-shadow:
-        inset 0 0 65px rgba(0,0,0,.78);
+        inset 0 0 55px rgba(0,0,0,.48);
 }
 
-/* Moving analogue refresh band */
+/* Gentle analogue brightness band */
 .crt-roll {
     position: absolute;
     left: 0;
-    top: -180px;
+    top: -150px;
+
     width: 100%;
-    height: 170px;
+    height: 140px;
+
     pointer-events: none;
     z-index: 81;
 
@@ -622,39 +641,53 @@ body {
         linear-gradient(
             to bottom,
             transparent 0%,
-            rgba(255,255,255,.025) 20%,
-            rgba(255,255,255,.13) 50%,
-            rgba(255,255,255,.035) 78%,
+            rgba(255,255,255,.012) 25%,
+            rgba(255,255,255,.045) 50%,
+            rgba(255,255,255,.012) 75%,
             transparent 100%
         );
 
-    animation: crtRollDown 6.5s linear infinite;
+    animation: crtRollDown 9s linear infinite;
 }
 
-/* More visible CRT bloom on the actual Ceefax picture */
-.ceefax {
-    filter:
-        contrast(1.08)
-        brightness(1.035)
-        saturate(1.08);
-}
-
-/* Existing text keeps its chunky Ceefax edge plus phosphor bloom */
-.ceefax * {
+/* Small red/blue separation and phosphor bloom around Ceefax text */
+.ceefax *:not(.crt-scanlines):not(.crt-vignette):not(.crt-roll):not(.crt-flicker) {
     text-shadow:
-        1px 0 rgba(255,0,0,.16),
-        -1px 0 rgba(0,180,255,.16),
-        0 0 3px currentColor;
+        1px 0 rgba(255,0,0,.13),
+        -1px 0 rgba(0,170,255,.13),
+        0 0 2px currentColor;
 }
 
-@keyframes crtLineDrift {
-    from { background-position: 0 0, 0 0; }
-    to   { background-position: 0 4px, 3px 0; }
+/* Replace the old nearly-invisible flicker with a subtle visible one */
+.crt-flicker {
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+    z-index: 83;
+
+    background: rgba(255,255,255,.025);
+
+    animation: crtFineFlicker 5.5s steps(1) infinite;
+}
+
+@keyframes crtFineFlicker {
+    0%   { opacity: .10; }
+    7%   { opacity: .07; }
+    8%   { opacity: .14; }
+    9%   { opacity: .08; }
+    42%  { opacity: .09; }
+    43%  { opacity: .13; }
+    44%  { opacity: .08; }
+    79%  { opacity: .10; }
+    80%  { opacity: .14; }
+    81%  { opacity: .08; }
+    100% { opacity: .10; }
 }
 
 @keyframes crtRollDown {
-    from { transform: translateY(-170px); }
-    to   { transform: translateY(1120px); }
+    from { transform: translateY(-150px); }
+    to   { transform: translateY(1100px); }
 }
 
 </style>
