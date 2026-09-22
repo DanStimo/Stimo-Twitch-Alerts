@@ -630,6 +630,13 @@ async function getClubMatches(club) {
                     : "invalid response"
             );
 
+            if (Array.isArray(matches) && matches.length > 0) {
+                console.log(
+                    "[FC27] RAW MATCH SAMPLE:",
+                    JSON.stringify(matches[0], null, 2)
+                );
+            }
+
 
             if (Array.isArray(matches)) {
 
