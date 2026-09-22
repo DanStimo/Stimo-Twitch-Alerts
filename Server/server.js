@@ -312,10 +312,6 @@ app.use(express.static("../overlay"));
 // ============================================================
 
 const FC_CLUBS = {
-    passophonics: {
-        name: "PASSOPHONICS"
-    },
-
     neverEnough: {
         name: "xNEVER ENOUGHx"
     }
@@ -671,7 +667,7 @@ async function getClubMatches(club) {
     );
 
 
-    return allMatches.slice(0, 2);
+    return allMatches.slice(0, 4);
 }
 
 // ------------------------------------------------------------
@@ -801,7 +797,6 @@ app.get("/api/fc27/latest-results", async (req, res) => {
     try {
 
         const clubs = [
-            FC_CLUBS.passophonics,
             FC_CLUBS.neverEnough
         ];
 
