@@ -630,14 +630,6 @@ async function getClubMatches(club) {
                     : "invalid response"
             );
 
-            if (Array.isArray(matches) && matches.length > 0) {
-                console.log(
-                    "[FC27] RAW MATCH SAMPLE:",
-                    JSON.stringify(matches[0], null, 2)
-                );
-            }
-
-
             if (Array.isArray(matches)) {
 
                 for (const match of matches) {
@@ -680,6 +672,123 @@ async function getClubMatches(club) {
 
 
     return allMatches.slice(0, 2);
+}
+
+// ------------------------------------------------------------
+// FORMAT EA CLUB MATCH FOR THE CEEFAX OVERLAY
+// ------------------------------------------------------------
+
+function formatClubMatch(match, club) {
+
+    if (!match || !match.clubs) {
+        console.log(
+            `[FC27] ${club.name}: match has no clubs data`
+        );
+        return null;
+    }
+
+    const clubEntries =
+        Object.entries(match.clubs);
+
+    if (clubEntries.length < 2) {
+        console.log(
+            `[FC27] ${club.name}: match does not contain two clubs`
+        );
+        return null;
+    }
+
+
+    // Find our club by exact name.
+    const wantedName =
+        club.name.trim().toLowerCase();
+
+    const ourEntry =
+        clubEntries.find(([clubId, data]) => {
+
+            const name =
+                String(data?.details?.name || "")
+                    .trim()
+                    .toLowerCase();
+
+            return name === wantedName;
+        });
+
+
+    if (!ourEntry) {
+
+        console.log(
+            `[FC27] ${club.name}: could not find our club inside match ${match.matchId}`
+        );
+
+        return null;
+    }
+
+
+    const [ourClubId, ourData] =
+        ourEntry;
+
+
+    // The other club in the match is the opponent.
+    const opponentEntry =
+        clubEntries.find(
+            ([clubId]) =>
+                String(clubId) !== String(ourClubId)
+        );
+
+
+    if (!opponentEntry) {
+
+        console.log(
+            `[FC27] ${club.name}: opponent not found in match ${match.matchId}`
+        );
+
+        return null;
+    }
+
+
+    const [, opponentData] =
+        opponentEntry;
+
+
+    const ourGoals =
+        Number(ourData.goals ?? ourData.score ?? 0);
+
+    const opponentGoals =
+        Number(
+            opponentData.goals ??
+            ourData.goalsAgainst ??
+            0
+        );
+
+
+    const opponentName =
+        opponentData?.details?.name ||
+        "UNKNOWN OPPONENT";
+
+
+    let result = "DRAW";
+
+    if (ourGoals > opponentGoals) {
+        result = "WIN";
+    }
+
+    else if (ourGoals < opponentGoals) {
+        result = "LOSS";
+    }
+
+
+    console.log(
+        `[FC27] ${club.name}: ${ourGoals}-${opponentGoals} vs ${opponentName} (${result})`
+    );
+
+
+    return {
+        club: club.name,
+        opponent: opponentName,
+        score: `${ourGoals}-${opponentGoals}`,
+        result: result,
+        timestamp: Number(match.timestamp) || 0
+    };
 }
 
 
