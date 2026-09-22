@@ -313,18 +313,273 @@ app.use(express.static("../overlay"));
 
 const FC_CLUBS = {
     passophonics: {
-        name: "PASSOPHONICS",
-        id: "799294" // TEMP: old club ID - replace with FC27 ID later
+        name: "PASSOPHONICS"
     },
 
     neverEnough: {
-        name: "xNEVER ENOUGHx",
-        id: "304203" // old xNever Enoughx ID
+        name: "xNEVER ENOUGHx"
     }
 };
 
 
+// ------------------------------------------------------------
+// EA REQUEST HEADERS
+// ------------------------------------------------------------
+
+const FC_HEADERS = {
+    "Accept": "application/json",
+    "Accept-Language": "en-US,en;q=0.9",
+
+    "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+        "AppleWebKit/537.36 (KHTML, like Gecko) " +
+        "Chrome/141.0.0.0 Safari/537.36",
+
+    "sec-ch-ua":
+        '"Google Chrome";v="141", "Not?A_Brand";v="8", "Chromium";v="141"',
+
+    "sec-fetch-site": "same-origin"
+};
+
+
+// ------------------------------------------------------------
+// SEARCH FOR CURRENT CLUB ID BY EXACT CLUB NAME
+// ------------------------------------------------------------
+
+async function findClubByName(clubName) {
+
+    const encodedName =
+        encodeURIComponent(clubName);
+
+    const searchUrls = [
+
+        // Current-season search first.
+        `https://proclubs.ea.com/api/fc/currentSeasonLeaderboard/search` +
+        `?platform=common-gen5` +
+        `&clubName=${encodedName}`,
+
+        // Fall back to all-time search if necessary.
+        `https://proclubs.ea.com/api/fc/allTimeLeaderboard/search` +
+        `?platform=common-gen5` +
+        `&clubName=${encodedName}`
+    ];
+
+
+    for (const url of searchUrls) {
+
+        try {
+
+            const response =
+                await fetch(url, {
+                    headers: FC_HEADERS
+                });
+
+
+            if (!response.ok) {
+
+                console.log(
+                    `[FC27] Club search for "${clubName}" returned HTTP ${response.status}`
+                );
+
+                continue;
+            }
+
+
+            const data =
+                await response.json();
+
+
+            /*
+                EA has changed the exact shape of these
+                responses between FC versions.
+
+                Handle the common possibilities rather
+                than assuming only one structure.
+            */
+
+            let clubs = [];
+
+            if (Array.isArray(data)) {
+                clubs = data;
+            }
+
+            else if (Array.isArray(data?.clubs)) {
+                clubs = data.clubs;
+            }
+
+            else if (Array.isArray(data?.items)) {
+                clubs = data.items;
+            }
+
+            else if (Array.isArray(data?.results)) {
+                clubs = data.results;
+            }
+
+
+            console.log(
+                `[FC27] Search "${clubName}": ${clubs.length} candidates`
+            );
+
+
+            /*
+                EXACT NAME MATCH ONLY.
+
+                Case does not matter, but otherwise the
+                club name must be identical.
+            */
+
+            const wantedName =
+                clubName
+                    .trim()
+                    .toLowerCase();
+
+
+            const exactMatches =
+                clubs.filter(entry => {
+
+                    const returnedName =
+                        String(
+                            entry.clubName ??
+                            entry.name ??
+                            entry.club?.clubName ??
+                            entry.club?.name ??
+                            ""
+                        )
+                        .trim()
+                        .toLowerCase();
+
+                    return returnedName === wantedName;
+                });
+
+
+            if (exactMatches.length === 0) {
+
+                console.log(
+                    `[FC27] No exact match for "${clubName}"`
+                );
+
+                continue;
+            }
+
+
+            if (exactMatches.length > 1) {
+
+                console.log(
+                    `[FC27] WARNING: ${exactMatches.length} exact-name matches found for "${clubName}"`
+                );
+            }
+
+
+            /*
+                If EA returns several clubs with exactly the
+                same name, prefer the one with the highest ID.
+
+                A recreated club will normally have a newer ID
+                than an old deleted club.
+            */
+
+            exactMatches.sort((a, b) => {
+
+                const idA =
+                    Number(
+                        a.clubId ??
+                        a.id ??
+                        a.club?.clubId ??
+                        a.club?.id ??
+                        0
+                    );
+
+                const idB =
+                    Number(
+                        b.clubId ??
+                        b.id ??
+                        b.club?.clubId ??
+                        b.club?.id ??
+                        0
+                    );
+
+                return idB - idA;
+            });
+
+
+            const match =
+                exactMatches[0];
+
+
+            const clubId =
+                match.clubId ??
+                match.id ??
+                match.club?.clubId ??
+                match.club?.id;
+
+
+            if (!clubId) {
+
+                console.log(
+                    `[FC27] Exact club "${clubName}" found but no club ID was present`
+                );
+
+                continue;
+            }
+
+
+            console.log(
+                `[FC27] Resolved "${clubName}" -> club ID ${clubId}`
+            );
+
+
+            return {
+                name: clubName,
+                id: String(clubId)
+            };
+
+
+        } catch (err) {
+
+            console.log(
+                `[FC27] Club search "${clubName}" error:`,
+                err.message
+            );
+        }
+    }
+
+
+    console.log(
+        `[FC27] Unable to resolve current club ID for "${clubName}"`
+    );
+
+    return null;
+}
+
+
+// ------------------------------------------------------------
+// FETCH MATCHES FOR THE RESOLVED CLUB
+// ------------------------------------------------------------
+
 async function getClubMatches(club) {
+
+    /*
+        IMPORTANT:
+
+        Resolve the ID every time the results endpoint updates.
+
+        This means if the club is deleted and recreated,
+        the overlay automatically discovers the new ID.
+    */
+
+    const resolvedClub =
+        await findClubByName(club.name);
+
+
+    if (!resolvedClub) {
+
+        console.log(
+            `[FC27] ${club.name}: club could not be found`
+        );
+
+        return [];
+    }
+
 
     const matchTypes = [
         "friendlyMatch",
@@ -332,7 +587,9 @@ async function getClubMatches(club) {
         "playoffMatch"
     ];
 
+
     const allMatches = [];
+
 
     for (const matchType of matchTypes) {
 
@@ -340,24 +597,17 @@ async function getClubMatches(club) {
             `https://proclubs.ea.com/api/fc/clubs/matches` +
             `?matchType=${matchType}` +
             `&platform=common-gen5` +
-            `&clubIds=${club.id}` +
+            `&clubIds=${resolvedClub.id}` +
             `&maxResultCount=10`;
+
 
         try {
 
-            const response = await fetch(url, {
-                headers: {
-                    "Accept": "application/json",
-                    "Accept-Language": "en-US,en;q=0.9",
-                    "User-Agent":
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                        "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                        "Chrome/141.0.0.0 Safari/537.36",
-                    "sec-ch-ua":
-                        '"Google Chrome";v="141", "Not?A_Brand";v="8", "Chromium";v="141"',
-                    "sec-fetch-site": "same-origin"
-                }
-            });
+            const response =
+                await fetch(url, {
+                    headers: FC_HEADERS
+                });
+
 
             if (!response.ok) {
 
@@ -368,14 +618,18 @@ async function getClubMatches(club) {
                 continue;
             }
 
-            const matches = await response.json();
+
+            const matches =
+                await response.json();
+
 
             console.log(
-                `[FC27] ${club.name} (${club.id}) ${matchType}:`,
+                `[FC27] ${club.name} (${resolvedClub.id}) ${matchType}:`,
                 Array.isArray(matches)
                     ? `${matches.length} matches`
                     : "invalid response"
             );
+
 
             if (Array.isArray(matches)) {
 
@@ -388,6 +642,7 @@ async function getClubMatches(club) {
                 }
             }
 
+
         } catch (err) {
 
             console.log(
@@ -398,7 +653,8 @@ async function getClubMatches(club) {
     }
 
 
-    // Sort newest match first.
+    // Newest match first.
+
     allMatches.sort((a, b) => {
 
         const timeA =
@@ -416,10 +672,13 @@ async function getClubMatches(club) {
     );
 
 
-    // Return the two most recent matches,
-    // regardless of match type.
     return allMatches.slice(0, 2);
 }
+
+
+// ------------------------------------------------------------
+// OVERLAY API
+// ------------------------------------------------------------
 
 app.get("/api/fc27/latest-results", async (req, res) => {
 
@@ -430,7 +689,9 @@ app.get("/api/fc27/latest-results", async (req, res) => {
             FC_CLUBS.neverEnough
         ];
 
+
         const results = [];
+
 
         for (const club of clubs) {
 
@@ -439,15 +700,18 @@ app.get("/api/fc27/latest-results", async (req, res) => {
                 const matches =
                     await getClubMatches(club);
 
+
                 for (const match of matches) {
 
                     const formatted =
                         formatClubMatch(match, club);
 
+
                     if (formatted) {
                         results.push(formatted);
                     }
                 }
+
 
             } catch (err) {
 
@@ -455,6 +719,7 @@ app.get("/api/fc27/latest-results", async (req, res) => {
                     `[FC27] ${club.name}:`,
                     err.message
                 );
+
 
                 results.push({
                     club: club.name,
@@ -465,10 +730,12 @@ app.get("/api/fc27/latest-results", async (req, res) => {
             }
         }
 
+
         res.setHeader(
             "Cache-Control",
             "no-store"
         );
+
 
         res.json({
             updated:
@@ -477,6 +744,7 @@ app.get("/api/fc27/latest-results", async (req, res) => {
             results
         });
 
+
     } catch (err) {
 
         console.log(
@@ -484,8 +752,10 @@ app.get("/api/fc27/latest-results", async (req, res) => {
             err.message
         );
 
+
         res.status(500).json({
-            error: "Unable to retrieve club results"
+            error:
+                "Unable to retrieve club results"
         });
     }
 });
